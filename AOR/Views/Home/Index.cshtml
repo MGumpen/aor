@@ -1,11 +1,13 @@
 @{
     ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
 }
 <!-- Legger til tekst på førstesiden -->
 <div class="text-center">
     <h1 class="display-4" style="margin-top: 50px;">Welcome to Index</h1>
     
-    <p class="fs-2" style="margin-top: 20px;">Please log in to access the application</p>
+    <p class="fs-2" style="margin-top: 20px;">You have now entered the application successfully!</p>
     
-
+    <!-- Knapp som går tilbake til LogIn siden -->
+    <a asp-controller="LogIn" asp-action="Index" class="btn btn-primary btn-lg mt-4" style="padding: 20px 50px; font-size: 1.5rem;">Go to Login</a>
 </div>
