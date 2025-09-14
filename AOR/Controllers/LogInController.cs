@@ -18,6 +18,12 @@ namespace AOR.Controllers
             return View(new LogInData());
         }
 
+        //Tilgang til privacy fra LogIn page
+        public IActionResult PrivacyLogIn()
+        {
+            return View();
+        }
+
         // POST: /LogIn
         [HttpPost]
         public IActionResult Index(LogInData model)
@@ -31,7 +37,7 @@ namespace AOR.Controllers
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
                     return RedirectToAction("Index", "Home");
                 }
-                
+
                 else
                 {
                     ModelState.AddModelError("", "Ugyldig brukernavn eller passord");
@@ -40,6 +46,12 @@ namespace AOR.Controllers
 
             // Hvis vi kommer hit, vis skjemaet igjen med feilmeldinger
             return View(model);
+        }
+        
+        //Tilgang til privacy fra LogIn page
+        public IActionResult ForgotPassword()
+        {
+            return View();
         }
     }
 }
