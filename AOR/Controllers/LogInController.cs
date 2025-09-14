@@ -25,7 +25,7 @@ namespace AOR.Controllers
             if (ModelState.IsValid)
             {
                 // Hardkodet bruker for utvikling
-                if (model.Username == "mariusgg@uia.no" && model.Password == "123")
+                if (model.Username == "test@uia.no" && model.Password == "123")
                 {
                     // Suksess - redirect til hjemmesiden
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
