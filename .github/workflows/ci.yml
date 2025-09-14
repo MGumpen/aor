@@ -13,7 +13,8 @@ jobs:
           dotnet-version: '8.0.x'
       - run: dotnet restore
       - run: dotnet build -c Release --no-restore
-      - run: dotnet test --no-build --verbosity normal# This workflow uses actions that are not certified by GitHub.
+      - run: dotnet test --no-build --verbosity normal
+# This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
