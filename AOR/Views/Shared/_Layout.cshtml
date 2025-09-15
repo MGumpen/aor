@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AOR</title>
     <script type="importmap"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Optionally extend Tailwind (example keeps it minimal)
+        tailwind.config = {
+          theme: {
+            extend: {
+              container: { center: true, padding: { DEFAULT: '1rem', md: '1.5rem' } }
+            }
+          }
+        }
+    </script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AOR.styles.css" asp-append-version="true" />
@@ -18,18 +29,24 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-               <!-- Midlertidig kommentert bort det vi ikke trenger i headeren.
+
 
                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                    <ul class="navbar-nav ms-auto fs-5">
+                     <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
+                    <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="MyReports" asp-action="Index">My reports</a>
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="LogIn" asp-action="Index">Log out</a>
                         </li>
                     </ul>
-                </div> -->
+
             </div>
         </nav>
     </header>
@@ -40,8 +57,14 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - AOR - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="container d-flex justify-content-between">
+        <span>
+            <!-- Full tekst på store skjermer -->
+            <span class="d-none d-md-inline">&copy; 2025 - AOR - Made in collaboration with Norsk Luftambulanse & Kartverket</span>
+            <!-- Forkortet tekst på små skjermer -->
+            <span class="d-md-none">&copy; 2025 - AOR</span>
+        </span>
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

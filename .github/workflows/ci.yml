@@ -1,0 +1,90 @@
+name: CI
+on:
+  pull_request:
+    branches: [update, main]
+  push:
+    branches: [update, main]
+
+jobs:
+
+
+  build:
+
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest  # For a list of available runner types, refer to
+                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+
+    env:
+
+      Solution_Name: AOR.sln
+      Test_Project_Path: AOR.Tests/AOR.Tests.csproj
+      Wap_Project_Directory: AOR.Package
+      Wap_Project_Path: AOR.Package/AOR.Package.wapproj
+
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            9.0.x
+            8.0.x
+
+      - name: Diagnose repo
+        shell: bash
+        run: |
+          dotnet --info
+          echo "Lister filer og løsninger:"
+          ls -la
+          git ls-files "*.sln" || true
+          git ls-files "*.csproj" || true
+
+      - name: Restore
+        shell: bash
+        run: |
+          set -e
+          SLN=$(git ls-files "*.sln" | head -n 1 || true)
+          if [ -n "$SLN" ]; then
+            echo "Fant løsning: $SLN"
+            dotnet restore "$SLN"
+          else
+            echo "Ingen .sln funnet – prøver alle .csproj"
+            for p in $(git ls-files "*.csproj"); do
+              echo "Restore $p"
+              dotnet restore "$p"
+            done
+          fi
+
+      - name: Build
+        shell: bash
+        run: |
+          set -e
+          SLN=$(git ls-files "*.sln" | head -n 1 || true)
+          if [ -n "$SLN" ]; then
+            dotnet build "$SLN" -c Release --no-restore
+          else
+            for p in $(git ls-files "*.csproj"); do
+              echo "Build $p"
+              dotnet build "$p" -c Release --no-restore
+            done
+          fi
+
+      - name: Test (only if tests exist)
+        shell: bash
+        run: |
+          set -e
+          TESTS=$(git ls-files "*Tests/*.csproj" "*Test/*.csproj" | wc -l)
+          if [ "$TESTS" -gt 0 ]; then
+            for t in $(git ls-files "*Tests/*.csproj" "*Test/*.csproj"); do
+              echo "Test $t"
+              dotnet test "$t" -c Release --no-build --verbosity normal
+            done
+          else
+            echo "Ingen testprosjekter funnet – hopper over test."
+          fi
