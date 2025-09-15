@@ -37,6 +37,7 @@ jobs:
             8.0.x
 
       - name: Diagnose repo
+        shell: bash
         run: |
           dotnet --info
           echo "Lister filer og løsninger:"
