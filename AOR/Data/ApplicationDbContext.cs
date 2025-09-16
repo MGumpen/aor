@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using AOR.Models;
 
 namespace AOR.Data;
 
@@ -7,31 +8,21 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-
     }
 
-    // DbSets for your entities will go here
-    // Example: public DbSet<User> Users { get; set; }
+    // DbSets for your entities
     public DbSet<AdviceDto> Advices { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AdviceDto>().HasKey(keyId => keyId.AdviceId);
+        base.OnModelCreating(modelBuilder);
+
+        // Configure AdviceDto entity
+        modelBuilder.Entity<AdviceDto>(entity =>
         {
-            
-        };
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
+        });
     }
-
-  //  protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-    //  base.OnModelCreating(modelBuilder);
-
-    // Entity configurations will go here
-    // Example:
-    // modelBuilder.Entity<User>(entity =>
-    // {
-    //     entity.HasKey(e => e.Id);
-    //     entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
-    // });
-    // }
 }
