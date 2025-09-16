@@ -16,7 +16,7 @@ public class ApplicationDbContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AdviceDto>().HasKey(keyId => keyId.adviceId);
+        modelBuilder.Entity<AdviceDto>().HasKey(keyId => keyId.AdviceId);
         {
             
         };
