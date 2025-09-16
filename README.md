@@ -3,6 +3,8 @@
 
 ## 🚀 Quick Start
 
+Bruker i Web Applikasjonen: test@uia.no Passord: 123
+
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for lokal utvikling)
