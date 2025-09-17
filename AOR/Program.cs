@@ -1,7 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add Entity Framework with MariaDB
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 
 var app = builder.Build();
 
@@ -25,6 +35,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=LogIn}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
