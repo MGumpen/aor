@@ -15,7 +15,7 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d
     networks:
-      - aor_network
+      - aor_aor_network
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       start_period: 10s
@@ -36,7 +36,8 @@ services:
       - ConnectionStrings__DefaultConnection=Server=mariadb;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;
     ports:
       - "80:8080"
-    depends_on:
+    depends_on:# bash
+  docker compose logs aor-web --tail=200
       mariadb:
         condition: service_healthy
     networks:

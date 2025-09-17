@@ -15,6 +15,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
+// Engangs-sjekk ved oppstart (logger resultatet)
+using (var scope = app.Services.CreateScope())
+{
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        // Synkron for enkelhet; kan også bruke CanConnectAsync().GetAwaiter().GetResult()
+        if (db.Database.CanConnect())
+            logger.LogInformation("MariaDB-tilkobling OK.");
+        else
+            logger.LogWarning("MariaDB-tilkobling feilet (CanConnect() = false).");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Feil ved tilkobling til MariaDB under oppstart.");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -29,6 +48,25 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+// Lettvekts health-endepunkt for DB: returnerer 200 når DB er tilgjengelig
+app.MapGet("/db-health", async (ApplicationDbContext db) =>
+{
+    try
+    {
+        var can = await db.Database.CanConnectAsync();
+        return can
+            ? Results.Ok("OK: Tilkoblet MariaDB")
+            : Results.StatusCode(503);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(
+            detail: ex.Message,
+            statusCode: 503,
+            title: "Kunne ikke koble til MariaDB");
+    }
+});
 
 //Fører til LogIn siden når appen startes
 app.MapControllerRoute(

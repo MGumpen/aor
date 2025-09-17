@@ -1,20 +1,39 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
 using AOR.Models;
+using System.Threading;
 
 namespace AOR.Controllers
 {
     public class LogInController : Controller
     {
-        private readonly ILogger<LogInController> _logger;
+        private readonly ApplicationDbContext _db;
 
-        public LogInController(ILogger<LogInController> logger)
+        public LogInController(ApplicationDbContext db)
         {
-            _logger = logger;
+            _db = db;
         }
 
-        // GET: /LogIn
-        public IActionResult Index()
+        // GET: /LogIn/Index
+        public async Task<IActionResult> Index()
         {
+            bool connected = false;
+            string? error = null;
+
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                connected = await _db.Database.CanConnectAsync(cts.Token);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+
+            ViewData["DbConnected"] = connected;
+            ViewData["DbError"] = error;
+
             return View(new LogInData());
         }
 
@@ -34,7 +53,6 @@ namespace AOR.Controllers
                 if (model.Username == "test@uia.no" && model.Password == "123")
                 {
                     // Suksess - redirect til hjemmesiden
-                    _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
                     return RedirectToAction("Index", "Home");
                 }
 
