@@ -11,7 +11,7 @@
 
 # Github kommandoer
 
-- Git pull origin main – Henter siste oppdateringer fra main.
+- Git pull origin "branch" – Henter siste oppdateringer fra oppgitt branch. Vi bruker mest å hente fra main eller update.
 
 - Git checkout «branch» - Navigerer til oppgitt branch.
 
