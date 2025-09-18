@@ -1,18 +1,428 @@
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "AOR - Aviation Obstacle Registration";
     Layout = "_Layout";
 }
-<!-- Legger til tekst på førstesiden -->
-<div class="text-center">
-    <h1 class="display-4" style="margin-top: 50px;">Welcome to Index</h1>
+
+<style>
+    /* Match the registration form's clean layout */
+    .map-content {
+        padding: 2rem 0;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
     
-    <p class="fs-2" style="margin-top: 20px;">You have now entered the application successfully!</p>
+    /* Map container with proper Bootstrap card styling */
+    .map-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
     
-    <div class="pt-4">
-            <a asp-action="DataForm" asp-controller="Obstacle"
-               class="inline-flex items-center rounded-lg px-4 py-2 ring-1 ring-indigo-600 text-indigo-700 hover:bg-indigo-50">
-                Register Obstacle
-            </a>
+    .map-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 1rem 1.25rem;
+    }
+    
+    .map-body {
+        position: relative;
+        padding: 0;
+    }
+    
+    /* Ensure map fills the card properly */
+    #obstacle-map {
+        width: 100%;
+        height: 500px;
+        border: none;
+    }
+    
+    /* Status panels styled like Bootstrap cards */
+    .info-panels {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1.25rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .info-card h6 {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.75rem;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .legend-color {
+        width: 20px;
+        height: 4px;
+        border-radius: 2px;
+        margin-right: 0.75rem;
+    }
+    
+    /* Controls styled like form buttons */
+    .controls-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .control-group {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1.25rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .control-group h6 {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .control-btn {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+    }
+    
+    .control-btn:hover {
+        background: #e9ecef;
+        border-color: #adb5bd;
+    }
+    
+    .control-btn.active {
+        background: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+    
+    /* Registration buttons styled like the form */
+    .register-section {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1.25rem;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        text-align: center;
+    }
+    
+    .register-section h6 {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .register-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .register-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s ease-in-out;
+    }
+    
+    .register-btn.primary {
+        background: #007bff;
+        color: white;
+    }
+    
+    .register-btn.primary:hover {
+        background: #0056b3;
+    }
+    
+    .register-btn.secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .register-btn.secondary:hover {
+        background: #545b62;
+    }
+    
+    /* Status indicators */
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+    
+    .status-item {
+        text-align: center;
+    }
+    
+    .status-value {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    .status-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+</style>
+
+<div class="container">
+    <div class="map-content">
+        
+        <!-- Info panels matching form styling -->
+        <div class="info-panels">
+            <div class="info-card">
+                <h6>Today's Activity</h6>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-value" id="today-count">2</span>
+                        <span class="status-label">Registered</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-value" id="pending-count">1</span>
+                        <span class="status-label">Pending</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <h6>Obstacle Types</h6>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #dc3545;"></div>
+                    <span>Power Lines</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #007bff;"></div>
+                    <span>Masts</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #28a745;"></div>
+                    <span>Towers</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #6f42c1;"></div>
+                    <span>Other</span>
+                </div>
+            </div>
         </div>
- 
+        
+        <!-- Main map card -->
+        <div class="map-card">
+            <div class="map-header">
+                <h5 class="mb-0">Aviation Obstacle Map - Norway</h5>
+            </div>
+            <div class="map-body">
+                <div id="obstacle-map"></div>
+            </div>
+        </div>
+        
+        <!-- Controls section -->
+        <div class="controls-section">
+            <div class="control-group">
+                <h6>Map Controls</h6>
+                <button class="control-btn" onclick="showMyLocation()">My Location</button>
+                <button class="control-btn" id="unit-btn" onclick="toggleHeightUnit()">Meters</button>
+                <button class="control-btn" id="online-btn" onclick="toggleOnlineMode()">Online</button>
+            </div>
+            
+            <div class="register-section">
+                <h6>Quick Registration</h6>
+                <div class="register-buttons">
+                    <button class="register-btn primary" onclick="registerObstacle('power_line')">Power Line</button>
+                    <button class="register-btn primary" onclick="registerObstacle('mast')">Mast</button>
+                    <button class="register-btn primary" onclick="registerObstacle('tower')">Tower</button>
+                    <button class="register-btn secondary" onclick="useGPS()">Use GPS</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        var map;
+        var isHeightInFeet = false;
+        var isOnline = true;
+        
+        function initializeMap() {
+            map = L.map('obstacle-map', {
+                center: [60.472, 8.4689],
+                zoom: 6,
+                zoomControl: true
+            });
+            
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            map.zoomControl.setPosition('bottomright');
+            
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+            
+            loadSampleObstacles();
+        }
+        
+        function loadSampleObstacles() {
+            // Power line
+            L.polyline([
+                [59.9139, 10.7522],
+                [59.9239, 10.7622]
+            ], {
+                color: '#dc3545',
+                weight: 4,
+                opacity: 0.8
+            }).addTo(map).bindPopup(`
+                <div>
+                    <h6>Power Line - Oslo</h6>
+                    <p><strong>Height:</strong> 45m<br>
+                    <strong>Status:</strong> <span style="color: #ffc107;">Pending</span></p>
+                </div>
+            `);
+            
+            // Communication mast
+            L.circleMarker([60.3913, 5.3221], {
+                color: '#007bff',
+                fillColor: '#007bff',
+                fillOpacity: 0.7,
+                radius: 8
+            }).addTo(map).bindPopup(`
+                <div>
+                    <h6>Communication Mast - Bergen</h6>
+                    <p><strong>Height:</strong> 120m<br>
+                    <strong>Status:</strong> <span style="color: #28a745;">Approved</span></p>
+                </div>
+            `);
+        }
+        
+        function showMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    map.setView([position.coords.latitude, position.coords.longitude], 15);
+                    L.marker([position.coords.latitude, position.coords.longitude])
+                        .bindPopup('🚁 Your Current Location')
+                        .addTo(map);
+                });
+            }
+        }
+        
+        function toggleHeightUnit() {
+            isHeightInFeet = !isHeightInFeet;
+            const btn = document.getElementById('unit-btn');
+            btn.textContent = isHeightInFeet ? 'Feet' : 'Meters';
+            btn.classList.toggle('active');
+        }
+        
+        function toggleOnlineMode() {
+            isOnline = !isOnline;
+            const btn = document.getElementById('online-btn');
+            btn.textContent = isOnline ? 'Online' : 'Offline';
+            btn.classList.toggle('active', !isOnline);
+        }
+        
+        function registerObstacle(type) {
+            const center = map.getCenter();
+            const typeName = type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            
+            if (confirm(`Register ${typeName} at current map center?`)) {
+                const color = getObstacleColor(type);
+                
+                L.circleMarker([center.lat, center.lng], {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.7,
+                    radius: 8
+                }).addTo(map).bindPopup(`
+                    <div>
+                        <h6>New ${typeName}</h6>
+                        <p><strong>Status:</strong> <span style="color: #ffc107;">Pending</span></p>
+                    </div>
+                `);
+                
+                // Update counts
+                document.getElementById('today-count').textContent = 
+                    parseInt(document.getElementById('today-count').textContent) + 1;
+                document.getElementById('pending-count').textContent = 
+                    parseInt(document.getElementById('pending-count').textContent) + 1;
+            }
+        }
+        
+        function getObstacleColor(type) {
+            const colors = {
+                'power_line': '#dc3545',
+                'mast': '#007bff',
+                'tower': '#28a745'
+            };
+            return colors[type] || '#6c757d';
+        }
+        
+        function useGPS() {
+    // Redirect to registration form with GPS location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            // Get current GPS coordinates
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            
+            // Redirect to registration form with coordinates as URL parameters
+            window.location.href = `/Obstacle/DataForm?lat=${lat}&lng=${lng}&useGPS=true`;
+        }, function(error) {
+            // If GPS fails, still redirect to form but without coordinates
+            console.log("GPS error:", error);
+            window.location.href = '/Obstacle/DataForm?useGPS=true';
+        });
+    } else {
+        // If browser doesn't support geolocation, redirect without GPS
+        window.location.href = '/Obstacle/DataForm';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initializeMap);
+
+window.addEventListener('resize', function() {
+    if (map) {
+                setTimeout(function() { map.invalidateSize(); }, 100);
+            }
+        });
+    </script>
+}
