@@ -143,4 +143,5 @@ public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
             return RedirectToAction("Index");
         }
     }
+
 }
