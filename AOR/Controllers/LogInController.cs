@@ -32,12 +32,14 @@ namespace AOR.Controllers
     
 // In the LogInController class:
 private readonly ILogger<LogInController> _logger;
-
+{
 public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
 {
     _db = db;
     _logger = logger;
 }
+}
+
         // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
