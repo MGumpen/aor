@@ -5,9 +5,9 @@ ASP.NET Core MVC Application with Docker & MariaDB
 
 
 # Brukere i Web Applikasjonen: #
-Crew: test@uia.no Passord: 123
-Admin: admin@uia.no Passord:456
-Registerfører: reg@uia.no Passord: 789
+- Crew: test@uia.no Passord: 123
+- Admin: admin@uia.no Passord:456
+- Registerfører: reg@uia.no Passord: 789
 
 
 ### Prerequisites
