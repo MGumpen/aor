@@ -147,4 +147,5 @@ public class LogInController : Controller
             return RedirectToAction("Index");
         }
     }
+    }
 
