@@ -137,10 +137,6 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 //Fører til LogIn siden når appen startes
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=LogIn}/{action=Index}/{id?}")
-    .WithStaticAssets();
 
 app.Run();
 
