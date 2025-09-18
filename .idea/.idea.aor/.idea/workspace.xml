@@ -11,7 +11,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="" />
+    <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,6 +29,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -64,12 +72,14 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    ".NET Launch Settings Profile.AOR DB.executor": "Run",
     ".NET Launch Settings Profile.AOR: AOR HTTPS.executor": "Run",
     ".NET Launch Settings Profile.AOR: AOR Local.executor": "Run",
     ".NET Launch Settings Profile.AOR: http.executor": "Run",
     ".NET Launch Settings Profile.AOR: https.executor": "Run",
     ".NET Launch Settings Profile.Unnamed.executor": "Run",
     "Docker.AOR/Dockerfile.executor": "Run",
+    "Docker.Docker .executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
@@ -84,8 +94,8 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.AOR: AOR Local">
-    <configuration name="AOR: AOR HTTPS" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+  <component name="RunManager" selected=".NET Launch Settings Profile.AOR DB">
+    <configuration name="AOR DB" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/AOR/AOR.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
       <option name="LAUNCH_PROFILE_NAME" value="AOR HTTPS" />
@@ -100,7 +110,7 @@
       <option name="AUTO_ATTACH_CHILDREN" value="0" />
       <method v="2">
         <option name="Build" />
-        <option name="RunConfigurationTask" enabled="true" run_configuration_name="AOR/Dockerfile" run_configuration_type="docker-deploy" />
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="Docker " run_configuration_type="docker-deploy" />
       </method>
     </configuration>
     <configuration name="AOR: AOR Local" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
@@ -116,35 +126,16 @@
       <option name="SEND_DEBUG_REQUEST" value="1" />
       <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
       <option name="AUTO_ATTACH_CHILDREN" value="0" />
-      <method v="2">
-        <option name="Build" />
-      </method>
-    </configuration>
-    <configuration name="Unnamed" type="LaunchSettings" factoryName=".NET Launch Settings Profile" nameIsGenerated="true">
-      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/AOR/AOR.csproj" />
-      <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
-      <option name="LAUNCH_PROFILE_NAME" value="http" />
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="USE_MONO" value="0" />
-      <option name="RUNTIME_ARGUMENTS" value="" />
-      <browser name="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
-      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
-      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
-      <option name="SEND_DEBUG_REQUEST" value="1" />
-      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
-      <option name="AUTO_ATTACH_CHILDREN" value="0" />
       <option name="RUNTIME_TYPE" value="coreclr" />
       <method v="2">
+        <option name="RunConfigurationTask" enabled="true" run_configuration_name="Docker " run_configuration_type="docker-deploy" />
         <option name="Build" />
-        <option name="RunConfigurationTask" enabled="true" run_configuration_name="AOR/Dockerfile" run_configuration_type="docker-deploy" />
       </method>
     </configuration>
-    <configuration name="AOR/Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
-      <deployment type="dockerfile">
+    <configuration name="Docker " type="docker-deploy" factoryName="docker-compose.yml" server-name="Docker">
+      <deployment type="docker-compose.yml">
         <settings>
-          <option name="containerName" value="aor" />
-          <option name="contextFolderPath" value="." />
-          <option name="sourceFilePath" value="AOR/Dockerfile" />
+          <option name="sourceFilePath" value="docker-compose.yml" />
         </settings>
       </deployment>
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
@@ -158,10 +149,9 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue=".NET Launch Settings Profile.AOR: AOR HTTPS" />
       <item itemvalue=".NET Launch Settings Profile.AOR: AOR Local" />
-      <item itemvalue=".NET Launch Settings Profile.Unnamed" />
-      <item itemvalue="Docker.AOR/Dockerfile" />
+      <item itemvalue=".NET Launch Settings Profile.AOR DB" />
+      <item itemvalue="Docker.Docker " />
     </list>
   </component>
   <component name="TaskManager">
