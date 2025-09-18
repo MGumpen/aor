@@ -29,16 +29,18 @@ using System.Threading.Tasks;
 
 namespace AOR.Controllers
 {
-    
-// In the LogInController class:
-private readonly ILogger<LogInController> _logger;
+
+public class LogInController : Controller
 {
-public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
-{
-    _db = db;
-    _logger = logger;
-}
-}
+    private readonly ILogger<LogInController> _logger;
+    private readonly ApplicationDbContext _db;
+
+    public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
 
         // GET: /LogIn/Index
         public async Task<IActionResult> Index()
