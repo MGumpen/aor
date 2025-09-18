@@ -1,25 +1,47 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Launch AOR (F5)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/AOR/bin/Debug/net9.0/AOR.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/AOR",
-            "console": "internalConsole",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
-                "uriFormat": "%s"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development",
-                "ASPNETCORE_URLS": "http://localhost:5242"
-            }
-        }
-    ]
+
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch AOR with Docker Database",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "start-mariadb",
+      "program": "${workspaceFolder}/AOR/bin/Debug/net9.0/AOR.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/AOR",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/AOR/Views"
+      }
+    },
+    {
+      "name": "Launch AOR (Local Only)",
+      "type": "coreclr", 
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/AOR/bin/Debug/net9.0/AOR.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/AOR",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(http://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/AOR/Views"
+      }
+    }
+  ]
+
 }
