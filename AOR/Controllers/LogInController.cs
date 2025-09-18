@@ -1,5 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
+/*
+ CHANGE LOG — erfan
+ Hva er lagt til/endre:
+ 1) Cookie-basert innlogging: bruker SignInAsync for å opprette autentiseringscookie med brukerens claims.
+ 2) Rolle-claim: legger ClaimTypes.Role = "Registerfører" for brukere som er registerførere.
+ 3) Beskyttet forside: action RegisterforerHome er merket med [Authorize(Roles = "Registerfører")].
+ 4) AccessDenied: egen action og visning for manglende rettigheter.
+ 5) Logout: action som sletter autentiseringscookien (SignOutAsync).
+ 6) Hardkodet brukerliste: to testbrukere i minne — registerforer@uia.no (Registerfører) og crew@uia.no (Crew).
+ 7) Rollebasert redirect: etter innlogging sendes Registerfører-bruker til RegisterforerHome og alle andre til Home/Index.
+ 8) Oppdatert testbruker: byttet fra tes@uia.no til registerforer@uia.no for tydelig testing av roller.
+ Hvorfor:
+ - For å støtte scenarioet der kun registerførere får tilgang til en egen forside, mens øvrige brukere sendes til vanlig Home.
+*/
 
 namespace AOR.Controllers
 {
@@ -24,20 +43,52 @@ namespace AOR.Controllers
             return View();
         }
 
+        // Side kun for registerførere (ligger under LogInController) — erfan
+        [Authorize(Roles = "Registerfører")]
+        public IActionResult RegisterforerHome()
+        {
+            return View();
+        }
+
         // POST: /LogIn
         [HttpPost]
-        public IActionResult Index(LogInData model)
+        public async Task<IActionResult> Index(LogInData model)
         {
             if (ModelState.IsValid)
             {
-                // Hardkodet bruker for utvikling
-                if (model.Username == "test@uia.no" && model.Password == "123")
+                // Hardkodede brukere for utvikling: én registerfører og én crew.
+                // Oppdatert: byttet testbruker til registerforer@uia.no for å teste rollebasert redirect (Registerfører vs. Home). — erfan
+                var users = new Dictionary<string, (string Password, string Role)>(StringComparer.OrdinalIgnoreCase)
                 {
-                    // Suksess - redirect til hjemmesiden
+                    ["registerforer@uia.no"] = ("123", "Registerfører"),
+                    ["crew@uia.no"] = ("123", "Crew")
+                };
+
+                if (users.TryGetValue(model.Username, out var user) && user.Password == model.Password)
+                {
+                    // Bygg claims inkludert rolle fra brukertabellen — erfan
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, model.Username),
+                        new Claim(ClaimTypes.Email, model.Username),
+                        new Claim(ClaimTypes.Role, user.Role)
+                    };
+
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+
+                    // Opprett autentiseringscookie — erfan
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
+
+                    // Ruter registerførere til sin forside, andre til Home — erfan
+                    if (user.Role == "Registerfører")
+                    {
+                        return RedirectToAction(nameof(RegisterforerHome), "LogIn");
+                    }
                     return RedirectToAction("Index", "Home");
                 }
-
                 else
                 {
                     ModelState.AddModelError("", "Ugyldig brukernavn eller passord");
@@ -47,11 +98,25 @@ namespace AOR.Controllers
             // Hvis vi kommer hit, vis skjemaet igjen med feilmeldinger
             return View(model);
         }
-        
+
         //Tilgang til privacy fra LogIn page
         public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        // AccessDenied-side ved manglende rettigheter
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        // Logg ut
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Index");
         }
     }
 }
