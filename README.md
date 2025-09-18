@@ -1,6 +1,7 @@
 # AOR - Aviation Obstacle Registration
 ASP.NET Core MVC Application with Docker & MariaDB
 
+
 # Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
 
@@ -8,6 +9,7 @@ ASP.NET Core MVC Application with Docker & MariaDB
 - Crew: test@uia.no Passord: 123
 - Admin: admin@uia.no Passord:456
 - Registerfører: reg@uia.no Passord: 789
+
 
 
 ### Prerequisites

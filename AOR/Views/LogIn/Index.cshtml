@@ -9,7 +9,28 @@
     <h1 class="display-4">Aviation Obstacle Registration</h1>
     <p class="fs-2" style="margin-top: 20px;">Please log in to access the application</p>
     
-    <form method="post" class="mx-auto" style="max-width: 500px; sm:max-width: 80%; margin-top: 40px;">
+    @if (ViewData["DbConnected"] is bool dbOk)
+    {
+        if (dbOk)
+        {
+            <div class="mt-2" style="font-size: 0.9rem; solid-color: green;">
+                Tilkoblet MariaDB
+            </div>
+        }
+        else
+        {
+            <div class="" role="alert" style="max-width: 600px; margin: 0 auto 20px;">
+                Ikke tilkoblet MariaDB
+                @if (ViewData["DbError"] is string err && !string.IsNullOrWhiteSpace(err))
+                {
+                    <span class="d-block mt-1" style="font-size: 0.9rem;">Detaljer: @err</span>
+                }
+            </div>
+        }
+    }
+
+    
+    <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
         
         <!-- Feilmeldinger vises her -->
         <!-- Kontrollere denne koden, og se om den er riktig, er laget med AI -->
