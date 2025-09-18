@@ -4,6 +4,7 @@ namespace AOR.Models;
 
 public class ObstacleData
 {
+    [Required(ErrorMessage = "Field is required")]
     [MaxLength(100)]
     public string ObstacleName { get; set; }
 

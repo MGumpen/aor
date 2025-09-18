@@ -13,11 +13,13 @@
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+
       <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Properties/launchSettings.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +92,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "DotCoverContinuousTestingPageId",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -166,7 +168,7 @@
       <workItem from="1758018750557" duration="647000" />
       <workItem from="1758045247917" duration="3093000" />
       <workItem from="1758090237962" duration="1385000" />
-      <workItem from="1758100014838" duration="3484000" />
+      <workItem from="1758100014838" duration="8185000" />
     </task>
     <servers />
   </component>
