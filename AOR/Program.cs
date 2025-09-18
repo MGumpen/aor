@@ -41,11 +41,6 @@ else
 
 
 // Add Entity Framework with MariaDB
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
 
 // Legg til cookie-autentisering for å holde påloggingsstatus i en sikker cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
