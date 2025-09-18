@@ -49,6 +49,9 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Generelt health-endepunkt
+app.MapGet("/health", () => Results.Ok("OK"));
+
 // Lettvekts health-endepunkt for DB: returnerer 200 når DB er tilgjengelig
 app.MapGet("/db-health", async (ApplicationDbContext db) =>
 {
