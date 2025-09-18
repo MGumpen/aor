@@ -3,12 +3,12 @@
     "AOR Local": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:8080",
+      "launchUrl": "http://localhost:5242",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:8080"
+      "applicationUrl": "http://localhost:5242"
     },
     "AOR HTTPS": {
       "commandName": "Project",
