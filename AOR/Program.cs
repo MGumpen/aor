@@ -134,7 +134,6 @@ app.MapControllerRoute(
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
 
 //Fører til LogIn siden når appen startes
 
