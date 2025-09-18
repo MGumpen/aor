@@ -31,9 +31,10 @@ services:
     container_name: aor-web
     restart: unless-stopped
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=Server=mariadb;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      DISABLE_HTTPS_REDIRECT: "true"
+      ConnectionStrings__DefaultConnection: Server=mariadb;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;
     ports:
       - "80:8080"
     depends_on:
@@ -43,6 +44,12 @@ services:
       - aor_network
     volumes:
       - ./AOR:/app/source:ro  # For development file watching
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/db-health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Adminer for database management (optional)
   adminer:
