@@ -144,4 +144,3 @@ public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
         }
     }
 
-}
