@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  aor-web:
+    build:
+      context: "/Users/marius/Documents/Prosjekter/aor/AOR"
+      dockerfile: "Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/AOR.dll"
+    environment:
+      ASPNETCORE_STATICWEBASSETS: "/app/bin/Debug/net9.0/AOR.staticwebassets.runtime.CT.json"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "aor:dev"
+    ports: []
+    volumes:
+    - "/Users/marius/Documents/Prosjekter/aor/AOR:/app:rw"
+    - "/Users/marius/Documents/Prosjekter/aor:/src:rw"
+    - "/Users/marius/.nuget/packages:/root/.nuget/packages"
+    working_dir: "/app"

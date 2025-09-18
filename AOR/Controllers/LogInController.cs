@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
 using AOR.Models;
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-
+using System.Threading;
+using System.Threading.Tasks;
 /*
  CHANGE LOG — erfan
  Hva er lagt til/endre:
@@ -20,20 +24,39 @@ using Microsoft.AspNetCore.Authorization;
  - For å støtte scenarioet der kun registerførere får tilgang til en egen forside, mens øvrige brukere sendes til vanlig Home.
 */
 
+
+
+
 namespace AOR.Controllers
 {
     public class LogInController : Controller
     {
-        private readonly ILogger<LogInController> _logger;
+        private readonly ApplicationDbContext _db;
 
-        public LogInController(ILogger<LogInController> logger)
+        public LogInController(ApplicationDbContext db)
         {
-            _logger = logger;
+            _db = db;
         }
 
-        // GET: /LogIn
-        public IActionResult Index()
+        // GET: /LogIn/Index
+        public async Task<IActionResult> Index()
         {
+            bool connected = false;
+            string? error = null;
+
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+                connected = await _db.Database.CanConnectAsync(cts.Token);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+            }
+
+            ViewData["DbConnected"] = connected;
+            ViewData["DbError"] = error;
+
             return View(new LogInData());
         }
 
@@ -87,6 +110,7 @@ namespace AOR.Controllers
                     {
                         return RedirectToAction(nameof(RegisterforerHome), "LogIn");
                     }
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
