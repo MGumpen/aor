@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
-
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
@@ -29,15 +29,15 @@ using System.Threading.Tasks;
 
 namespace AOR.Controllers
 {
-    public class LogInController : Controller
-    {
-        private readonly ApplicationDbContext _db;
+    
+// In the LogInController class:
+private readonly ILogger<LogInController> _logger;
 
-        public LogInController(ApplicationDbContext db)
-        {
-            _db = db;
-        }
-
+public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
+{
+    _db = db;
+    _logger = logger;
+}
         // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
