@@ -1,14 +1,18 @@
 ﻿{
   "profiles": {
-    "AOR Local": {
-      "commandName": "Project",
+    "AOR HTTP": {
+      "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5242",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5242"
+      "applicationUrl": "http://localhost:5242",
+      "dockerComposeProjectPath": "docker-compose.yml",
+      "serviceName": "aor-web",
+      "publishAllPorts": true,
+      "useSSL": false
     },
     "AOR HTTPS": {
       "commandName": "Project",
