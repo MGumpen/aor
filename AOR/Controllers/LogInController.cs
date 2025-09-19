@@ -111,7 +111,7 @@ public class LogInController : Controller
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
 
                     // Ruter registerførere til sin forside, andre til Home — erfan
-                    if (user.Role == "Registerfører")
+                    if (user.Role == "Registerforer")
                     {
                         return RedirectToAction(nameof(RegisterforerHome), "LogIn");
                     }
