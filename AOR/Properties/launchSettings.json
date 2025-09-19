@@ -7,36 +7,38 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DISABLE_HTTPS_REDIRECT": "true",
-        "ASPNETCORE_URLS": "http://localhost:5242"
+        "ASPNETCORE_URLS": "http://localhost:5242",
+        "dotnetRunMessages": true,
+        "applicationUrl": "http://localhost:5242",
+        "dockerComposeProjectPath": "docker-compose.yml",
+        "publishAllPorts": true,
+        "useSSL": false
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5242"
     },
-    "AOR Docker (HTTP)": {
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:5242",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "DISABLE_HTTPS_REDIRECT": "true",
-        "ASPNETCORE_HTTP_PORTS": "8080"
-      },
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5242",
-      "dockerComposeProjectPath": "docker-compose.yml",
-      "serviceName": "aor-web",
-      "publishAllPorts": true,
-      "useSSL": false
-    },
     "AOR HTTPS": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:7243",
+      "launchUrl": "/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7243;http://localhost:5000"
+    },
+    "AOR Docker (HTTP)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "dotnetRunMessages": true,
+      "dockerComposeProjectPath": "docker-compose.yml",
+      "serviceName": "aor-web",
+      "publishAllPorts": true
     }
   }
 }
