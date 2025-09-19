@@ -15,15 +15,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Kjør Docker Compose automatisk i Development
+// Kjør Docker Compose automatisk i Development (ikke blokker UI)
+// Start i bakgrunn og la appen starte umiddelbart
 if (builder.Environment.IsDevelopment())
 {
-    await EnsureComposeUpAsync(
+    _ = Task.Run(() => EnsureComposeUpAsync(
         composeFilePath: Path.Combine(builder.Environment.ContentRootPath, "docker-compose.yml"),
         servicesToWaitFor: new[] { ("aor-db", 3306) },
         timeout: TimeSpan.FromMinutes(2),
         cancellationToken: CancellationToken.None
-    );
+    ));
 }
 
 // Add services to the container.
@@ -50,15 +51,15 @@ else
         ));
 }
 
-
-// Add Entity Framework with MariaDB
-
 // Legg til cookie-autentisering for å holde påloggingsstatus i en sikker cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/LogIn";                // Send brukere hit hvis de ikke er innlogget — erfan
-        options.AccessDeniedPath = "/LogIn/AccessDenied"; // Send brukere hit hvis de mangler riktig rolle — erfan
+        options.Cookie.Name = "AOR.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax; // nyttig lokalt
+        options.LoginPath = "/LogIn";
+        options.AccessDeniedPath = "/LogIn/AccessDenied";
         options.SlidingExpiration = true;
     });
 
@@ -104,13 +105,16 @@ if (!disableHttpsRedirect)
     app.UseHttpsRedirection();
 }
 
+app.UseStaticFiles(); // sikrer at statiske filer serveres når MapStaticAssets ikke finnes
+
 app.UseRouting();
 
 // Viktig: autentisering må komme før autorisasjon og før endepunkter
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// MapStaticAssets() kan brukes hvis tilgjengelig, men UseStaticFiles dekker vanlig scenario
+// app.MapStaticAssets();
 
 // Health-endepunkt
 app.MapGet("/health", () => Results.Ok("OK"));
@@ -137,8 +141,7 @@ app.MapGet("/db-health", async (ApplicationDbContext db) =>
 //Fører til LogIn siden når appen startes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=LogIn}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=LogIn}/{action=Index}/{id?}");
 
 app.Run();
 
@@ -146,9 +149,8 @@ app.Run();
 static async Task EnsureComposeUpAsync(string composeFilePath, (string service, int port)[] servicesToWaitFor, TimeSpan timeout, CancellationToken cancellationToken)
 {
     if (!File.Exists(composeFilePath))
-        return; // valgfritt: throw om compose er påkrevd
+        return;
 
-    // docker compose up -d
     var upOk = await RunProcessAsync(
         fileName: "docker",
         arguments: $"compose -f \"{composeFilePath}\" up -d",
@@ -157,10 +159,8 @@ static async Task EnsureComposeUpAsync(string composeFilePath, (string service, 
         cancellationToken: cancellationToken
     );
 
-    if (!upOk)
-        throw new InvalidOperationException("Klarte ikke å kjøre 'docker compose up -d'.");
+    if (!upOk) return;
 
-    // Vent på tjenester (enkel port-sjekk; bruk healthcheck via CLI om ønskelig)
     var start = DateTime.UtcNow;
     foreach (var (_, port) in servicesToWaitFor)
     {
