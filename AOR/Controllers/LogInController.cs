@@ -87,8 +87,9 @@ public class LogInController : Controller
                 // Oppdatert: byttet testbruker til registerforer@uia.no for å teste rollebasert redirect (Registerfører vs. Home). — erfan
                 var users = new Dictionary<string, (string Password, string Role)>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["registerforer@uia.no"] = ("123", "Registerfører"),
-                    ["crew@uia.no"] = ("123", "Crew")
+                    ["reg@uia.no"] = ("123", "Registerforer"),
+                    ["crew@uia.no"] = ("123", "Crew"),
+                    ["admin@uia.no"] = ("123", "Admin")
                 };
 
                 if (users.TryGetValue(model.Username, out var user) && user.Password == model.Password)
@@ -114,10 +115,13 @@ public class LogInController : Controller
                     {
                         return RedirectToAction(nameof(RegisterforerHome), "LogIn");
                     }
-
-                    return RedirectToAction("Index", "Home");
-                }
-                else
+                    else if (user.Role == "Crew")
+                    {
+                    return RedirectToAction("Index", "Crew");
+                      }
+                    return RedirectToAction("Index", "Admin");
+            }
+            else
                 {
                     ModelState.AddModelError("", "Ugyldig brukernavn eller passord");
                 }
