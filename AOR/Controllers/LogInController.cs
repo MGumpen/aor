@@ -105,7 +105,7 @@ public class LogInController : Controller
                     var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(identity);
 
-                    // Opprett autentiseringscookie — erfan
+                    // Opprett autentiseringscookie
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
