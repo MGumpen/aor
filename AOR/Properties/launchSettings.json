@@ -27,7 +27,16 @@
       "serviceName": "aor-web",
       "publishAllPorts": true,
       "useSSL": false
+    },
+    "AOR HTTPS": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:7243",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7243;http://localhost:5000"
     }
-  },
-  "$schema": "https://json.schemastore.org/launchsettings.json"
+  }
 }
