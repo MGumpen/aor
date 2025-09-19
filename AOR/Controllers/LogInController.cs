@@ -71,11 +71,7 @@ public class LogInController : Controller
         }
 
         // Side kun for registerførere (ligger under LogInController) — erfan
-        [Authorize(Roles = "Registerfører")]
-        public IActionResult RegisterforerHome()
-        {
-            return View();
-        }
+        
 
         // POST: /LogIn
         [HttpPost]
@@ -113,7 +109,7 @@ public class LogInController : Controller
                     // Ruter registerførere til sin forside, andre til Home — erfan
                     if (user.Role == "Registerforer")
                     {
-                        return RedirectToAction(nameof(RegisterforerHome), "LogIn");
+                        return RedirectToAction("Index", "Registerforer");
                     }
                     else if (user.Role == "Crew")
                     {
