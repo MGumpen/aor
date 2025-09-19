@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AOR: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+    <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/AOR/AOR.csproj" />
+    <option name="LAUNCH_PROFILE_TFM" value="net9.0" />
+    <option name="LAUNCH_PROFILE_NAME" value="AOR Local" />
+    <option name="USE_EXTERNAL_CONSOLE" value="0" />
+    <option name="USE_MONO" value="0" />
+    <option name="RUNTIME_ARGUMENTS" value="" />
+    <browser name="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
+    <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+    <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+    <option name="SEND_DEBUG_REQUEST" value="1" />
+    <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+    <option name="AUTO_ATTACH_CHILDREN" value="0" />
+    <option name="RUNTIME_TYPE" value="coreclr" />
+    <method v="2">
+      <option name="Build" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Docker compose" run_configuration_type="docker-deploy" />
+    </method>
+  </configuration>
+</component>
