@@ -95,6 +95,8 @@ if (!disableHttpsRedirect)
 
 app.UseRouting();
 
+// Viktig: autentisering må komme før autorisasjon og før endepunkter
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -126,16 +128,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=LogIn}/{action=Index}/{id?}")
     .WithStaticAssets();
-
-
-
-
-// Viktig: Aktiver autentisering før autorisasjon — erfan
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-//Fører til LogIn siden når appen startes
 
 app.Run();
 
