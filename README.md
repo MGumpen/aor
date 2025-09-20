@@ -5,9 +5,9 @@ Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 # Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
 # Brukere i Web Applikasjonen: #
-- Crew: test@uia.no Passord: 123
-- Admin: admin@uia.no Passord:456
-- Registerfører: reg@uia.no Passord: 789
+- Crew: crew@uia.no Passord: 123
+- Admin: admin@uia.no Passord: 123
+- Registerfører: reg@uia.no Passord: 123
 
 
 ### Krav
