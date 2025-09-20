@@ -10,7 +10,7 @@ Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 - Registerfører: reg@uia.no Passord: 123
 
 
-### Krav
+### Forutsetninger
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for lokal utvikling)
 
