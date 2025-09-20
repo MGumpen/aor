@@ -15,14 +15,27 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Kjør Docker Compose automatisk i Development
+// Kjør Docker Compose synkront i Development og vent på tjenester før appen starter
 if (builder.Environment.IsDevelopment())
 {
-    await EnsureComposeUpAsync(
+    // Juster tidsfrister etter behov
+    var composeTimeout = TimeSpan.FromMinutes(5);
+
+    EnsureComposeUpBlocking(
         composeFilePath: Path.Combine(builder.Environment.ContentRootPath, "docker-compose.yml"),
-        servicesToWaitFor: new[] { ("aor-db", 3306) },
-        timeout: TimeSpan.FromMinutes(2),
-        cancellationToken: CancellationToken.None
+        servicesToWaitFor: new[]
+        {
+            // Vent på MariaDB-port lokalt
+            ("mariadb", "localhost", 3306),
+            // Vent på at web-containeren eksponerer /db-health via port 80 på host (docker-compose.yml: "80:8080")
+            ("aor-web", "localhost", 80)
+        },
+        healthChecks: new[]
+        {
+            // Ekstra: ping webens health-endepunkt
+            ("aor-web", new Uri("http://localhost/db-health"))
+        },
+        timeout: composeTimeout
     );
 }
 
@@ -50,15 +63,15 @@ else
         ));
 }
 
-
-// Add Entity Framework with MariaDB
-
 // Legg til cookie-autentisering for å holde påloggingsstatus i en sikker cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/LogIn";                // Send brukere hit hvis de ikke er innlogget — erfan
-        options.AccessDeniedPath = "/LogIn/AccessDenied"; // Send brukere hit hvis de mangler riktig rolle — erfan
+        options.Cookie.Name = "AOR.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax; // nyttig lokalt
+        options.LoginPath = "/LogIn";
+        options.AccessDeniedPath = "/LogIn/AccessDenied";
         options.SlidingExpiration = true;
     });
 
@@ -104,13 +117,16 @@ if (!disableHttpsRedirect)
     app.UseHttpsRedirection();
 }
 
+app.UseStaticFiles(); // sikrer at statiske filer serveres når MapStaticAssets ikke finnes
+
 app.UseRouting();
 
 // Viktig: autentisering må komme før autorisasjon og før endepunkter
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+// MapStaticAssets() kan brukes hvis tilgjengelig, men UseStaticFiles dekker vanlig scenario
+// app.MapStaticAssets();
 
 // Health-endepunkt
 app.MapGet("/health", () => Results.Ok("OK"));
@@ -137,43 +153,74 @@ app.MapGet("/db-health", async (ApplicationDbContext db) =>
 //Fører til LogIn siden når appen startes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=LogIn}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=LogIn}/{action=Index}/{id?}");
 
 app.Run();
 
 // Hjelpemetoder
-static async Task EnsureComposeUpAsync(string composeFilePath, (string service, int port)[] servicesToWaitFor, TimeSpan timeout, CancellationToken cancellationToken)
+static void EnsureComposeUpBlocking(
+    string composeFilePath,
+    (string service, string host, int port)[] servicesToWaitFor,
+    (string service, Uri url)[] healthChecks,
+    TimeSpan timeout)
 {
     if (!File.Exists(composeFilePath))
-        return; // valgfritt: throw om compose er påkrevd
+        throw new FileNotFoundException("docker-compose.yml ikke funnet", composeFilePath);
 
-    // docker compose up -d
-    var upOk = await RunProcessAsync(
+    Console.WriteLine($"[compose] Starter: docker compose -f \"{composeFilePath}\" up -d");
+    var upOk = RunProcessBlocking(
         fileName: "docker",
         arguments: $"compose -f \"{composeFilePath}\" up -d",
         workingDirectory: Path.GetDirectoryName(composeFilePath) ?? Directory.GetCurrentDirectory(),
         timeout: timeout,
-        cancellationToken: cancellationToken
+        logPrefix: "[compose]"
     );
-
     if (!upOk)
-        throw new InvalidOperationException("Klarte ikke å kjøre 'docker compose up -d'.");
+        throw new InvalidOperationException("docker compose up feilet eller timet ut.");
 
-    // Vent på tjenester (enkel port-sjekk; bruk healthcheck via CLI om ønskelig)
     var start = DateTime.UtcNow;
-    foreach (var (_, port) in servicesToWaitFor)
+    foreach (var (service, host, port) in servicesToWaitFor)
     {
+        Console.WriteLine($"[wait] Venter på {service} port {host}:{port} (timeout {timeout.TotalSeconds}s)...");
         while (DateTime.UtcNow - start < timeout)
         {
-            if (await IsPortOpenAsync("localhost", port, TimeSpan.FromSeconds(1)))
+            if (IsPortOpen(host, port, TimeSpan.FromSeconds(1)))
+            {
+                Console.WriteLine($"[wait] {service} port {port} er oppe.");
                 break;
-            await Task.Delay(1000, cancellationToken);
+            }
+            Thread.Sleep(1000);
         }
+        if (!IsPortOpen(host, port, TimeSpan.FromSeconds(1)))
+            throw new TimeoutException($"Timeout ved venting på {service} port {port}.");
+    }
+
+    using var http = new HttpClient() { Timeout = TimeSpan.FromSeconds(5) };
+    foreach (var (service, url) in healthChecks)
+    {
+        Console.WriteLine($"[wait] Venter på health {service} {url} (timeout {timeout.TotalSeconds}s)...");
+        var ok = false;
+        while (DateTime.UtcNow - start < timeout)
+        {
+            try
+            {
+                var resp = http.GetAsync(url).GetAwaiter().GetResult();
+                if ((int)resp.StatusCode >= 200 && (int)resp.StatusCode < 500)
+                {
+                    ok = true;
+                    Console.WriteLine($"[wait] {service} health OK ({(int)resp.StatusCode}).");
+                    break;
+                }
+            }
+            catch { /* ignorer til neste forsøk */ }
+            Thread.Sleep(1000);
+        }
+        if (!ok)
+            throw new TimeoutException($"Timeout ved venting på health for {service} ({url}).");
     }
 }
 
-static async Task<bool> RunProcessAsync(string fileName, string arguments, string workingDirectory, TimeSpan timeout, CancellationToken cancellationToken)
+static bool RunProcessBlocking(string fileName, string arguments, string workingDirectory, TimeSpan timeout, string logPrefix)
 {
     using var p = new System.Diagnostics.Process
     {
@@ -186,33 +233,42 @@ static async Task<bool> RunProcessAsync(string fileName, string arguments, strin
             RedirectStandardError = true,
             UseShellExecute = false,
             CreateNoWindow = true
-        }
+        },
+        EnableRaisingEvents = true
     };
-    var tcs = new TaskCompletionSource<bool>();
-    p.EnableRaisingEvents = true;
-    p.Exited += (_, __) => tcs.TrySetResult(p.ExitCode == 0);
 
-    p.Start();
+    var exited = new ManualResetEventSlim(false);
+    p.OutputDataReceived += (_, e) => { if (!string.IsNullOrEmpty(e.Data)) Console.WriteLine($"{logPrefix} {e.Data}"); };
+    p.ErrorDataReceived += (_, e) => { if (!string.IsNullOrEmpty(e.Data)) Console.WriteLine($"{logPrefix} ERR: {e.Data}"); };
+    p.Exited += (_, __) => exited.Set();
 
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-    cts.CancelAfter(timeout);
+    Console.WriteLine($"{logPrefix} Kjører: {fileName} {arguments}");
+    if (!p.Start())
+        return false;
 
-    var completed = await Task.WhenAny(tcs.Task, Task.Delay(Timeout.Infinite, cts.Token));
-    if (completed != tcs.Task)
+    p.BeginOutputReadLine();
+    p.BeginErrorReadLine();
+
+    var finishedInTime = exited.Wait(timeout);
+    if (!finishedInTime)
     {
-        try { if (!p.HasExited) p.Kill(true); } catch { }
+        try { if (!p.HasExited) p.Kill(entireProcessTree: true); } catch { }
+        Console.WriteLine($"{logPrefix} Prosess timet ut.");
         return false;
     }
-    return await tcs.Task;
+
+    Console.WriteLine($"{logPrefix} ExitCode={p.ExitCode}");
+    return p.ExitCode == 0;
 }
 
-static async Task<bool> IsPortOpenAsync(string host, int port, TimeSpan timeout)
+static bool IsPortOpen(string host, int port, TimeSpan timeout)
 {
     try
     {
         using var cts = new CancellationTokenSource(timeout);
         using var client = new System.Net.Sockets.TcpClient();
-        await client.ConnectAsync(host, port, cts.Token);
+        var task = client.ConnectAsync(host, port);
+        task.Wait(cts.Token);
         return client.Connected;
     }
     catch { return false; }
