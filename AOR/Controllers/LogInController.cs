@@ -139,8 +139,8 @@ public class LogInController : Controller
             return View();
         }
 
-        // Logg ut
-        [HttpPost]
+        // Logg ut - støtter både GET og POST
+        [HttpPost, HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

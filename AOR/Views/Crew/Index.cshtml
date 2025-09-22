@@ -3,6 +3,215 @@
     Layout = "_Layout";
 }
 
+@section Styles {
+    <style>
+        /* Match the registration form's clean layout */
+        .map-content {
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Map container with proper Bootstrap card styling */
+        .map-card {
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .map-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 1.25rem;
+        }
+
+        .map-body {
+            position: relative;
+            padding: 0;
+        }
+
+        /* Ensure map fills the card properly */
+        #obstacle-map {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        /* Status panels styled like Bootstrap cards */
+        .info-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            padding: 1.25rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .info-card h6 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #212529;
+        }
+
+        /* Activity status grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .status-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        /* Legend items */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 0.75rem;
+        }
+
+        /* Map controls */
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .control-btn {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #6c757d;
+            background: white;
+            border-radius: 0.25rem;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .control-btn:hover {
+            background-color: #e9ecef;
+            border-color: #5a6268;
+        }
+
+        .control-btn.active {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        /* Quick registration buttons */
+        .quick-registration {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .quick-registration h6 {
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .register-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .register-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .register-btn.primary {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .register-btn.primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .register-btn.secondary {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .register-btn.secondary:hover {
+            background-color: #545b62;
+            border-color: #4e555b;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .map-content {
+                padding: 1rem 0;
+            }
+            
+            .info-panels {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .map-controls {
+                flex-wrap: wrap;
+            }
+            
+            .register-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            #obstacle-map {
+                height: 400px;
+            }
+            
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
 <div class="container">
     <div class="map-content">
         
