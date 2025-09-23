@@ -18,7 +18,7 @@ html {
 }
 
 body {
-  margin-bottom: 80px; /* Økt for å gi plass til høyere footer */
+  
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +28,8 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+.footer
+{
+    width: 100%; height: 48px; z-index: 1000; bottom: 0; overflow: hidden;
 }
