@@ -27,13 +27,13 @@ if (builder.Environment.IsDevelopment())
         {
             // Vent på MariaDB-port lokalt
             ("mariadb", "localhost", 3306),
-            // Vent på at web-containeren eksponerer /db-health via port 80 på host (docker-compose.yml: "80:8080")
-            ("aor-web", "localhost", 80)
+            // Vent på at web-containeren eksponerer /db-health via port 5001 på host (docker-compose.yml: "5001:8080")
+            ("aor-web", "localhost", 5001)
         },
         healthChecks: new[]
         {
             // Ekstra: ping webens health-endepunkt
-            ("aor-web", new Uri("http://localhost/db-health"))
+            ("aor-web", new Uri("http://localhost:5001/db-health"))
         },
         timeout: composeTimeout
     );

@@ -36,7 +36,7 @@ services:
       DISABLE_HTTPS_REDIRECT: "true"
       ConnectionStrings__DefaultConnection: Server=mariadb;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;
     ports:
-      - "80:8080"
+      - "5001:8080"
     depends_on:
       mariadb:
         condition: service_healthy
