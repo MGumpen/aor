@@ -28,7 +28,7 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header style="height: 64px; width: 100%">
+    <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 @{
@@ -51,7 +51,9 @@
                         }
                     }
                 }
-                <a class="navbar-brand" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
+                <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
+                <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
+               
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -66,7 +68,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
                             </li>
                             <li class="nav-item">
-                                @* Velg riktig Home-lenke basert på rolle *@
+                               
                                 @if (User.IsInRole("Registerforer"))
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Registerforer" asp-action="Index">Home</a>
@@ -89,7 +91,7 @@
             </div>
         </nav>
     </header>
-    <div class="container" style="min-height: calc(100dvh - 64px - 48px);">
+    <div class="container" style="min-height: 86vh;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -97,7 +99,7 @@
 
         
     <footer class="border-top footer text-muted navbar-light bg-white box-shadow mb-3">
-        <div class="container" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 15px;">
+        <div class="container" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 10px;">
         <span>
             <!-- Full tekst på store skjermer -->
             <span class="d-none d-md-inline">&copy; 2025 - AOR - Made in collaboration with Norsk Luftambulanse & Kartverket</span>
