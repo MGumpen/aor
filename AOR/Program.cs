@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Test command
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
