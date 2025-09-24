@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 */
 
 var builder = WebApplication.CreateBuilder(args);
+ feature/admin-frontpage
 
 // Kjør Docker Compose synkront i Development og vent på tjenester før appen starter
 if (builder.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("DISABLE_DOCKER_BOOT"))
@@ -36,6 +37,7 @@ if (builder.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>
     );
 }
 
+feilretting
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
