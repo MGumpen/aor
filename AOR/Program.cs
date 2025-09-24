@@ -28,7 +28,7 @@ if (builder.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>
         servicesToWaitFor: new[]
         {
             // Vent på MariaDB-port lokalt
-            ("mariadb", "localhost", 3306)
+            ("mariadb", "localhost", 3307)
         },
         // Viktig: Ikke vent på webens eget health-endepunkt her; appen lytter først etter at denne fasen er ferdig
         healthChecks: Array.Empty<(string service, Uri url)>(),
