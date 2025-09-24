@@ -3,20 +3,22 @@ using AOR.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 /*
- CHANGE LOG — erfan
+ CHANGE LOG — erfan (oppdatert)
  Hva:
  1) Aktivert cookie-basert autentisering (AddAuthentication + AddCookie).
  2) Satt LoginPath = /LogIn og AccessDeniedPath = /LogIn/AccessDenied.
  3) Aktivert UseAuthentication() i middleware-pipelinen før UseAuthorization().
+ 4) Docker-oppstart i Development gjort valgfri via DISABLE_DOCKER_BOOT, og fjerning av venting på web-helse (for å unngå deadlock).
  Hvorfor:
- - For å huske innloggingsstatus på tvers av forespørsler og håndheve rollebasert tilgang (Registerfører).
+ - For å huske innloggingsstatus og håndheve rollebasert tilgang.
  - For å sende ikke-innloggede til innlogging, og brukere uten rett rolle til AccessDenied.
+ - For å unngå at appen henger på oppstart dersom Docker ikke er tilgjengelig, eller dersom man venter på egen web-endpoint før Kestrel lytter.
 */
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Kjør Docker Compose synkront i Development og vent på tjenester før appen starter
-if (builder.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment() && !builder.Configuration.GetValue<bool>("DISABLE_DOCKER_BOOT"))
 {
     // Juster tidsfrister etter behov
     var composeTimeout = TimeSpan.FromMinutes(5);
@@ -26,15 +28,10 @@ if (builder.Environment.IsDevelopment())
         servicesToWaitFor: new[]
         {
             // Vent på MariaDB-port lokalt
-            ("mariadb", "localhost", 3306),
-            // Vent på at web-containeren eksponerer /db-health via port 5001 på host (docker-compose.yml: "5001:8080")
-            ("aor-web", "localhost", 5001)
+            ("mariadb", "localhost", 3306)
         },
-        healthChecks: new[]
-        {
-            // Ekstra: ping webens health-endepunkt
-            ("aor-web", new Uri("http://localhost:5001/db-health"))
-        },
+        // Viktig: Ikke vent på webens eget health-endepunkt her; appen lytter først etter at denne fasen er ferdig
+        healthChecks: Array.Empty<(string service, Uri url)>(),
         timeout: composeTimeout
     );
 }
@@ -150,7 +147,7 @@ app.MapGet("/db-health", async (ApplicationDbContext db) =>
     }
 });
 
-//Fører til LogIn siden når appen startes
+// Fører til LogIn siden når appen startes
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=LogIn}/{action=Index}/{id?}");
@@ -273,4 +270,3 @@ static bool IsPortOpen(string host, int port, TimeSpan timeout)
     }
     catch { return false; }
 }
-
