@@ -1,4 +1,4 @@
-# Use the official .NET 9.0 runtime as a parent image
+﻿# Use the official .NET 9.0 runtime as a parent image
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 EXPOSE 8080
@@ -30,11 +30,14 @@ WORKDIR /app
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
 USER appuser
 
+# Ensure Kestrel listens on non-privileged port 8080 on all interfaces
+ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+
 COPY --from=publish /app/publish .
 
 # Health check endpoint
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/health || exit 1
+  CMD curl -f http://localhost:8080/db-health || exit 1
 
 ENTRYPOINT ["dotnet", "AOR.dll"]
 
