@@ -9,5 +9,13 @@ namespace AOR.Controllers
         {
             return View();
         }
+
+        // GET: /Admin/Inbox
+        public IActionResult Inbox()
+        {
+            // TODO: hent nye rapporter fra databasen
+            // Foreløpig kan vi returnere en tom view
+            return View();
+        }
     }
 }
