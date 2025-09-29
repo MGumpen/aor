@@ -4,58 +4,191 @@
     Layout = "_Layout";
 }
 
-<section class="mx-auto max-w-2xl">
-    <div class="bg-white rounded-2xl shadow-sm ring-1 ring-gray-200 p-6">
+
+<style>
+    .pilot-form-container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 24px;
+        border: 1px solid #e5e7eb;
+    }
+    .pilot-form-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+    .pilot-form-header p {
+        color: #6b7280;
+        margin: 0;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+    .form-row {
+        grid-column: span 1;
+    }
+    .form-row.wide {
+        grid-column: span 2;
+    }
+    .pilot-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+    .pilot-input, .pilot-textarea, .pilot-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+    }
+    .pilot-input:focus, .pilot-textarea:focus, .pilot-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+    .pilot-validation {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 4px;
+        display: block;
+    }
+    .pilot-help {
+        display: block;
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+    .pilot-tips {
+        margin-top: 12px;
+        padding: 12px;
+        border: 1px dashed #c7d2fe;
+        border-radius: 12px;
+        background-color: #eef2ff;
+        color: #3730a3;
+    }
+    .pilot-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 8px;
+    }
+    .pilot-primary {
+        background-color: #4f46e5;
+        color: #fff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .pilot-secondary {
+        background: #fff;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        padding: 10px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+</style>
+
+<section class="pilot-form-container">
+    <div class="pilot-form-header">
         <header class="mb-6">
             <h1 class="text-2xl font-semibold">Obstacle Registration Form</h1>
             <p class="text-gray-600 mt-1">Please register an obstacle:</p>
         </header>
-
-        <form asp-action="DataForm" method="post" class="space-y-5">
-            <div class="grid gap-5 sm:grid-cols-2">
-                <!-- Obstacle Name -->
-                <div class="sm:col-span-2">
-                    <label asp-for="ObstacleName" class="block text-sm font-medium text-gray-800 mb-1">Obstacle Name</label>
-                    <input asp-for="ObstacleName"
-                           class="block w-full rounded-lg border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 px-3 py-2"
-                           placeholder="e.g., Wall, Ramp" />
-                    <span asp-validation-for="ObstacleName" class="text-sm text-red-600"></span>
-                </div>
-
-                <!-- Height -->
-                <div>
-                    <label asp-for="ObstacleHeight" class="block text-sm font-medium text-gray-800 mb-1">
-                        Obstacle Height (meters)
-                    </label>
-                    <input asp-for="ObstacleHeight" type="number" step="0.01" min="0"
-                           class="block w-full rounded-lg border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 px-3 py-2"
-                           placeholder="e.g., 2.5" />
-                    <span asp-validation-for="ObstacleHeight" class="text-sm text-red-600"></span>
-                </div>
-
-                <!-- Description -->
-                <div class="sm:col-span-2">
-                    <label asp-for="ObstacleDescription" class="block text-sm font-medium text-gray-800 mb-1">
-                        Obstacle Description
-                    </label>
-                    <textarea asp-for="ObstacleDescription" rows="4"
-                              class="block w-full rounded-lg border-gray-300 focus:border-indigo-600 focus:ring-indigo-600 px-3 py-2"
-                              placeholder="Describe the obstacle, materials, location, etc."></textarea>
-                    <span asp-validation-for="ObstacleDescription" class="text-sm text-red-600"></span>
-                </div>
-            </div>
-
-            <div class="pt-2">
-                <button type="submit"
-                        class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                    Submit Data
-                </button>
-            </div>
-        </form>
     </div>
+
+    <form asp-action="DataForm" method="post" class="space-y-5">
+        <div class="form-grid">
+            <!-- Obstacle Name (select for pilots) -->
+            <div class="form-row wide">
+                <label asp-for="ObstacleName" class="pilot-label">Obstacle Name</label>
+                <select asp-for="ObstacleName" class="pilot-select" autofocus aria-describedby="obstacleNameHelp" id="ObstacleNameSelect" name="ObstacleName">
+                    <option value="">Choose an obstacle</option>
+                    <option>Wall</option>
+                    <option>Ramp</option>
+                    <option>Tunnel</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span id="obstacleNameHelp" class="pilot-help">Choose an obstacle appropriate for the drill or competition.</span>
+                <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
+            </div>
+
+            <!-- Custom "Other" input (visible when Other is selected) -->
+            <div class="form-row wide" id="ObstacleNameOtherRow" style="display: none;">
+                <label class="pilot-label" for="ObstacleNameOther">Other obstacle (brief description)</label>
+                <input id="ObstacleNameOther" name="ObstacleNameOther" class="pilot-input" placeholder="Describe the other obstacle here" />
+                <span class="pilot-help">This field is used when the obstacle is not listed in the dropdown.</span>
+            </div>
+
+            <!-- Height -->
+            <div class="form-row">
+                <label asp-for="ObstacleHeight" class="pilot-label">
+                    Obstacle Height (meters)
+                </label>
+                <input asp-for="ObstacleHeight" type="number" step="0.01" min="0"
+                       class="pilot-input" placeholder="e.g., 2.5" />
+                <span asp-validation-for="ObstacleHeight" class="pilot-validation"></span>
+            </div>
+
+            <!-- Description -->
+            <div class="form-row wide">
+                <label asp-for="ObstacleDescription" class="pilot-label">
+                    Obstacle Description
+                </label>
+                <textarea asp-for="ObstacleDescription" rows="4"
+                          class="pilot-textarea"
+                          placeholder="Describe the obstacle, materials, location, etc."></textarea>
+                <span asp-validation-for="ObstacleDescription" class="pilot-validation"></span>
+            </div>
+        </div>
+
+        <!-- Pilot-friendly tips (CSS-styled block) -->
+        <div class="pilot-tips" aria-label="Pilots tips">
+            Tips for pilots:
+            <ul>
+                <li>Use concise descriptions and clear names for quick recognition.</li>
+                <li>Choose obstacles from the dropdown for consistency during training.</li>
+                <li>Height can be adjusted later if needed.</li>
+                <li>Press Reset to start over if you make a mistake.</li>
+            </ul>
+        </div>
+
+        <div class="pilot-actions">
+            <button type="submit" class="pilot-primary">Submit Data</button>
+            <button type="reset" class="pilot-secondary">Reset</button>
+        </div>
+    </form>
 </section>
 
 @section Scripts {
     <!-- If you use client-side validation, keep the standard validation partial -->
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Show "Other" input when "Other" is selected
+        (function() {
+            var select = document.getElementById('ObstacleNameSelect');
+            var otherRow = document.getElementById('ObstacleNameOtherRow');
+            function toggle() {
+                if (select && select.value === 'Other') {
+                    otherRow.style.display = 'block';
+                } else {
+                    otherRow.style.display = 'none';
+                }
+            }
+            if (select) {
+                select.addEventListener('change', toggle);
+                // Initialize state on load
+                toggle();
+            }
+        })();
+    </script>
 }
