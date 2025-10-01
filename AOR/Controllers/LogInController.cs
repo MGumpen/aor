@@ -9,23 +9,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading;
 using System.Threading.Tasks;
-/*
- CHANGE LOG — erfan
- Hva er lagt til/endre:
- 1) Cookie-basert innlogging: bruker SignInAsync for å opprette autentiseringscookie med brukerens claims.
- 2) Rolle-claim: legger ClaimTypes.Role = "Registerfører" for brukere som er registerførere.
- 3) Beskyttet forside: action RegisterforerHome er merket med [Authorize(Roles = "Registerfører")].
- 4) AccessDenied: egen action og visning for manglende rettigheter.
- 5) Logout: action som sletter autentiseringscookien (SignOutAsync).
- 6) Hardkodet brukerliste: to testbrukere i minne — registerforer@uia.no (Registerfører) og crew@uia.no (Crew).
- 7) Rollebasert redirect: etter innlogging sendes Registerfører-bruker til RegisterforerHome og alle andre til Home/Index.
- 8) Oppdatert testbruker: byttet fra tes@uia.no til registerforer@uia.no for tydelig testing av roller.
- Hvorfor:
- - For å støtte scenarioet der kun registerførere får tilgang til en egen forside, mens øvrige brukere sendes til vanlig Home.
-*/
-
-
-
 
 namespace AOR.Controllers
 {
@@ -45,21 +28,12 @@ public class LogInController : Controller
         // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
-            bool connected = false;
-            string? error = null;
+            var provider = _db.Database.ProviderName ?? "";
+            var ok = provider.Contains("MySql", StringComparison.OrdinalIgnoreCase)
+                     && await _db.Database.CanConnectAsync();
 
-            try
-            {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                connected = await _db.Database.CanConnectAsync(cts.Token);
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-            }
-
-            ViewData["DbConnected"] = connected;
-            ViewData["DbError"] = error;
+            ViewData["DbConnected"] = ok;
+            ViewData["DbError"]     = ok ? null : "Ikke tilkoblet MariaDB.";
 
             return View(new LogInData());
         }
