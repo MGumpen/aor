@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 
 namespace AOR.Controllers;
-
+[Authorize]
 public class RegisterforerController : Controller
 {
 private readonly ILogger<RegisterforerController> _logger;
