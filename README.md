@@ -4,13 +4,17 @@ Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
 # Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
+# Vi har en egen fil som viser hvordan vi bruker github
+- Github.md
+
+# Forskjellige testingscenarier finner du i Testing.md
+
 # Brukere i Web Applikasjonen: #
 - Crew: crew@uia.no Passord: 123
 - Admin: admin@uia.no Passord: 123
 - Registerfører: reg@uia.no Passord: 123
 
-
-### Forutsetninger
+### Forutsetninger for å starte hele applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for lokal utvikling)
 
@@ -24,26 +28,23 @@ docker compose up -d --build
 docker compose up -d
 
 # Åpne applikasjonen:
-# - Web App: http://localhost
+# - Web App: http://localhost:5001
 # - Database Admin: http://localhost:8080
 
 # Stopp alle services
 docker compose down
 ```
 
-### Lokal utvikling (anbefalt)
+### Lokal utvikling uten databasetilkobling
 
 ```bash
-# 1. Start kun database
-docker compose up -d mariadb
-
-# 2. Start .NET applikasjonen lokalt
+# 1. Start .NET applikasjonen lokalt
 cd AOR
 dotnet run
 
-# 3. Åpne http://localhost:5242
+# 2. Åpne http://localhost:5001
 
-#4. Stoppe .NET applikasjonen
+#3. Stoppe .NET applikasjonen
     Trykk: Ctrl+C
 ```
 
