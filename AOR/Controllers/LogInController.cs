@@ -26,7 +26,6 @@ public class LogInController : Controller
 
 
         // GET: /LogIn/Index
-        // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
             var provider = _db.Database.ProviderName ?? "";
