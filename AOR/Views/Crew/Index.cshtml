@@ -215,7 +215,6 @@
 <div class="container">
     <div class="map-content">
         
-        <!-- Info panels matching form styling -->
         <div class="info-panels">
             <div class="info-card">
                 <h6>Today's Activity</h6>
@@ -252,7 +251,6 @@
             </div>
         </div>
         
-        <!-- Main map card -->
         <div class="map-card">
             <div class="map-header">
                 <h5 class="mb-0">Aviation Obstacle Map - Norway</h5>
@@ -262,7 +260,6 @@
             </div>
         </div>
         
-        <!-- Controls section -->
         <div class="controls-section">
             <div class="control-group">
                 <h6>Map Controls</h6>
@@ -316,7 +313,7 @@
         }
         
         function loadSampleObstacles() {
-            // Power line
+          
             L.polyline([
                 [59.9139, 10.7522],
                 [59.9239, 10.7622]
@@ -332,7 +329,6 @@
                 </div>
             `);
             
-            // Communication mast
             L.circleMarker([60.3913, 5.3221], {
                 color: '#007bff',
                 fillColor: '#007bff',
@@ -409,22 +405,19 @@
         }
         
         function useGPS() {
-    // Redirect to registration form with GPS location
+    
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-            // Get current GPS coordinates
+            
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
             
-            // Redirect to registration form with coordinates as URL parameters
             window.location.href = `/Obstacle/DataForm?lat=${lat}&lng=${lng}&useGPS=true`;
         }, function(error) {
-            // If GPS fails, still redirect to form but without coordinates
             console.log("GPS error:", error);
             window.location.href = '/Obstacle/DataForm?useGPS=true';
         });
     } else {
-        // If browser doesn't support geolocation, redirect without GPS
         window.location.href = '/Obstacle/DataForm';
     }
 }
