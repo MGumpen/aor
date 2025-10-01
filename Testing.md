@@ -11,4 +11,4 @@
 evt til logIn om du ikke er logget inn.
 
 # Log In
-- Logg inn med de forskjellige burkerne og passordene som står i README.md, så skal du komme til forskjellige index sider.
+- Logg inn med de forskjellige brukerne og passordene som står i README.md, så skal du komme til forskjellige index sider.
