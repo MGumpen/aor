@@ -11,19 +11,15 @@
     
     @if (ViewData["DbConnected"] is bool dbOk && dbOk)
     {
-        <div class="alert alert-success">Tilkoblet MariaDB</div>
+        <div class="text-success">Tilkoblet MariaDB</div>
     }
     else
     {
-        <div class="alert alert-danger">
+        <div class="text-danger">
             Ikke tilkoblet MariaDB
-            @if (ViewData["DbError"] is string err && !string.IsNullOrWhiteSpace(err))
-            {
-                <div class="mt-1" style="font-size:.9rem;">Detaljer: @err</div>
-            }
         </div>
     }
-    }
+    
 
     
     <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
