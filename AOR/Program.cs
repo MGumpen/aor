@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
@@ -31,6 +32,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+// Disable caching so user cannot go back after logout
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    context.Response.Headers["Pragma"] = "no-cache";
+    context.Response.Headers["Expires"] = "0";
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
