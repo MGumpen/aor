@@ -26,23 +26,15 @@ public class LogInController : Controller
 
 
         // GET: /LogIn/Index
+        // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
-            bool connected = false;
-            string? error = null;
+            var provider = _db.Database.ProviderName ?? "";
+            var ok = provider.Contains("MySql", StringComparison.OrdinalIgnoreCase)
+                     && await _db.Database.CanConnectAsync();
 
-            try
-            {
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                connected = await _db.Database.CanConnectAsync(cts.Token);
-            }
-            catch (Exception ex)
-            {
-                error = ex.Message;
-            }
-
-            ViewData["DbConnected"] = connected;
-            ViewData["DbError"] = error;
+            ViewData["DbConnected"] = ok;
+            ViewData["DbError"]     = ok ? null : "Ikke tilkoblet MariaDB.";
 
             return View(new LogInData());
         }
