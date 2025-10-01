@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AOR.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         // GET: /Admin
