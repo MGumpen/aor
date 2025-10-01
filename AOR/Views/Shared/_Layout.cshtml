@@ -38,6 +38,10 @@
                         {
                             homeController = "Admin";
                         }
+                        else
+                        {
+                            homeController = "LogIn";
+                        }
                     }
                 }
                 <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
