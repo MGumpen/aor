@@ -2,12 +2,11 @@
 ASP.NET Core MVC Application with Docker & MariaDB
 Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
-# Gruppe 3, IT og informasjonssystemer, høsten 2025.
+Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
-# Vi har en egen fil som viser hvordan vi bruker github
-- Github.md
+- Vi har en egen fil som viser hvordan vi bruker github: Github.md
 
-# Forskjellige testingscenarier finner du i Testing.md
+- Forskjellige testingscenarier finner du i Testing.md
 
 # Brukere i Web Applikasjonen: #
 - Crew: crew@uia.no Passord: 123
