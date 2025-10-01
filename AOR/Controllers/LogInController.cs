@@ -140,12 +140,19 @@ public class LogInController : Controller
         }
 
         // Logg ut - støtter både GET og POST
-        [HttpPost, HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index");
-        }
+       [HttpPost, HttpGet]
+public async Task<IActionResult> Logout()
+{
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+    // Make sure cache is cleared on logout response
+    Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    Response.Headers["Pragma"] = "no-cache";
+    Response.Headers["Expires"] = "0";
+
+    return RedirectToAction("Index", "LogIn");
+}
+
     }
     }
 
