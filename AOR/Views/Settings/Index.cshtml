@@ -1,0 +1,40 @@
+@model AOR.Models.SettingsViewModel
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Index" method="post">
+    <div class="mb-3">
+        <label asp-for="Language" class="form-label">Språk</label>
+        <select asp-for="Language" class="form-select">
+            <option value="en">Engelsk</option>
+            <option value="no">Norsk</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Theme" class="form-label">Tema</label>
+        <select asp-for="Theme" class="form-select">
+            <option value="light">Lyst</option>
+            <option value="dark">Mørkt</option>
+        </select>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EmailNotifications" class="form-check-input" type="checkbox" />
+        <label asp-for="EmailNotifications" class="form-check-label">Send e-postvarsler</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lagre</button>
+</form>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success mt-3">
+        @TempData["Message"]
+    </div>
+}
+
