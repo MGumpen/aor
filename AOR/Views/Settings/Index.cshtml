@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Settings";
+    Layout = "_Layout";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -23,10 +24,7 @@
         </select>
     </div>
 
-    <div class="form-check mb-3">
-        <input asp-for="EmailNotifications" class="form-check-input" type="checkbox" />
-        <label asp-for="EmailNotifications" class="form-check-label">Send e-postvarsler</label>
-    </div>
+    <h3>Funksjoner er under utvikling</h3>
 
     <button type="submit" class="btn btn-primary">Lagre</button>
 </form>
