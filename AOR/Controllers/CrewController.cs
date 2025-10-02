@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 
 namespace AOR.Controllers;
 
+[Authorize]
 public class CrewController : Controller
 {
     private readonly ILogger<CrewController> _logger;
