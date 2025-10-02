@@ -436,7 +436,9 @@
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
         <h3>Welcome to AOR</h3>
-        <p>Aviation Obstacle Registration system. Use the map to register obstacles by clicking to place markers and dragging to adjust positions.</p>
+        <p>Aviation Obstacle Registration system. 
+            Use the map to register obstacles by clicking to place markers and dragging to adjust positions.
+            The system is using your current position.</p>
         <button onclick="closeWelcomePopup()">OK</button>
     </div>
 </div>
@@ -502,7 +504,7 @@
 
     function initializeMap() {
         map = L.map('obstacle-map', {
-            center: [60.472, 8.4689],
+            center: showMyLocation(),
             zoom: 6,
             zoomControl: true,
             touchZoom: true,
