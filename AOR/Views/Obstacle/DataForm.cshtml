@@ -2,12 +2,16 @@
 @{
     ViewData["Title"] = "Register Obstacle";
     Layout = "_Layout";
+    
+    // Get data from query parameters (sent from map)
+    string obstacleType = ViewBag.ObstacleType ?? "other";
+    string coordinatesJson = ViewBag.Coordinates ?? "[]";
+    int pointCount = ViewBag.PointCount ?? 0;
 }
-
 
 <style>
     .pilot-form-container {
-        max-width: 720px;
+        max-width: 800px;
         margin: 0 auto;
         background: #ffffff;
         border-radius: 24px;
@@ -49,6 +53,7 @@
         border-radius: 8px;
         font-size: 14px;
         outline: none;
+        box-sizing: border-box;
     }
     .pilot-input:focus, .pilot-textarea:focus, .pilot-select:focus {
         border-color: #4f46e5;
@@ -66,129 +71,243 @@
         color: #6b7280;
         margin-top: 6px;
     }
-    .pilot-tips {
-        margin-top: 12px;
-        padding: 12px;
-        border: 1px dashed #c7d2fe;
+    .obstacle-info {
+        background-color: #f0f9ff;
+        border: 1px solid #0ea5e9;
         border-radius: 12px;
-        background-color: #eef2ff;
-        color: #3730a3;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    .obstacle-info h3 {
+        color: #0c4a6e;
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+    }
+    .coordinates-list {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .coordinate-item {
+        margin-bottom: 4px;
+        padding: 4px 8px;
+        background-color: white;
+        border-radius: 4px;
+        border-left: 3px solid #3b82f6;
     }
     .pilot-actions {
         display: flex;
         gap: 10px;
         align-items: center;
-        margin-top: 8px;
+        margin-top: 20px;
     }
     .pilot-primary {
         background-color: #4f46e5;
         color: #fff;
         border: none;
-        padding: 10px 16px;
+        padding: 12px 20px;
         border-radius: 8px;
         cursor: pointer;
+        font-weight: 500;
     }
     .pilot-secondary {
         background: #fff;
         border: 1px solid #d1d5db;
         color: #374151;
-        padding: 10px 16px;
+        padding: 12px 20px;
         border-radius: 8px;
         cursor: pointer;
     }
+    .obstacle-type-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-left: 10px;
+    }
+    .badge-powerline { background: #fee2e2; color: #dc2626; }
+    .badge-mast { background: #dbeafe; color: #2563eb; }
+    .badge-other { background: #d1fae5; color: #059669; }
 </style>
 
 <section class="pilot-form-container">
     <div class="pilot-form-header">
-        <header class="mb-6">
-            <h1 class="text-2xl font-semibold">Obstacle Registration Form</h1>
-            <p class="text-gray-600 mt-1">Please register an obstacle:</p>
-        </header>
+        <h1>
+            @(obstacleType.ToUpper()) Registration
+            <span class="obstacle-type-badge badge-@obstacleType.ToLower()">@obstacleType</span>
+        </h1>
+        <p>Complete the registration for your @obstacleType.ToLower() obstacle with @pointCount point(s)</p>
     </div>
 
-    <form asp-action="DataForm" method="post" class="space-y-5">
+    <!-- Obstacle Info Summary -->
+    <div class="obstacle-info">
+        <h3>Map Data Summary</h3>
+        <p><strong>Type:</strong> @obstacleType.ToUpper()</p>
+        <p><strong>Points:</strong> @pointCount coordinate(s)</p>
+        
+        @if (pointCount > 0) {
+            <div class="coordinates-list">
+                <strong>Coordinates:</strong>
+                <div id="coordinates-display"></div>
+            </div>
+        }
+    </div>
+
+    <form asp-controller="Obstacle" asp-action="DataForm" method="post">
+
+        <!-- Hidden fields for map data -->
+        <input type="hidden" name="ObstacleType" value="@obstacleType" />
+        <input type="hidden" name="Coordinates" value="@coordinatesJson" />
+        <input type="hidden" name="PointCount" value="@pointCount" />
+
         <div class="form-grid">
-            <!-- Obstacle Name (select for pilots) -->
+            <!-- Dynamic fields based on obstacle type -->
+            @if (obstacleType.ToLower() == "powerline") {
+                <div class="form-row">
+                    <label class="pilot-label">Power Line Name/ID</label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" required />
+                    <span class="pilot-help">Enter the power line identification</span>
+                    <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Voltage (kV)</label>
+                    <input name="Voltage" type="number" class="pilot-input" placeholder="e.g., 22" step="0.1" />
+                    <span class="pilot-help">Power line voltage in kilovolts</span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Wire Height (meters)</label>
+                    <input asp-for="ObstacleHeight" type="number" step="0.1" min="0" class="pilot-input" placeholder="e.g., 15.5" />
+                    <span class="pilot-help">Height of the lowest wire</span>
+                    <span asp-validation-for="ObstacleHeight" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Number of Wires</label>
+                    <input name="WireCount" type="number" min="1" class="pilot-input" placeholder="e.g., 3" />
+                </div>
+            }
+            else if (obstacleType.ToLower() == "mast") {
+                <div class="form-row">
+                    <label class="pilot-label">Mast Name/ID</label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Communication Tower 1" required />
+                    <span class="pilot-help">Enter the mast identification</span>
+                    <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Mast Type</label>
+                    <select name="MastType" class="pilot-select">
+                        <option value="">Select type</option>
+                        <option value="communication">Communication Tower</option>
+                        <option value="radio">Radio Mast</option>
+                        <option value="cellular">Cell Tower</option>
+                        <option value="meteorological">Weather Mast</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Height (meters)</label>
+                    <input asp-for="ObstacleHeight" type="number" step="0.1" min="0" class="pilot-input" placeholder="e.g., 45.0" required />
+                    <span class="pilot-help">Total height of the mast</span>
+                    <span asp-validation-for="ObstacleHeight" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Has Lighting?</label>
+                    <select name="HasLighting" class="pilot-select">
+                        <option value="">Select</option>
+                        <option value="true">Yes - Has Aviation Lighting</option>
+                        <option value="false">No - No Lighting</option>
+                    </select>
+                    <span class="pilot-help">Aviation warning lights present</span>
+                </div>
+            }
+            else {
+                <div class="form-row">
+                    <label class="pilot-label">Obstacle Name</label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Wind Turbine, Building, etc." required />
+                    <span class="pilot-help">Name or description of the obstacle</span>
+                    <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Obstacle Category</label>
+                    <select name="Category" class="pilot-select">
+                        <option value="">Select category</option>
+                        <option value="building">Building/Structure</option>
+                        <option value="tree">Tree/Vegetation</option>
+                        <option value="terrain">Terrain/Hill</option>
+                        <option value="vehicle">Vehicle/Equipment</option>
+                        <option value="temporary">Temporary Structure</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Height (meters)</label>
+                    <input asp-for="ObstacleHeight" type="number" step="0.1" min="0" class="pilot-input" placeholder="e.g., 25.0" />
+                    <span class="pilot-help">Approximate height if known</span>
+                    <span asp-validation-for="ObstacleHeight" class="pilot-validation"></span>
+                </div>
+                
+                <div class="form-row">
+                    <label class="pilot-label">Material</label>
+                    <input name="Material" class="pilot-input" placeholder="e.g., Steel, Concrete, Wood" />
+                </div>
+            }
+
+            <!-- Common fields for all types -->
             <div class="form-row wide">
-                <label asp-for="ObstacleName" class="pilot-label">Obstacle Name</label>
-                <select asp-for="ObstacleName" class="pilot-select" autofocus aria-describedby="obstacleNameHelp" id="ObstacleNameSelect" name="ObstacleName">
-                    <option value="">Choose an obstacle</option>
-                    <option>Wall</option>
-                    <option>Ramp</option>
-                    <option>Tunnel</option>
-                    <option value="Other">Other</option>
-                </select>
-                <span id="obstacleNameHelp" class="pilot-help">Choose an obstacle appropriate for the drill or competition.</span>
-                <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
-            </div>
-
-            <!-- Custom "Other" input (visible when Other is selected) -->
-            <div class="form-row wide" id="ObstacleNameOtherRow" style="display: none;">
-                <label class="pilot-label" for="ObstacleNameOther">Other obstacle (brief description)</label>
-                <input id="ObstacleNameOther" name="ObstacleNameOther" class="pilot-input" placeholder="Describe the other obstacle here" />
-                <span class="pilot-help">This field is used when the obstacle is not listed in the dropdown.</span>
-            </div>
-
-            <!-- Height -->
-            <div class="form-row">
-                <label asp-for="ObstacleHeight" class="pilot-label">
-                    Obstacle Height (meters)
-                </label>
-                <input asp-for="ObstacleHeight" type="number" step="0.01" min="0"
-                       class="pilot-input" placeholder="e.g., 2.5" />
-                <span asp-validation-for="ObstacleHeight" class="pilot-validation"></span>
-            </div>
-
-            <!-- Description -->
-            <div class="form-row wide">
-                <label asp-for="ObstacleDescription" class="pilot-label">
-                    Obstacle Description
-                </label>
-                <textarea asp-for="ObstacleDescription" rows="4"
-                          class="pilot-textarea"
-                          placeholder="Describe the obstacle, materials, location, etc."></textarea>
+                <label class="pilot-label">Additional Description</label>
+                <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" 
+                          placeholder="Additional details, hazards, or important notes..."></textarea>
+                <span class="pilot-help">Any additional information that might be relevant for aviation safety</span>
                 <span asp-validation-for="ObstacleDescription" class="pilot-validation"></span>
             </div>
         </div>
 
-        <!-- Pilot-friendly tips (CSS-styled block) -->
-        <div class="pilot-tips" aria-label="Pilots tips">
-            Tips for pilots:
-            <ul>
-                <li>Use concise descriptions and clear names for quick recognition.</li>
-                <li>Choose obstacles from the dropdown for consistency during training.</li>
-                <li>Height can be adjusted later if needed.</li>
-                <li>Press Reset to start over if you make a mistake.</li>
-            </ul>
-        </div>
-
         <div class="pilot-actions">
-            <button type="submit" class="pilot-primary">Submit Data</button>
-            <button type="reset" class="pilot-secondary">Reset</button>
+            <button type="submit" class="pilot-primary">Register @obstacleType.ToUpper()</button>
+            <a href="/Crew" class="pilot-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Back to Map</a>
         </div>
     </form>
 </section>
 
 @section Scripts {
-    <!-- If you use client-side validation, keep the standard validation partial -->
     <partial name="_ValidationScriptsPartial" />
+    
     <script>
-        // Show "Other" input when "Other" is selected
-        (function() {
-            var select = document.getElementById('ObstacleNameSelect');
-            var otherRow = document.getElementById('ObstacleNameOtherRow');
-            function toggle() {
-                if (select && select.value === 'Other') {
-                    otherRow.style.display = 'block';
-                } else {
-                    otherRow.style.display = 'none';
+        // Display coordinates from map
+        document.addEventListener('DOMContentLoaded', function() {
+            const coordinatesJson = '@Html.Raw(coordinatesJson)';
+            const coordinatesDisplay = document.getElementById('coordinates-display');
+            
+            if (coordinatesJson && coordinatesJson !== '[]') {
+                try {
+                    const coordinates = JSON.parse(coordinatesJson);
+                    let html = '';
+                    
+                    coordinates.forEach((coord, index) => {
+                        html += `<div class="coordinate-item">
+                                   Point ${index + 1}: ${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}
+                                 </div>`;
+                    });
+                    
+                    coordinatesDisplay.innerHTML = html;
+                } catch (e) {
+                    coordinatesDisplay.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
                 }
             }
-            if (select) {
-                select.addEventListener('change', toggle);
-                // Initialize state on load
-                toggle();
-            }
-        })();
+        });
     </script>
 }
