@@ -1,25 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 
-public class SettingsController : Controller
+namespace AOR.Controllers
 {
-    [HttpGet]
-    public IActionResult Index()
+    public class SettingsController : Controller
     {
-        // Her kan du hente eksisterende innstillinger fra database eller config
-        var model = new SettingsViewModel();
-        return View(model);
-    }
-
-    [HttpPost]
-    public IActionResult Index(SettingsViewModel model)
-    {
-        if (ModelState.IsValid)
+        [HttpGet]
+        public IActionResult Index()
         {
-            // Lagre innstillingene, f.eks. i database eller brukerprofil
-            TempData["Message"] = "Innstillinger lagret!";
-            return RedirectToAction("Index");
+            var model = new SettingsViewModel();
+            return View(model);
         }
-        return View(model);
+
+        [HttpPost]
+        public IActionResult Index(SettingsViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                TempData["Message"] = "Innstillinger lagret!";
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
     }
 }
