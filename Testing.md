@@ -2,7 +2,7 @@
 
 # Tilkobling til mariaDB
 
-- Starte appen med "dotnet run" skal gi en rød tekst med teksten "Ikke tilkoblet mariaDB" på logIn page.
+- Starte appen med "dotnet run" skal gi en rød tekst med teksten "Ikke tilkoblet mariaDB" på logIn page. (På noem pcer starter ikke appen)
 - Starte appen med "docker compose up -d --build" skal vise en grønn tekst med teksten "Tilkoblet mariaDB" på logIn page.
 
 # Privacy
