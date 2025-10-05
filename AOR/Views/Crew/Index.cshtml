@@ -9,7 +9,7 @@
     .map-container {
         position: relative;
         width: 100%;
-        height: calc(100vh - 80px);
+        height: 87dvh;
         min-height: 600px;
         margin: 1rem 0;
     }
@@ -21,7 +21,7 @@
         border-radius: 8px;
     }
 
-    /* Welcome popup */
+    
     .welcome-popup {
         position: fixed;
         top: 0;
@@ -123,9 +123,10 @@
         left: 50%;
         transform: translateX(-50%);
         display: flex;
+        flex-wrap: wrap;
         gap: 12px;
         z-index: 1000;
-        flex-wrap: wrap;
+        width: 100%;
         justify-content: center;
     }
 
@@ -436,7 +437,9 @@
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
         <h3>Welcome to AOR</h3>
-        <p>Aviation Obstacle Registration system. Use the map to register obstacles by clicking to place markers and dragging to adjust positions.</p>
+        <p>Aviation Obstacle Registration system. 
+            Use the map to register obstacles by clicking to place markers and dragging to adjust positions.
+            The system is using your current position.</p>
         <button onclick="closeWelcomePopup()">OK</button>
     </div>
 </div>
@@ -502,7 +505,7 @@
 
     function initializeMap() {
         map = L.map('obstacle-map', {
-            center: [60.472, 8.4689],
+            center: showMyLocation(),
             zoom: 6,
             zoomControl: true,
             touchZoom: true,
