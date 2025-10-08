@@ -1,0 +1,799 @@
+@{
+    ViewData["Title"] = "AOR - Aviation Obstacle Registration";
+    Layout = "_Layout";
+}
+
+<!-- Map-specific styles -->
+<style>
+    /* Map container - responsive */
+    .map-container {
+        position: relative;
+        width: 100%;
+        height: 87dvh;
+        min-height: 600px;
+        margin: 1rem 0;
+    }
+
+    #obstacle-map {
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 8px;
+    }
+
+    
+    .welcome-popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    .welcome-popup-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .welcome-popup h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .welcome-popup p {
+        margin: 0 0 1.5rem 0;
+        color: #6c757d;
+        line-height: 1.5;
+    }
+
+    .welcome-popup button {
+        background: #0C5AA6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .welcome-popup button:hover {
+        background: #0A4A8A;
+        transform: translateY(-1px);
+    }
+
+    /* Location button - responsive */
+    .location-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 400;
+        color: #495057;
+        backdrop-filter: blur(10px);
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        touch-action: manipulation;
+    }
+
+    .location-btn:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Zoom controls */
+    .leaflet-control-zoom {
+        position: absolute !important;
+        top: 20px !important;
+        right: 20px !important;
+        left: auto !important;
+    }
+
+    .leaflet-control-zoom a {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid #e9ecef !important;
+        touch-action: manipulation;
+    }
+
+    /* Action buttons - responsive */
+    .action-buttons {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        z-index: 1000;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .main-action-btn {
+        padding: 28px 56px;
+        border: none;
+        border-radius: 12px;
+        font-size: 20px;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(10px);
+        min-width: 180px;
+        text-align: center;
+        touch-action: manipulation;
+        letter-spacing: 0.5px; 
+    }
+
+    .btn-powerline {
+        background: #E74C3C;
+    }
+
+    .btn-powerline:hover, .btn-powerline:active {
+        background: #C0392B;
+    }
+
+    .btn-mast {
+        background: #0C5AA6;
+    }
+
+    .btn-mast:hover, .btn-mast:active {
+        background: #0A4A8A;
+    }
+
+    .btn-other {
+        background: #ffffff;
+        color: #495057;
+        border: 1px solid #e9ecef;
+    }
+
+    .btn-other:hover, .btn-other:active {
+        background: #f8f9fa;
+        border-color: #dee2e6;
+    }
+
+    /* Points panel - responsive */
+    .points-panel {
+        position: absolute;
+        top: 80px;
+        left: 20px;
+        width: 240px;
+        max-height: 400px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: none;
+        overflow: hidden;
+    }
+
+    .points-panel-header {
+        padding: 12px 16px;
+        background: rgba(248, 249, 250, 0.8);
+        border-bottom: 1px solid rgba(233, 236, 239, 0.5);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .points-panel-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: #495057;
+        margin: 0;
+    }
+
+    .panel-controls {
+        display: flex;
+        gap: 6px;
+    }
+
+    .panel-btn {
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 500;
+        touch-action: manipulation;
+    }
+
+    .panel-btn.undo {
+        background: #6c757d;
+        color: white;
+    }
+
+    .panel-btn.confirm {
+        background: #28a745;
+        color: white;
+    }
+
+    .panel-btn.cancel {
+        background: #dc3545;
+        color: white;
+    }
+
+    .panel-btn:active {
+        opacity: 0.8;
+        transform: scale(0.95);
+    }
+
+    .points-list {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 8px;
+    }
+
+    .point-item {
+        padding: 10px 12px;
+        margin-bottom: 6px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(233, 236, 239, 0.5);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        font-size: 11px;
+    }
+
+    .point-item:active {
+        background: rgba(248, 249, 250, 0.9);
+        border-color: rgba(108, 117, 125, 0.3);
+    }
+
+    .point-item.confirmed {
+        background: rgba(40, 167, 69, 0.1);
+        border-color: rgba(40, 167, 69, 0.3);
+    }
+
+    .point-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    .point-number {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .point-actions {
+        display: flex;
+        gap: 4px;
+    }
+
+    .point-btn {
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+        touch-action: manipulation;
+    }
+
+    .point-btn.accept {
+        background: #28a745;
+        color: white;
+    }
+
+    .point-btn.remove {
+        background: #dc3545;
+        color: white;
+    }
+
+    .point-btn:active {
+        opacity: 0.8;
+        transform: scale(0.95);
+    }
+
+    .point-coords {
+        color: #6c757d;
+        font-family: 'Courier New', monospace;
+        font-size: 10px;
+        line-height: 1.2;
+    }
+
+    /* Touch-friendly markers */
+    .simple-marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        cursor: grab;
+        transition: all 0.2s ease;
+        touch-action: none;
+    }
+
+    .simple-marker:hover {
+        transform: scale(1.1);
+    }
+
+    .simple-marker:active {
+        cursor: grabbing;
+    }
+
+    .marker-powerline {
+        background: #E74C3C;
+    }
+
+    .marker-mast {
+        background: #0C5AA6;
+    }
+
+    .marker-other {
+        background: #00A651;
+    }
+
+    /* Notification - responsive */
+    .drawing-notification {
+        position: absolute;
+        bottom: 95px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 6px 12px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-size: 11px;
+        font-weight: 400;
+        color: #495057;
+        z-index: 1000;
+        display: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        white-space: nowrap;
+    }
+
+    /* Mobile responsiveness */
+    @@media (max-width: 768px) {
+        .points-panel {
+            width: calc(100% - 40px);
+            max-width: 300px;
+            top: auto;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .action-buttons {
+            gap: 8px;
+            bottom: 20px;
+        }
+
+        .main-action-btn {
+            padding: 12px 20px;
+            font-size: 13px;
+            min-width: 90px;
+        }
+
+        .drawing-notification {
+            bottom: 85px;
+            font-size: 10px;
+            padding: 5px 10px;
+        }
+
+        .location-btn {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .points-panel {
+            max-height: 250px;
+        }
+
+        .action-buttons {
+            bottom: 15px;
+        }
+
+        .main-action-btn {
+            padding: 10px 16px;
+            font-size: 12px;
+            min-width: 80px;
+        }
+    }
+</style>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<!-- Welcome popup -->
+<div class="welcome-popup" id="welcome-popup">
+    <div class="welcome-popup-content">
+        <h3>Welcome to AOR</h3>
+        <p>Aviation Obstacle Registration system. 
+            Use the map to register obstacles by clicking to place markers and dragging to adjust positions.
+            The system is using your current position.</p>
+        <button onclick="closeWelcomePopup()">OK</button>
+    </div>
+</div>
+
+<!-- Map container -->
+<div class="map-container">
+    <div id="obstacle-map"></div>
+    
+    <!-- Location button -->
+    <button class="location-btn" onclick="showMyLocation()">
+        My Location
+    </button>
+    
+    <!-- Points panel -->
+    <div class="points-panel" id="points-panel">
+        <div class="points-panel-header">
+            <h3 class="points-panel-title" id="panel-title">Points</h3>
+            <div class="panel-controls">
+                <button class="panel-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
+                <button class="panel-btn confirm" onclick="confirmDrawing()" title="Confirm">✓</button>
+                <button class="panel-btn cancel" onclick="cancelDrawing()" title="Cancel">✕</button>
+            </div>
+        </div>
+        <div class="points-list" id="points-list">
+            <!-- Points will be dynamically added here -->
+        </div>
+    </div>
+    
+    <!-- Minimal notification -->
+    <div class="drawing-notification" id="drawing-notification">
+        Tap to place • Drag to move • View details in panel
+    </div>
+    
+    <!-- Action buttons -->
+    <div class="action-buttons">
+        <button class="main-action-btn btn-powerline" onclick="startDrawing('powerline')">
+            Power Line
+        </button>
+        <button class="main-action-btn btn-mast" onclick="startDrawing('mast')">
+            Mast
+        </button>
+        <button class="main-action-btn btn-other" onclick="startDrawing('other')">
+            Other
+        </button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    var map;
+    var drawingMode = null;
+    var currentDrawing = [];
+    var drawingLayer = null;
+    var markers = [];
+    var polyline = null;
+    var pointCounter = 0;
+
+    function closeWelcomePopup() {
+        document.getElementById('welcome-popup').style.display = 'none';
+    }
+
+    function initializeMap() {
+        map = L.map('obstacle-map', {
+            center: showMyLocation(),
+            zoom: 6,
+            zoomControl: true,
+            touchZoom: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: true,
+            tap: true,
+            tapTolerance: 20
+        });
+        
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        
+        map.zoomControl.setPosition('topright');
+        
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 100);
+        
+        setupMapEvents();
+    }
+
+    function setupMapEvents() {
+        map.on('click', function(e) {
+            if (drawingMode) {
+                addPoint(e.latlng);
+            }
+        });
+    }
+    
+    function startDrawing(type) {
+        drawingMode = type;
+        currentDrawing = [];
+        markers = [];
+        pointCounter = 0;
+        
+        const titles = {
+            'powerline': 'Power Line',
+            'mast': 'Masts', 
+            'other': 'Obstacles'
+        };
+        document.getElementById('panel-title').textContent = titles[type];
+        
+        document.getElementById('drawing-notification').style.display = 'block';
+        document.getElementById('points-panel').style.display = 'block';
+        
+        document.getElementById('points-list').innerHTML = '';
+        
+        drawingLayer = L.layerGroup().addTo(map);
+    }
+
+    function addPoint(latlng) {
+        if (!drawingMode) return;
+        
+        pointCounter++;
+        const pointId = `point-${pointCounter}`;
+        
+        const colors = {
+            'powerline': '#E74C3C',
+            'mast': '#0C5AA6',
+            'other': '#00A651'
+        };
+
+        const marker = L.circleMarker(latlng, {
+            radius: 8,
+            fillColor: colors[drawingMode],
+            color: 'white',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 1,
+            draggable: false,
+            pointId: pointId
+        });
+
+        // MOBILE-FRIENDLY: Support both mouse and touch events
+        let isDragging = false;
+        
+        // Mouse events
+        marker.on('mousedown', function(e) {
+            startDrag(e);
+        });
+
+        // Touch events
+        marker.on('touchstart', function(e) {
+            startDrag(e);
+        });
+
+        function startDrag(e) {
+            isDragging = true;
+            map.dragging.disable();
+            L.DomEvent.preventDefault(e.originalEvent);
+            
+            const onMove = function(e) {
+                if (isDragging) {
+                    const newLatLng = e.latlng || map.mouseEventToLatLng(e.originalEvent.touches[0]);
+                    marker.setLatLng(newLatLng);
+                    updateCurrentDrawing();
+                    updatePointInList(pointId, newLatLng);
+                    if (drawingMode === 'powerline') {
+                        updatePolyline();
+                    }
+                }
+            };
+            
+            const onEnd = function(e) {
+                isDragging = false;
+                map.dragging.enable();
+                map.off('mousemove', onMove);
+                map.off('mouseup', onEnd);
+                map.off('touchmove', onMove);
+                map.off('touchend', onEnd);
+            };
+            
+            // Listen for both mouse and touch events
+            map.on('mousemove', onMove);
+            map.on('mouseup', onEnd);
+            map.on('touchmove', onMove);
+            map.on('touchend', onEnd);
+        }
+
+        marker.addTo(drawingLayer);
+        markers.push(marker);
+        currentDrawing.push(latlng);
+
+        addPointToList(pointId, latlng, pointCounter);
+
+        if (drawingMode === 'powerline') {
+            updatePolyline();
+        }
+    }
+
+    function addPointToList(pointId, latlng, number) {
+        const pointsList = document.getElementById('points-list');
+        const pointItem = document.createElement('div');
+        pointItem.className = 'point-item';
+        pointItem.id = pointId;
+        
+        const lat = latlng.lat.toFixed(5);
+        const lng = latlng.lng.toFixed(5);
+        
+        pointItem.innerHTML = `
+            <div class="point-header">
+                <div class="point-number">${number}</div>
+                <div class="point-actions">
+                    <button class="point-btn accept" onclick="confirmPoint('${pointId}')" title="Confirm">✓</button>
+                    <button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>
+                </div>
+            </div>
+            <div class="point-coords">${lat}, ${lng}</div>
+        `;
+        
+        pointsList.appendChild(pointItem);
+    }
+
+    function updatePointInList(pointId, latlng) {
+        const pointItem = document.getElementById(pointId);
+        if (pointItem) {
+            const coordsDiv = pointItem.querySelector('.point-coords');
+            const lat = latlng.lat.toFixed(5);
+            const lng = latlng.lng.toFixed(5);
+            coordsDiv.textContent = `${lat}, ${lng}`;
+        }
+    }
+
+    function confirmPoint(pointId) {
+        const pointItem = document.getElementById(pointId);
+        if (pointItem) {
+            pointItem.classList.add('confirmed');
+        }
+    }
+
+    function removePoint(pointId) {
+        const markerIndex = markers.findIndex(marker => marker.options.pointId === pointId);
+        if (markerIndex !== -1) {
+            drawingLayer.removeLayer(markers[markerIndex]);
+            markers.splice(markerIndex, 1);
+        }
+        
+        const pointItem = document.getElementById(pointId);
+        if (pointItem) {
+            pointItem.remove();
+        }
+        
+        updateCurrentDrawing();
+        if (drawingMode === 'powerline') {
+            updatePolyline();
+        }
+    }
+
+    function undoLastPoint() {
+        if (markers.length > 0) {
+            const lastMarker = markers[markers.length - 1];
+            const pointId = lastMarker.options.pointId;
+            removePoint(pointId);
+        }
+    }
+
+    function updateCurrentDrawing() {
+        currentDrawing = markers.map(marker => marker.getLatLng());
+    }
+
+    function updatePolyline() {
+        if (polyline) {
+            drawingLayer.removeLayer(polyline);
+        }
+        
+        if (currentDrawing.length > 1) {
+            polyline = L.polyline(currentDrawing, {
+                color: '#E74C3C',
+                weight: 3,
+                opacity: 0.8
+            });
+            polyline.addTo(drawingLayer);
+        }
+    }
+
+    function confirmDrawing() {
+        if (currentDrawing.length === 0) {
+            alert('Please add at least one point');
+            return;
+        }
+
+        const obstacleData = {
+            type: drawingMode,
+            coordinates: currentDrawing.map(latlng => ({
+                lat: latlng.lat,
+                lng: latlng.lng
+            })),
+            timestamp: new Date().toISOString()
+        };
+
+        console.log('Obstacle data to register:', obstacleData);
+
+        const params = new URLSearchParams({
+            type: drawingMode,
+            coordinates: JSON.stringify(obstacleData.coordinates),
+            count: currentDrawing.length
+        });
+
+        window.location.href = `/Obstacle/DataForm?${params.toString()}`;
+    }
+
+    function cancelDrawing() {
+        if (drawingLayer) {
+            map.removeLayer(drawingLayer);
+        }
+        
+        drawingMode = null;
+        currentDrawing = [];
+        markers = [];
+        polyline = null;
+        drawingLayer = null;
+        pointCounter = 0;
+        
+        document.getElementById('drawing-notification').style.display = 'none';
+        document.getElementById('points-panel').style.display = 'none';
+    }
+    
+    function showMyLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    map.setView([lat, lng], 15);
+                    
+                    L.marker([lat, lng])
+                        .bindPopup('Your Current Location')
+                        .addTo(map);
+                },
+                function(error) {
+                    alert('Could not get your location. Please ensure location services are enabled.');
+                }
+            );
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initializeMap, 100);
+    });
+    
+    window.addEventListener('resize', function() {
+        if (map) {
+            setTimeout(function() { 
+                map.invalidateSize(); 
+            }, 100);
+        }
+    });
+</script>

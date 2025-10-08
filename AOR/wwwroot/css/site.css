@@ -17,8 +17,12 @@ html {
   min-height: 100%;
 }
 
+.header{
+    max-height: 5dvh; width: 100%
+}
+
 body {
-  margin-bottom: 60px;
+  
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +32,18 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+.footer
+{
+    width: 100%; z-index: 1000; bottom: 0; overflow: hidden;
+}
+
+.pilot-form-container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    padding: 24px;
+    border: 1px solid #e5e7eb;
 }

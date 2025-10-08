@@ -1,14 +1,16 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 
 namespace AOR.Controllers;
 
-public class HomeController : Controller
+[Authorize]
+public class CrewController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<CrewController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    public CrewController(ILogger<CrewController> logger)
     {
         _logger = logger;
     }

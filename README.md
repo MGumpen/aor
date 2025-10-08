@@ -1,49 +1,51 @@
 # AOR - Aviation Obstacle Registration
 ASP.NET Core MVC Application with Docker & MariaDB
+Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
-# Gruppe 3, IT og informasjonssystemer, høsten 2025.
+Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
+- Vi har en egen fil som viser hvordan vi bruker github: Github.md
+
+- Forskjellige testingscenarier finner du i Testing.md
 
 # Brukere i Web Applikasjonen: #
-Crew: test@uia.no Passord: 123
-Admin: admin@uia.no Passord:456
-Registerfører: reg@uia.no Passord: 789
+- Crew: crew@uia.no Passord: 123
+- Admin: admin@uia.no Passord: 123
+- Registerfører: reg@uia.no Passord: 123
 
-
-### Prerequisites
+### Forutsetninger for å starte hele applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for lokal utvikling)
 
 ### Start hele applikasjonen
 
 ```bash
-# Start alle services (database, web app, adminer)
+# For å opprette docker containerne og starte alle services:
+docker compose up -d --build
+
+# Start alle services hvis du har containere fra før (database, web app, adminer):
 docker compose up -d
 
 # Åpne applikasjonen:
-# - Web App: http://localhost
+# - Web App: http://localhost:5001
 # - Database Admin: http://localhost:8080
 
 # Stopp alle services
 docker compose down
 ```
 
-### Lokal utvikling (anbefalt)
+### Lokal utvikling uten databasetilkobling
 
 ```bash
-# 1. Start kun database
-docker compose up -d mariadb
-
-# 2. Start .NET applikasjonen lokalt
+# 1. Start .NET applikasjonen lokalt
 cd AOR
 dotnet run
 
-# 3. Åpne http://localhost:5242
+# 2. Åpne http://localhost:5001
+
+#3. Stoppe .NET applikasjonen
+    Trykk: Ctrl+C
 ```
-
-### VS Code F5 debugging
-
-Trykk **F5** i VS Code - dette starter automatisk MariaDB og debugger .NET appen.
 
 ## 🛠️ Database
 
@@ -86,7 +88,7 @@ SHOW TABLES;
 SELECT * FROM Advices;
 ```
 
-## 🐳 Docker Commands
+##  Docker Commands
 
 ```bash
 # Start alle services

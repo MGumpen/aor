@@ -12,10 +12,6 @@
         "/consoleloggerparameters:NoSummary"
       ],
       "problemMatcher": "$msCompile",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
     },
     {
       "label": "publish",
@@ -40,72 +36,6 @@
         "${workspaceFolder}/AOR/AOR.csproj"
       ],
       "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "start-mariadb",
-      "type": "shell",
-      "command": "docker",
-      "args": [
-        "compose",
-        "up",
-        "-d",
-        "mariadb"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "silent",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      },
-      "problemMatcher": [],
-      "dependsOn": "build"
-    },
-    {
-      "label": "start-all-docker",
-      "type": "shell", 
-      "command": "docker",
-      "args": [
-        "compose",
-        "up",
-        "-d"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "stop-docker",
-      "type": "shell",
-      "command": "docker", 
-      "args": [
-        "compose",
-        "down"
-      ],
-      "options": {
-        "cwd": "${workspaceFolder}"
-      },
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared"
-      },
-      "problemMatcher": []
     }
   ]
 }
