@@ -24,16 +24,12 @@ public class LogInController : Controller
         _logger = logger;
     }
 
-
         // GET: /LogIn/Index
         public async Task<IActionResult> Index()
         {
-            var provider = _db.Database.ProviderName ?? "";
-            var ok = provider.Contains("MySql", StringComparison.OrdinalIgnoreCase)
-                     && await _db.Database.CanConnectAsync();
-
-            ViewData["DbConnected"] = ok;
-            ViewData["DbError"]     = ok ? null : "Ikke tilkoblet MariaDB.";
+            // Med InMemory-database er det ikke nødvendig å sjekke DB-tilkobling
+            ViewData["DbConnected"] = true;
+            ViewData["DbError"]     = null;
 
             return View(new LogInData());
         }
@@ -78,11 +74,11 @@ public class LogInController : Controller
                     }
                     else if (user.Role == "Crew")
                     {
-                    return RedirectToAction("Index", "Crew");
-                      }
+                        return RedirectToAction("Index", "Crew");
+                    }
                     return RedirectToAction("Index", "Admin");
-            }
-            else
+                }
+                else
                 {
                     ModelState.AddModelError("", "Ugyldig brukernavn eller passord");
                 }
@@ -114,5 +110,4 @@ public async Task<IActionResult> Logout()
 }
 
     }
-    }
-
+}
