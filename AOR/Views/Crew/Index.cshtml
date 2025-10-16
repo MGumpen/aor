@@ -7,12 +7,13 @@
 <style>
     /* Map container - responsive */
     .map-container {
-        position: relative;
-        width: 100%;
-        height: 87dvh;
-        min-height: 600px;
-        margin: 1rem 0;
-    }
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 160px); /* Account for both header and footer */
+    min-height: 600px;
+    margin: 30px 0;              /* Equal top and bottom margin */
+    border-radius: 8px;
+}
 
     #obstacle-map {
         width: 100%;
@@ -22,19 +23,6 @@
     }
 
     
-    .welcome-popup {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-    }
-
     .welcome-popup-content {
         background: white;
         padding: 2rem;
@@ -58,6 +46,18 @@
         line-height: 1.5;
     }
 
+    .welcome-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Changed from flex to none */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
     .welcome-popup button {
         background: #0C5AA6;
         color: white;
@@ -501,7 +501,22 @@
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
+        localStorage.setItem('aor_welcome_shown', 'true');
     }
+
+    function showWelcomePopup() {
+        const hasSeenPopup = localStorage.getItem('aor_welcome_shown');
+        if (!hasSeenPopup) {
+            document.getElementById('welcome-popup').style.display = 'flex';
+        } else {
+            document.getElementById('welcome-popup').style.display = 'none';
+        }
+    }
+
+ document.addEventListener('DOMContentLoaded', function() {
+        showWelcomePopup();
+        setTimeout(initializeMap, 100);
+    });
 
     function initializeMap() {
         map = L.map('obstacle-map', {
