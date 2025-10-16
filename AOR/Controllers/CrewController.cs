@@ -23,6 +23,10 @@ public IActionResult LogIn()
         return View();
     }
 
+    public IActionResult MyReports()
+    {
+        return View();
+    }
     public IActionResult Privacy()
     {
         return View();

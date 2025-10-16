@@ -57,9 +57,6 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
-                            </li>
-                            <li class="nav-item">
                                
                                 @if (User.IsInRole("Registerforer"))
                                 {
@@ -75,8 +72,18 @@
                                 }
                             </li>
                             <li class="nav-item">
+                                @if (User.IsInRole("Crew"))
+                                {
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="MyReports">My reports</a>
+                                }
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="LogIn" asp-action="Logout">Log out</a>
                             </li>
+                            
                         }
                     </ul>
                 </div>
