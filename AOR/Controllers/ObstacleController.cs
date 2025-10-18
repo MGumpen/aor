@@ -1,70 +1,72 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
 using AOR.Models;
 
-namespace AOR.Controllers;
-
-public class ObstacleController : Controller
+namespace AOR.Controllers
 {
-
-    [HttpGet]
-    public IActionResult DataForm(string type, string coordinates, int count)
+    public class ObstacleController : Controller
     {
-        Console.WriteLine($"GET DataForm called - Type: {type}, Count: {count}");
-        
-        ViewBag.ObstacleType = type ?? "other";
-        ViewBag.Coordinates = coordinates ?? "[]";
-        ViewBag.PointCount = count;
-        
-        return View(new ObstacleData 
-        { 
-            ObstacleType = type ?? "other",
-            Coordinates = coordinates,
-            PointCount = count
-        });
+        private readonly ApplicationDbContext _db;
+
+        public ObstacleController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
+        [HttpGet]
+        public IActionResult DataForm(string type, string? coordinates, int count)
+        {
+            ViewBag.ObstacleType = type ?? "other";
+            ViewBag.Coordinates  = coordinates ?? "[]";
+            ViewBag.PointCount   = count;
+
+            return View(new ObstacleData
+            {
+                ObstacleType = type ?? "other",
+                Coordinates  = coordinates,
+                PointCount   = count
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DataForm(ObstacleData obstacleData)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Behold inputs ved valideringsfeil
+                ViewBag.ObstacleType = obstacleData.ObstacleType;
+                ViewBag.Coordinates  = obstacleData.Coordinates;
+                ViewBag.PointCount   = obstacleData.PointCount;
+                return View(obstacleData);
+            }
+
+            obstacleData.CreatedAt = DateTime.UtcNow;
+
+            _db.ObstacleDatas.Add(obstacleData);
+            await _db.SaveChangesAsync();
+
+            // Etter lagring: vis detaljsiden (eller Overview-view om du heller vil det)
+            return RedirectToAction(nameof(Details), new { id = obstacleData.Id });
+            // Alternativ: return View("Overview", obstacleData);
+        }
+
+        public async Task<IActionResult> AllObstacles()
+        {
+            var obstacles = await _db.ObstacleDatas
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            return View(obstacles);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var obstacle = await _db.ObstacleDatas.FindAsync(id);
+            if (obstacle == null) return NotFound();
+
+            return View("Overview", obstacle);
+        }
     }
-
-    [HttpPost]
-public async Task<IActionResult> DataForm(ObstacleData obstacleData)
-{
-    if (ModelState.IsValid)
-    {
-        obstacleData.CreatedAt = DateTime.UtcNow;
-        // Save to database
-        // _context.ObstacleData.Add(obstacleData);
-        // await _context.SaveChangesAsync();
-        
-        return View("Overview", obstacleData); // Show single obstacle overview
-    }
-    
-    // If validation failed, preserve ViewBag data
-    ViewBag.ObstacleType = obstacleData.ObstacleType;
-    ViewBag.Coordinates = obstacleData.Coordinates;
-    ViewBag.PointCount = obstacleData.PointCount;
-    
-    return View(obstacleData);
 }
-
-public async Task<IActionResult> AllObstacles()
-{
-    // Get all obstacles from database
-    // var obstacles = await _context.ObstacleData.OrderByDescending(x => x.CreatedAt).ToListAsync();
-    
-    // For now, return empty list - replace with database query
-    var obstacles = new List<ObstacleData>();
-    
-    return View(obstacles);
-}
-
-public async Task<IActionResult> Details(int id)
-{
-    // Get specific obstacle
-    // var obstacle = await _context.ObstacleData.FindAsync(id);
-    // if (obstacle == null) return NotFound();
-    
-    var obstacle = new ObstacleData(); // Replace with database query
-    return View("Overview", obstacle);
-}
-
-}
-
