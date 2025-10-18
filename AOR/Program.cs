@@ -1,41 +1,36 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// DB-oppsett: ENV (docker) først, så appsettings.*
-var cs =
-    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
-
-if (string.IsNullOrWhiteSpace(cs))
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseInMemoryDatabase("AOR_InMemory"));
-}
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
-}
-
-// AuthenificationS
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+// Configure Cookie Authentication
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/LogIn";
+        options.LoginPath = "/LogIn/Index";
+        options.LogoutPath = "/LogIn/Logout";
         options.AccessDeniedPath = "/LogIn/AccessDenied";
-    }
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddAuthorization();
+
+// Configure MariaDB connection
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
 );
 
 var app = builder.Build();
 
-// Configure pipeline
+// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -44,20 +39,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-// Disable caching so user cannot go back after logout
-app.Use(async (context, next) =>
-{
-    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
-    context.Response.Headers["Pragma"] = "no-cache";
-    context.Response.Headers["Expires"] = "0";
-    await next();
-});
-
+// Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=LogIn}/{action=Index}/{id?}");
