@@ -1,36 +1,35 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using AOR.Data;
+using AOR.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC
 builder.Services.AddControllersWithViews();
 
-// Configure Cookie Authentication
+// Cookie auth
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+    .AddCookie(o =>
     {
-        options.LoginPath = "/LogIn/Index";
-        options.LogoutPath = "/LogIn/Logout";
-        options.AccessDeniedPath = "/LogIn/AccessDenied";
-        options.SlidingExpiration = true;
+        o.LoginPath = "/LogIn/Index";
+        o.LogoutPath = "/LogIn/Logout";
+        o.AccessDeniedPath = "/LogIn/AccessDenied";
+        o.SlidingExpiration = true;
     });
 
 builder.Services.AddAuthorization();
 
-// Configure MariaDB connection
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    )
-);
+// DB
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(opt =>
+    opt.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Prod-feilside + HSTS
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -39,12 +38,64 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-// Authentication and Authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ---------- AUTO-MIGRATE + (OPTIONAL) SEED ----------
+if (app.Configuration.GetValue<bool>("RunMigrationsOnStart", true))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+
+    if (app.Configuration.GetValue<bool>("SeedDemoData", false))
+    {
+        if (!db.ObstacleDatas.Any())
+        {
+            db.ObstacleDatas.Add(new ObstacleData
+            {
+                ObstacleName = "Demo Tower",
+                ObstacleType = "tower",
+                Coordinates  = "[[58.16, 8.00]]",
+                PointCount   = 1,
+                CreatedAt    = DateTime.UtcNow
+            });
+            db.SaveChanges();
+        }
+    }
+}
+// ----------------------------------------------------
+
+// Debug-endepunkter (nyttige for sensur/test)
+static string Mask(string s) =>
+    Regex.Replace(s ?? "(empty)", @"(?i)(password|pwd)=([^;]+)", "$1=****");
+
+app.MapGet("/db-health", async (ApplicationDbContext db) =>
+    await db.Database.CanConnectAsync() ? Results.Ok("DB OK") : Results.Problem("DB DOWN"));
+
+app.MapGet("/debug/db-info", async (ApplicationDbContext db) =>
+{
+    var ok = await db.Database.CanConnectAsync();
+    return Results.Ok(new
+    {
+        Connected = ok,
+        Provider = db.Database.ProviderName,
+        ConnectionString = Mask(db.Database.GetDbConnection().ConnectionString)
+    });
+});
+
+app.MapGet("/debug/obstacles", async (ApplicationDbContext db) =>
+{
+    var count  = await db.ObstacleDatas.CountAsync();
+    var latest = await db.ObstacleDatas
+        .OrderByDescending(x => x.CreatedAt)
+        .Select(x => new { x.Id, x.ObstacleName, x.CreatedAt })
+        .Take(5)
+        .ToListAsync();
+
+    return Results.Ok(new { Count = count, Latest = latest });
+});
 
 // Default route
 app.MapControllerRoute(

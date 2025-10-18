@@ -1,36 +1,33 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Models;
 
-namespace AOR.Data
+namespace AOR.Data;
+
+public class ApplicationDbContext : DbContext
 {
-    public class ApplicationDbContext : DbContext
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options) { }
+
+    public DbSet<AdviceDto> Advices { get; set; } = default!;
+    public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!; // <-- LEGG TIL
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options) { }
+        base.OnModelCreating(modelBuilder);
 
-        // Legg til/ta med andre DbSet<...> du har i prosjektet (f.eks. AdviceDto, etc.)
-        public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!;
-        public DbSet<AdviceDto> Advices { get; set; } = default!;
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        modelBuilder.Entity<AdviceDto>(entity =>
         {
-            base.OnModelCreating(modelBuilder);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
+        });
 
-            // Enkle key/konfigurasjoner (tilpass ved behov)
-            modelBuilder.Entity<ObstacleData>(entity =>
-            {
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.ObstacleName).HasMaxLength(200);
-                entity.Property(x => x.ObstacleType).HasMaxLength(100);
-                entity.Property(x => x.Coordinates).HasColumnType("text");
-            });
-
-            modelBuilder.Entity<AdviceDto>(entity =>
-            {
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.Title).HasMaxLength(200);
-                entity.Property(x => x.Description).HasMaxLength(1000);
-            });
-        }
+        modelBuilder.Entity<ObstacleData>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ObstacleName).HasMaxLength(200);
+            entity.Property(e => e.ObstacleType).HasMaxLength(100);
+            entity.Property(e => e.Coordinates); // tekst/json
+        });
     }
 }
