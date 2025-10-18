@@ -1,72 +1,65 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AOR.Data;
 using AOR.Models;
+using AOR.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace AOR.Controllers
+namespace AOR.Controllers;
+
+public class ObstacleController : Controller
 {
-    public class ObstacleController : Controller
+    private readonly ApplicationDbContext _db;
+    public ObstacleController(ApplicationDbContext db) => _db = db;
+
+    [HttpGet]
+    public IActionResult DataForm(string type, string coordinates, int count)
     {
-        private readonly ApplicationDbContext _db;
+        ViewBag.ObstacleType = type ?? "other";
+        ViewBag.Coordinates  = coordinates ?? "[]";
+        ViewBag.PointCount   = count;
 
-        public ObstacleController(ApplicationDbContext db)
+        return View(new ObstacleData
         {
-            _db = db;
-        }
+            ObstacleType = type ?? "other",
+            Coordinates  = coordinates,
+            PointCount   = count
+        });
+    }
 
-        [HttpGet]
-        public IActionResult DataForm(string type, string? coordinates, int count)
+    [HttpPost]
+    public async Task<IActionResult> DataForm(ObstacleData obstacleData)
+    {
+        if (ModelState.IsValid)
         {
-            ViewBag.ObstacleType = type ?? "other";
-            ViewBag.Coordinates  = coordinates ?? "[]";
-            ViewBag.PointCount   = count;
-
-            return View(new ObstacleData
-            {
-                ObstacleType = type ?? "other",
-                Coordinates  = coordinates,
-                PointCount   = count
-            });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DataForm(ObstacleData obstacleData)
-        {
-            if (!ModelState.IsValid)
-            {
-                // Behold inputs ved valideringsfeil
-                ViewBag.ObstacleType = obstacleData.ObstacleType;
-                ViewBag.Coordinates  = obstacleData.Coordinates;
-                ViewBag.PointCount   = obstacleData.PointCount;
-                return View(obstacleData);
-            }
-
             obstacleData.CreatedAt = DateTime.UtcNow;
 
-            _db.ObstacleDatas.Add(obstacleData);
-            await _db.SaveChangesAsync();
+            _db.ObstacleDatas.Add(obstacleData);      // <-- LAGRE
+            await _db.SaveChangesAsync();             // <-- LAGRE
 
-            // Etter lagring: vis detaljsiden (eller Overview-view om du heller vil det)
-            return RedirectToAction(nameof(Details), new { id = obstacleData.Id });
-            // Alternativ: return View("Overview", obstacleData);
+            return View("Overview", obstacleData);
         }
 
-        public async Task<IActionResult> AllObstacles()
-        {
-            var obstacles = await _db.ObstacleDatas
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
+        // bevar ViewBag ved valideringsfeil
+        ViewBag.ObstacleType = obstacleData.ObstacleType;
+        ViewBag.Coordinates  = obstacleData.Coordinates;
+        ViewBag.PointCount   = obstacleData.PointCount;
 
-            return View(obstacles);
-        }
+        return View(obstacleData);
+    }
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var obstacle = await _db.ObstacleDatas.FindAsync(id);
-            if (obstacle == null) return NotFound();
+    public async Task<IActionResult> AllObstacles()
+    {
+        var obstacles = await _db.ObstacleDatas
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
 
-            return View("Overview", obstacle);
-        }
+        return View(obstacles);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var obstacle = await _db.ObstacleDatas.FindAsync(id);
+        if (obstacle == null) return NotFound();
+
+        return View("Overview", obstacle);
     }
 }
