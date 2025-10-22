@@ -12,8 +12,8 @@ public class ReportModel
     [ForeignKey(nameof(UserId))]
     public UserModel User { get; set; } = default!;
 
-    public int ObstacleId { get; set; }
-    [ForeignKey(nameof(ObstacleId))]
+    public int Id { get; set; }
+    [ForeignKey(nameof(Id))]
     public ObstacleData Obstacle { get; set; } = new ObstacleData();
     
     [MaxLength(50)]
