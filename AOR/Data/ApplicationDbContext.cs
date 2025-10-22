@@ -9,7 +9,12 @@ public class ApplicationDbContext : DbContext
         : base(options) { }
 
     public DbSet<AdviceDto> Advices { get; set; } = default!;
-    public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!; // <-- LEGG TIL
+    public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!;
+    public DbSet<UserModel> Users => Set<UserModel>();
+    public DbSet<RoleModel> Roles => Set<RoleModel>();
+    public DbSet<UserRoleModel> UserRoles => Set<UserRoleModel>();
+    public DbSet<OrgModel> Orgs => Set<OrgModel>();
+    public DbSet<ReportModel> Reports => Set<ReportModel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -24,7 +29,7 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<ObstacleData>(entity =>
         {
-            entity.HasKey(e => e.Id);
+            entity.HasKey(e => e.ObstacleId);
             entity.Property(e => e.ObstacleName).HasMaxLength(200);
             entity.Property(e => e.ObstacleType).HasMaxLength(100);
             entity.Property(e => e.Coordinates); // tekst/json
