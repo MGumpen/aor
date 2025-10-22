@@ -14,7 +14,7 @@ public class ReportModel
 
     public int ObstacleId { get; set; }
     [ForeignKey(nameof(ObstacleId))]
-    public ObstacleData Obstacle { get; set; } = default!;
+    public ObstacleData Obstacle { get; set; } = new ObstacleData();
     
     [MaxLength(50)]
     public string? Status { get; set; }

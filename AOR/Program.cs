@@ -24,6 +24,7 @@ builder.Services.AddAuthorization();
 
 // DB
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
     opt.UseMySql(cs, ServerVersion.AutoDetect(cs)));
 
