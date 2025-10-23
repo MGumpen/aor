@@ -1,20 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace AOR.Data;
-
-public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<AorDbContext>
+namespace AOR.Data
 {
-    public AorDbContext CreateDbContext(string[] args)
+    public class AorDbContextFactory : IDesignTimeDbContextFactory<AorDbContext>
     {
-        var optionsBuilder = new DbContextOptionsBuilder<AorDbContext>();
-        
-        // Use a temporary connection string for design-time operations
-        optionsBuilder.UseMySql(
-            "Server=localhost;Database=aor_db;Uid=root;Pwd=rootpassword123;Port=3306;",
-            ServerVersion.AutoDetect("Server=localhost;Database=aor_db;Uid=root;Pwd=rootpassword123;Port=3306;")
-        );
+        public AorDbContext CreateDbContext(string[] args)
+        {
+            var options = new DbContextOptionsBuilder<AorDbContext>()
+                .UseMySql(
+                    // Dev-connection string (lokalt, ikke Docker-hostnavn)
+                    "Server=localhost;Port=3306;Database=aor_db;User=aor_user;Password=Test123;CharSet=utf8mb4;",
+                    new MySqlServerVersion(new Version(11, 4, 0))
+                )
+                .Options;
 
-        return new AorDbContext(optionsBuilder.Options);
+            return new AorDbContext(options);
+        }
     }
 }
