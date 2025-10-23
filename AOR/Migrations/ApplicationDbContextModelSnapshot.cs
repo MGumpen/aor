@@ -113,6 +113,7 @@ namespace AOR.Migrations
                 {
                     b.Property<int>("OrgNr")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(9)
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("OrgNr"));
@@ -154,7 +155,7 @@ namespace AOR.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("ReportModel");
                 });
 
             modelBuilder.Entity("AOR.Models.RoleModel", b =>
