@@ -8,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<AorDbContext>(opt =>
+    opt.UseMySql(
+        builder.Configuration.GetConnectionString("AorDb"),
+        new MySqlServerVersion(new Version(11,4,0))));
+
 // CLEAN database configuration - no orchestration
 builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseInMemoryDatabase("AOR_InMemory"));
