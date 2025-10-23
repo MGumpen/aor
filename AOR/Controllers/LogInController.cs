@@ -16,9 +16,9 @@ namespace AOR.Controllers
 public class LogInController : Controller
 {
     private readonly ILogger<LogInController> _logger;
-    private readonly ApplicationDbContext _db;
+    private readonly AorDbContext _db;
 
-    public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
+    public LogInController(AorDbContext db, ILogger<LogInController> logger)
     {
         _db = db;
         _logger = logger;

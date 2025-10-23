@@ -8,12 +8,12 @@ namespace AOR.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var model = new SettingsViewModel();
+            var model = new SettingsModel();
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Index(SettingsViewModel model)
+        public IActionResult Index(SettingsModel model)
         {
             if (ModelState.IsValid)
             {

@@ -3,13 +3,13 @@ using AOR.Controllers;
 using AOR.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Xunit;
+
 
 namespace AOR.UnitTests.ControllerTests
 {
     public class CrewControllerTests
     {
-        private CrewController CreateController()
+        private static CrewController CreateController()
         {
             var logger = new LoggerFactory().CreateLogger<CrewController>();
             return new CrewController(logger);
@@ -58,7 +58,7 @@ namespace AOR.UnitTests.ControllerTests
 
             // Assert
             Assert.NotNull(result);
-            var model = Assert.IsType<ErrorViewModel>(result.Model);
+            var model = Assert.IsType<ErrorModel>(result.Model);
             Assert.NotNull(model.RequestId);
         }
     }

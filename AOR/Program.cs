@@ -8,9 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
+// Database configuration - MySQL
+var connectionString = builder.Configuration.GetConnectionString("AorDb");
+builder.Services.AddDbContext<AorDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
 // CLEAN database configuration - no orchestration
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseInMemoryDatabase("AOR_InMemory"));
+//builder.Services.AddDbContext<AorDbContext>(options =>
+  //  options.UseInMemoryDatabase("AOR_InMemory"));
 
 
 // AuthenificationS
@@ -23,6 +28,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 );
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
+    db.Database.Migrate();  // oppretter DB og kjører alle migrasjoner
+}
 
 // Configure pipeline
 if (!app.Environment.IsDevelopment())

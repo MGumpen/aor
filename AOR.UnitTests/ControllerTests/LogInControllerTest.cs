@@ -40,11 +40,11 @@ namespace AOR.UnitTests.ControllerTests
         private static LogInController CreateController()
         {
             // InMemory-database i stedet for ekte MariaDB
-            var dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+            var dbOptions = new DbContextOptionsBuilder<AorDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
 
-            var db = new ApplicationDbContext(dbOptions);
+            var db = new AorDbContext(dbOptions);
             var logger = new FakeLogger<LogInController>();
             var controller = new LogInController(db, logger);
 
