@@ -1,11 +1,22 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
 using AOR.Models;
 
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<ObstacleController> _logger;
+
+    public ObstacleController(ApplicationDbContext context, ILogger<ObstacleController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
     {
