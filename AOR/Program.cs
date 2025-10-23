@@ -21,6 +21,10 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+// CLEAN database configuration - no orchestration
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseInMemoryDatabase("AOR_InMemory"));
+
 
 // DB
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");

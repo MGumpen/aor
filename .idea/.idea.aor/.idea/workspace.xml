@@ -19,7 +19,11 @@
       <change afterPath="$PROJECT_DIR$/AOR/Models/PhotoModel.cs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/AOR/Models/PositionModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" afterDir="false" />
+
+
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
