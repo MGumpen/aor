@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace AOR.Data;
 
-public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
+public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<AorDbContext>
 {
-    public ApplicationDbContext CreateDbContext(string[] args)
+    public AorDbContext CreateDbContext(string[] args)
     {
-        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+        var optionsBuilder = new DbContextOptionsBuilder<AorDbContext>();
         
         // Use a temporary connection string for design-time operations
         optionsBuilder.UseMySql(
@@ -15,6 +15,6 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             ServerVersion.AutoDetect("Server=localhost;Database=aor_db;Uid=root;Pwd=rootpassword123;Port=3306;")
         );
 
-        return new ApplicationDbContext(optionsBuilder.Options);
+        return new AorDbContext(optionsBuilder.Options);
     }
 }

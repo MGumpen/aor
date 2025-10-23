@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // CLEAN database configuration - no orchestration
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseInMemoryDatabase("AOR_InMemory"));
 
 
