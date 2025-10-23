@@ -21,5 +21,10 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<ReportModel> Reports { get; set; } = default!;
     
+    public DbSet<ReportModel> ObstacleType { get; set; } = default!;
+    
+    public DbSet<ReportModel> Position { get; set; } = default!;
+    
+    public DbSet<ReportModel> Photo { get; set; } = default!;
     
 }

@@ -15,9 +15,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR/Models/PhotoModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR/Models/PositionModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +47,10 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/RoleModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/UserModel.cs" root0="FORCE_HIGHLIGHTING" />
@@ -159,7 +164,7 @@
       <workItem from="1758045247917" duration="3093000" />
       <workItem from="1758090237962" duration="1385000" />
       <workItem from="1758100014838" duration="8185000" />
-      <workItem from="1761211775430" duration="226000" />
+      <workItem from="1761211775430" duration="647000" />
     </task>
     <servers />
   </component>
