@@ -189,20 +189,8 @@
         <!-- Type-specific fields -->
         @if (Model.ObstacleType.ToLower() == "powerline")
         {
-            @if (Model.Voltage.HasValue)
-            {
-                <div class="detail-card">
-                    <div class="detail-label">Voltage</div>
-                    <div class="detail-value">@Model.Voltage kV</div>
-                </div>
-            }
-            @if (Model.WireCount.HasValue)
-            {
-                <div class="detail-card">
-                    <div class="detail-label">Wire Count</div>
-                    <div class="detail-value">@Model.WireCount wires</div>
-                </div>
-            }
+           
+            
         }
         else if (Model.ObstacleType.ToLower() == "mast")
         {
