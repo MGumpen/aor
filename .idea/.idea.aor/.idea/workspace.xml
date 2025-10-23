@@ -15,12 +15,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
-
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916092706_InitialCreate.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916092706_InitialCreate.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916104209_AddAdviceDtoModel.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916104209_AddAdviceDtoModel.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/ErrorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/ErrorModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/Error.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/Error.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +31,13 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../bacit25" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -74,7 +80,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Marius/header",
+    "git-widget-placeholder": "databaseKobling",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
