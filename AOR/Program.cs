@@ -8,15 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
-// Database configuration - MySQL
-var connectionString = builder.Configuration.GetConnectionString("AorDb");
-builder.Services.AddDbContext<AorDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+// DB-oppsett: ENV (docker) først, så appsettings.*
+var cs =
+    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
 
-// CLEAN database configuration - no orchestration
-//builder.Services.AddDbContext<AorDbContext>(options =>
-  //  options.UseInMemoryDatabase("AOR_InMemory"));
-
+if (string.IsNullOrWhiteSpace(cs))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(o =>
+        o.UseInMemoryDatabase("AOR_InMemory"));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(o =>
+        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
+}
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -29,10 +35,20 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
+// Apply migrations automatically
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
-    db.Database.Migrate();  // oppretter DB og kjører alle migrasjoner
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
 }
 
 // Configure pipeline
