@@ -57,9 +57,6 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
-                            </li>
-                            <li class="nav-item">
                                
                                 @if (User.IsInRole("Registerforer"))
                                 {
@@ -75,8 +72,18 @@
                                 }
                             </li>
                             <li class="nav-item">
+                                @if (User.IsInRole("Crew"))
+                                {
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="MyReports">My reports</a>
+                                }
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="LogIn" asp-action="Logout">Log out</a>
                             </li>
+                            
                         }
                     </ul>
                 </div>
@@ -91,7 +98,7 @@
 
         
     <footer class="border-top footer fixed-bottom text-muted navbar-light bg-white box-shadow height: 16px">
-        <div class="container" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 10px;">
+        <div class="footer" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 10px;">
         <span>
             <span class="d-none d-md-inline">&copy; 2025 - AOR - Made in collaboration with Norsk Luftambulanse & Kartverket</span>
             <span class="d-md-none">&copy; 2025 - AOR</span>
