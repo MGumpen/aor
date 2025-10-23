@@ -8,21 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
-// DB-oppsett: ENV (docker) først, så appsettings.*
-var cs =
-    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+// CLEAN database configuration - no orchestration
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseInMemoryDatabase("AOR_InMemory"));
 
-if (string.IsNullOrWhiteSpace(cs))
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseInMemoryDatabase("AOR_InMemory"));
-}
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
-}
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
