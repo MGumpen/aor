@@ -10,6 +10,11 @@ public class ObstacleController : Controller
     private readonly ApplicationDbContext _db;
     public ObstacleController(ApplicationDbContext db) => _db = db;
 
+    public ObstacleController()
+    {
+        throw new NotImplementedException();
+    }
+
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
     {

@@ -4,7 +4,7 @@ namespace AOR.Models;
 
 public class OrgModel
 {
-    [Key]
+    [Key, Required, MaxLength(9)]
     public int OrgNr { get; set; }
 
     [Required, MaxLength(100)]
