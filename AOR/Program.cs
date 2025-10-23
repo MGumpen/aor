@@ -8,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<AorDbContext>(opt =>
+    opt.UseMySql(
+        builder.Configuration.GetConnectionString("AorDb"),
+        new MySqlServerVersion(new Version(11,4,0))));
+
 // CLEAN database configuration - no orchestration
 builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseInMemoryDatabase("AOR_InMemory"));
@@ -24,20 +29,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
-// Apply migrations automatically
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate();
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating the database.");
-    }
+    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
+    db.Database.Migrate();
 }
 
 // Configure pipeline
