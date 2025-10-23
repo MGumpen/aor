@@ -6,23 +6,23 @@ namespace AOR.Data;
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-
-    // DbSets for your entities
-    public DbSet<AdviceDto> Advices { get; set; }
+        : base(options) { }
+    public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!;
     
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        // Configure AdviceDto entity
-        modelBuilder.Entity<AdviceDto>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
-        });
-    }
+    public DbSet<UserModel> Users { get; set; } = default!;
+    
+    public DbSet<RoleModel> Roles { get; set; } = default!;
+    
+    public DbSet<UserRoleModel> UserRoles { get; set; } = default!;
+    
+    public DbSet<OrgModel> Orgs { get; set; } = default!;
+    
+    public DbSet<ReportModel> Reports { get; set; } = default!;
+    
+    public DbSet<ObstacleData> ObstacleTypes { get; set; } = default!;
+    
+    public DbSet<PositionModel> Positions { get; set; } = default!;
+    
+    public DbSet<PhotoModel> Photos { get; set; } = default!;
+    
 }
