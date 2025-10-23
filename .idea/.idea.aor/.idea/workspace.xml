@@ -15,12 +15,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916092706_InitialCreate.Designer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916092706_InitialCreate.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916104209_AddAdviceDtoModel.Designer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20250916104209_AddAdviceDtoModel.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/ErrorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/ErrorModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/Error.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/Error.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/SettingsViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/SettingsModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Settings/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Settings/Index.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
