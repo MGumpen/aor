@@ -8,9 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<AorDbContext>(opt =>
+    opt.UseMySql(
+        builder.Configuration.GetConnectionString("AorDb"),
+        new MySqlServerVersion(new Version(11,4,0))));
+
 // CLEAN database configuration - no orchestration
-builder.Services.AddDbContext<AorDbContext>(options =>
-    options.UseInMemoryDatabase("AOR_InMemory"));
+//builder.Services.AddDbContext<AorDbContext>(options =>
+  //  options.UseInMemoryDatabase("AOR_InMemory"));
 
 
 // AuthenificationS
@@ -23,6 +28,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 );
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
+    db.Database.Migrate();
+}
 
 // Configure pipeline
 if (!app.Environment.IsDevelopment())

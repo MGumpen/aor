@@ -15,18 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/PhotoModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/PositionModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/ReportModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/RoleModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/UserModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/ApplicationDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/ObstacleData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/ObstacleData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Obstacle/AllObstacles.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Obstacle/AllObstacles.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
