@@ -7,8 +7,6 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
-
-    public DbSet<AdviceDto> Advices { get; set; } = default!;
     public DbSet<ObstacleData> ObstacleDatas { get; set; } = default!;
     
     public DbSet<UserModel> Users { get; set; } = default!;
