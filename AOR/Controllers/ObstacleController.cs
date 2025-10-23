@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
+using AOR.Data;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace AOR.Controllers;
 
@@ -34,6 +37,9 @@ public class ObstacleController : Controller
         });
     }
 
+    private readonly AorDbContext _db;
+    public ObstacleController(AorDbContext db) => _db = db;
+    
     [HttpPost]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData)
     {
@@ -70,6 +76,16 @@ public class ObstacleController : Controller
         // Process other type-specific fields
         ProcessTypeSpecificFields(obstacleData);
 
+        if (ModelState.IsValid)
+        {
+            obstacleData.CreatedAt = DateTime.UtcNow;
+            _db.Obstacles.Add(obstacleData);
+            await _db.SaveChangesAsync();
+
+            // PRG-mønster
+            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
+        }
+        
         if (ModelState.IsValid)
         {
             obstacleData.CreatedAt = DateTime.UtcNow;
@@ -165,7 +181,9 @@ public class ObstacleController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        var obstacle = new ObstacleData();
+        var obstacle = await _db.Obstacles.FindAsync(id);
+        if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
     }
 }
+
