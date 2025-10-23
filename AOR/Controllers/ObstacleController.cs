@@ -1,11 +1,21 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AOR.Data;
 using AOR.Models;
 
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
+    private readonly ApplicationDbContext _context;
+    private readonly ILogger<ObstacleController> _logger;
+
+    public ObstacleController(ApplicationDbContext context, ILogger<ObstacleController> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
 
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
@@ -25,46 +35,71 @@ public class ObstacleController : Controller
     }
 
     [HttpPost]
-public async Task<IActionResult> DataForm(ObstacleData obstacleData)
-{
-    if (ModelState.IsValid)
+    public async Task<IActionResult> DataForm(ObstacleData obstacleData)
     {
-        obstacleData.CreatedAt = DateTime.UtcNow;
-        // Save to database
-        // _context.ObstacleData.Add(obstacleData);
-        // await _context.SaveChangesAsync();
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                obstacleData.CreatedAt = DateTime.UtcNow;
+                obstacleData.CreatedBy = User.Identity?.Name;
+
+                await _context.Obstacles.AddAsync(obstacleData);
+                await _context.SaveChangesAsync();
+                
+                _logger.LogInformation($"New obstacle created: {obstacleData.ObstacleName}");
+                return View("Overview", obstacleData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving obstacle");
+                ModelState.AddModelError("", "Det oppstod en feil under lagring av hindringen.");
+            }
+        }
         
-        return View("Overview", obstacleData); // Show single obstacle overview
+        // If validation failed or there was an error, preserve ViewBag data
+        ViewBag.ObstacleType = obstacleData.ObstacleType;
+        ViewBag.Coordinates = obstacleData.Coordinates;
+        ViewBag.PointCount = obstacleData.PointCount;
+        
+        return View(obstacleData);
     }
-    
-    // If validation failed, preserve ViewBag data
-    ViewBag.ObstacleType = obstacleData.ObstacleType;
-    ViewBag.Coordinates = obstacleData.Coordinates;
-    ViewBag.PointCount = obstacleData.PointCount;
-    
-    return View(obstacleData);
-}
 
-public async Task<IActionResult> AllObstacles()
-{
-    // Get all obstacles from database
-    // var obstacles = await _context.ObstacleData.OrderByDescending(x => x.CreatedAt).ToListAsync();
-    
-    // For now, return empty list - replace with database query
-    var obstacles = new List<ObstacleData>();
-    
-    return View(obstacles);
-}
+    public async Task<IActionResult> AllObstacles()
+    {
+        try
+        {
+            var obstacles = await _context.Obstacles
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+            
+            return View(obstacles);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching obstacles");
+            return View(new List<ObstacleData>());
+        }
+    }
 
-public async Task<IActionResult> Details(int id)
-{
-    // Get specific obstacle
-    // var obstacle = await _context.ObstacleData.FindAsync(id);
-    // if (obstacle == null) return NotFound();
-    
-    var obstacle = new ObstacleData(); // Replace with database query
-    return View("Overview", obstacle);
-}
+    public async Task<IActionResult> Details(int id)
+    {
+        try
+        {
+            var obstacle = await _context.Obstacles.FindAsync(id);
+            if (obstacle == null)
+            {
+                return NotFound();
+            }
+            
+            return View("Overview", obstacle);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching obstacle details");
+            return NotFound();
+        }
+    }
 
 }
 
