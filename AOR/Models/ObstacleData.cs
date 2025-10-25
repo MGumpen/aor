@@ -5,7 +5,7 @@ namespace AOR.Models
     public class ObstacleData : IValidatableObject
     {
         [Key]
-        public int Id { get; set; }
+        public int ObstacleId { get; set; }
         
         [Required(ErrorMessage = "Obstacle name is required")]
         [MaxLength(200)]

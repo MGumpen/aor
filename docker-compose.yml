@@ -31,10 +31,10 @@ services:
     container_name: aor-web
     restart: unless-stopped
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:8080
-      DISABLE_HTTPS_REDIRECT: "true"
-      ConnectionStrings__DefaultConnection: Server=mariadb;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;
+        ASPNETCORE_ENVIRONMENT: Production
+        ASPNETCORE_URLS: http://+:8080
+        DISABLE_HTTPS_REDIRECT: "true"
+        ConnectionStrings__AorDb: Server=mariadb;Port=3306;Database=aor_db;User=aor_user;Password=Test123;CharSet=utf8mb4;
     ports:
       - "5001:8080"
     depends_on:
