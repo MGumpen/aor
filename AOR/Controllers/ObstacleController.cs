@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 using AOR.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq;
 
 
 namespace AOR.Controllers;
@@ -162,9 +164,14 @@ public class ObstacleController : Controller
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> AllObstacles()
     {
-        var obstacles = new List<ObstacleData>();
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+
         return View(obstacles);
     }
 

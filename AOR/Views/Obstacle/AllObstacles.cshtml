@@ -1,4 +1,6 @@
 @model IEnumerable<AOR.Models.ObstacleData>
+@using System.Linq
+@using System
 
 @{
     ViewData["Title"] = "All Registered Obstacles";
@@ -177,27 +179,27 @@
     
     <div class="actions-bar">
         <div class="stats">
-            <div><strong>Total:</strong> @Model.Count() obstacles</div>
-            <div><strong>Power Lines:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "powerline")</div>
-            <div><strong>Masts:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "mast")</div>
-            <div><strong>Other:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "other")</div>
+            <div><strong>Total:</strong> @(Model?.Count() ?? 0) obstacles</div>
+            <div><strong>Power Lines:</strong> @(Model?.Count(x => string.Equals(x.ObstacleType, "powerline", StringComparison.OrdinalIgnoreCase)) ?? 0)</div>
+            <div><strong>Masts:</strong> @(Model?.Count(x => string.Equals(x.ObstacleType, "mast", StringComparison.OrdinalIgnoreCase)) ?? 0)</div>
+            <div><strong>Other:</strong> @(Model?.Count(x => string.Equals(x.ObstacleType, "other", StringComparison.OrdinalIgnoreCase)) ?? 0)</div>
         </div>
         <a href="/Crew" class="btn btn-primary">Add New Obstacle</a>
     </div>
     
-    @if (Model.Any())
+    @if (Model?.Any() == true)
     {
         <div class="obstacles-grid">
-            @foreach (var obstacle in Model.OrderByDescending(x => x.CreatedAt))
+            @foreach (var obstacle in (Model ?? Enumerable.Empty<AOR.Models.ObstacleData>()).OrderByDescending(x => x.CreatedAt))
             {
                 <div class="obstacle-card">
                     <div class="obstacle-header">
                         <h3 class="obstacle-name">@obstacle.ObstacleName</h3>
-                        <span class="obstacle-type-badge badge-@obstacle.ObstacleType.ToLower()">
-                            @obstacle.ObstacleType
+                        <span class="obstacle-type-badge badge-@((obstacle.ObstacleType ?? "other").ToLower())">
+                            @(string.IsNullOrWhiteSpace(obstacle.ObstacleType) ? "other" : obstacle.ObstacleType)
                         </span>
                     </div>
-                    
+
                     <div class="obstacle-details">
                         @if (obstacle.ObstacleHeight.HasValue)
                         {
@@ -206,26 +208,26 @@
                                 <div class="detail-value">@obstacle.ObstacleHeight.Value m</div>
                             </div>
                         }
-                        
+
                         <div class="detail-item">
                             <div class="detail-label">Points:</div>
                             <div class="detail-value">@obstacle.PointCount</div>
                         </div>
-                        
+
                         <div class="detail-item">
                             <div class="detail-label">Registered:</div>
                             <div class="detail-value">@obstacle.CreatedAt.ToString("dd.MM.yyyy")</div>
                         </div>
-                        
-                        @if (obstacle.ObstacleType.ToLower() == "powerline" && obstacle.Voltage.HasValue)
+
+                        @if ((obstacle.ObstacleType ?? "").Equals("powerline", StringComparison.OrdinalIgnoreCase) && obstacle.Voltage.HasValue)
                         {
                             <div class="detail-item">
                                 <div class="detail-label">Voltage:</div>
                                 <div class="detail-value">@obstacle.Voltage kV</div>
                             </div>
                         }
-                        
-                        @if (obstacle.ObstacleType.ToLower() == "mast" && !string.IsNullOrEmpty(obstacle.MastType))
+
+                        @if ((obstacle.ObstacleType ?? "").Equals("mast", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(obstacle.MastType))
                         {
                             <div class="detail-item">
                                 <div class="detail-label">Type:</div>
