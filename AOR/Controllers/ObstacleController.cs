@@ -11,10 +11,10 @@ namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly AorDbContext _context;
     private readonly ILogger<ObstacleController> _logger;
 
-    public ObstacleController(ApplicationDbContext context, ILogger<ObstacleController> logger)
+    public ObstacleController(AorDbContext context, ILogger<ObstacleController> logger)
     {
         _context = context;
         _logger = logger;

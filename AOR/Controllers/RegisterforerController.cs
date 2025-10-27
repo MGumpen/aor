@@ -10,9 +10,9 @@ namespace AOR.Controllers;
 public class RegisterforerController : Controller
 {
 private readonly ILogger<RegisterforerController> _logger;
-private readonly ApplicationDbContext _context;
+private readonly AorDbContext _context;
 
-public RegisterforerController(ILogger<RegisterforerController> logger, ApplicationDbContext context)
+public RegisterforerController(ILogger<RegisterforerController> logger, AorDbContext context)
 {
     _logger = logger;
     _context = context;
