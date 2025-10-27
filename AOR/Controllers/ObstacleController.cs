@@ -3,19 +3,38 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
-using AOR.Data;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
-    private readonly AorDbContext _context;
+    private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
+
+    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
 
     
 
+    
+    [HttpGet("/Obstacle")]
+    public IActionResult Index() => RedirectToAction(nameof(All));
+
+    [HttpGet("/Obstacle/All")]
+    public async Task<IActionResult> All()
+    {
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+        
+        return View("AllObstacles", obstacles);
+    }
+    
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
     {
@@ -33,8 +52,6 @@ public class ObstacleController : Controller
         });
     }
 
-    private readonly AorDbContext _db;
-    public ObstacleController(AorDbContext db) => _db = db;
     
     [HttpPost]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData)
@@ -169,9 +186,13 @@ public class ObstacleController : Controller
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> AllObstacles()
     {
-        var obstacles = new List<ObstacleData>();
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
         return View(obstacles);
     }
 
@@ -181,5 +202,7 @@ public class ObstacleController : Controller
         if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
     }
+    
+    
 }
 
