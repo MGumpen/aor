@@ -13,10 +13,6 @@ var connectionString = builder.Configuration.GetConnectionString("AorDb");
 builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// CLEAN database configuration - no orchestration
-builder.Services.AddDbContext<AorDbContext>(options =>
-    options.UseInMemoryDatabase("AOR_InMemory"));
-
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
