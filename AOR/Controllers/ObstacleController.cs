@@ -4,19 +4,37 @@ using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
 
+
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
 
-    public ObstacleController(ApplicationDbContext context, ILogger<ObstacleController> logger)
+    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger)
     {
-        _context = context;
+        _db = db;
         _logger = logger;
     }
 
+    
+
+    
+    [HttpGet("/Obstacle")]
+    public IActionResult Index() => RedirectToAction(nameof(All));
+
+    [HttpGet("/Obstacle/All")]
+    public async Task<IActionResult> All()
+    {
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+        
+        return View("AllObstacles", obstacles);
+    }
+    
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
     {
@@ -34,6 +52,7 @@ public class ObstacleController : Controller
         });
     }
 
+    
     [HttpPost]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData)
     {
@@ -70,6 +89,16 @@ public class ObstacleController : Controller
         // Process other type-specific fields
         ProcessTypeSpecificFields(obstacleData);
 
+        if (ModelState.IsValid)
+        {
+            obstacleData.CreatedAt = DateTime.UtcNow;
+            _db.Obstacles.Add(obstacleData);
+            await _db.SaveChangesAsync();
+
+            // PRG-mønster
+            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
+        }
+        
         if (ModelState.IsValid)
         {
             obstacleData.CreatedAt = DateTime.UtcNow;
@@ -157,15 +186,23 @@ public class ObstacleController : Controller
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> AllObstacles()
     {
-        var obstacles = new List<ObstacleData>();
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
         return View(obstacles);
     }
 
     public async Task<IActionResult> Details(int id)
     {
-        var obstacle = new ObstacleData();
+        var obstacle = await _db.Obstacles.FindAsync(id);
+        if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
     }
+    
+    
 }
+

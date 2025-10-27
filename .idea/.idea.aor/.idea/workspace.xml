@@ -15,12 +15,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
-
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +31,13 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../bacit25" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -48,6 +54,18 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/RoleModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/UserModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bf9021a960b74107a7e141aa06bc9d8a0a53c929178c2fb95b1597be8af8dc/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -74,7 +92,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Marius/header",
+    "git-widget-placeholder": "databaseKobling",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
