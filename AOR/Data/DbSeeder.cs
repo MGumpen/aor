@@ -11,7 +11,6 @@ public static class DbSeeder
         
         using var scope = sp.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
-        await db.Database.MigrateAsync();
 
         // Orgs
         if (!await db.Organizations.AnyAsync())
@@ -39,9 +38,9 @@ public static class DbSeeder
         if (!await db.Users.AnyAsync())
         {
             db.Users.AddRange(
-                new UserModel { FirstName = "Kari", LastName = "Nordmann", Email = "admin@test.no", OrgNr = 123456789, PasswordHash = Sha256("Test123") },
-                new UserModel { FirstName = "Per",  LastName = "Luft",     Email = "reg@test.no", OrgNr = 234567891, PasswordHash = Sha256("Test123") },
-                new UserModel { FirstName = "Ola",  LastName = "Pilot",    Email = "crew@test.no", OrgNr = 345678912, PasswordHash = Sha256("Test123") }
+                new UserModel { FirstName = "Kari", LastName = "Nordmann", Email = "admin@test.no", OrgNr = 123456789, PasswordHash = HashPassword("Test123") },
+                new UserModel { FirstName = "Per",  LastName = "Luft",     Email = "reg@test.no", OrgNr = 234567891, PasswordHash = HashPassword("Test123") },
+                new UserModel { FirstName = "Ola",  LastName = "Pilot",    Email = "crew@test.no", OrgNr = 345678912, PasswordHash = HashPassword("Test123") }
             );
             await db.SaveChangesAsync();
 
@@ -62,9 +61,8 @@ public static class DbSeeder
         }
     }
 
-    private static string Sha256(string s)
+    private static string HashPassword(string password)
     {
-        using var sha = System.Security.Cryptography.SHA256.Create();
-        return Convert.ToBase64String(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(s)));
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }

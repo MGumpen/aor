@@ -9,10 +9,8 @@ public class UserRoleModel
     [Key] 
     public int UserRoleId { get; set; }            // enkel PK (nødvendig uten Fluent)
 
-    [ForeignKey(nameof(UserId))] 
     public int UserId { get; set; }
 
-    [ForeignKey(nameof(RoleId))] 
     public int RoleId { get; set; }
     
 }

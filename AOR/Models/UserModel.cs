@@ -22,8 +22,8 @@ public class UserModel
     public string PasswordHash { get; set; } = string.Empty;
 
     // FK -> Organization (valgfri)
-    [ForeignKey(nameof(OrgNr))] 
     public int? OrgNr { get; set; }
+    [ForeignKey(nameof(OrgNr))]
     public OrgModel? Organization { get; set; }
 
     // mange-til-mange via koblingstabell
