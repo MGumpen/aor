@@ -15,27 +15,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/jsLibraryMappings 2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 2.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest 2.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest 2.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest 2.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest 2.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Data/DbSeeder.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251023130057_InitialCreate.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.Designer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251023130057_InitialCreate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029120527_Seed_TestUsers_Roles_Orgs.Designer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029120527_Seed_TestUsers_Roles_Orgs.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/AorDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/RoleModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/RoleModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/UserModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/UserModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
