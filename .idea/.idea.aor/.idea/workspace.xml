@@ -16,10 +16,7 @@
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest 2.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest 2.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest 2.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
