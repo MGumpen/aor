@@ -18,12 +18,6 @@ public class ObstacleController : Controller
         _logger = logger;
     }
 
-    public ObstacleController()
-    {
-        throw new NotImplementedException();
-    }
-
-
     [HttpGet("/Obstacle")]
     public IActionResult Index() => RedirectToAction(nameof(All));
 
