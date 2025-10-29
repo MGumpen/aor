@@ -1,6 +1,6 @@
 namespace AOR.Models
 {
-    public class SettingsViewModel
+    public class SettingsModel
     {
         public string Language { get; set; } = "en";
         public string Theme { get; set; } = "light";

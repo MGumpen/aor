@@ -1,8 +1,41 @@
+@model IEnumerable<AOR.Models.ObstacleData>
 @{
     ViewData["Title"] = "Registerfører - Forside";
     Layout = "_Layout";
 }
 
 <h1>Velkommen, registerfører</h1>
-    <p>Denne siden er kun tilgjengelig for brukere med rollen "Registerfører".</p>
+<p>Denne siden er kun tilgjengelig for brukere med rollen "Registerfører".</p>
+
+<div class="container mt-4">
+    <h2>Registrerte hindringer</h2>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Type</th>
+                <th>Høyde</th>
+                <th>Opprettet</th>
+                <th>Detaljer</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obstacle in Model)
+            {
+                <tr>
+                    <td>@obstacle.ObstacleName</td>
+                    <td>@obstacle.ObstacleType</td>
+                    <td>@(obstacle.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
+                    <td>@obstacle.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm">
+                            Vis detaljer
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 

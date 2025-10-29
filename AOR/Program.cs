@@ -8,21 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
-// DB-oppsett: ENV (docker) først, så appsettings.*
-var cs =
-    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+// Database configuration - MySQL
+var connectionString = builder.Configuration.GetConnectionString("AorDb");
+builder.Services.AddDbContext<AorDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-if (string.IsNullOrWhiteSpace(cs))
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseInMemoryDatabase("AOR_InMemory"));
-}
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
-}
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -34,6 +24,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 );
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
+    db.Database.Migrate();  // oppretter DB og kjører alle migrasjoner
+}
 
 // Configure pipeline
 if (!app.Environment.IsDevelopment())
