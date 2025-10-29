@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 [Index(nameof(Email), IsUnique = true)]
 public class UserModel
 {
-    [Key] public int UserId { get; set; }
+    [Key] 
+    public int UserId { get; set; }
+    
     [Required, MaxLength(50)] 
     public string FirstName { get; set; } = string.Empty;
     
@@ -20,8 +22,9 @@ public class UserModel
     public string PasswordHash { get; set; } = string.Empty;
 
     // FK -> Organization (valgfri)
+    [ForeignKey(nameof(OrgNr))] 
     public int? OrgNr { get; set; }
-    [ForeignKey(nameof(OrgNr))] public OrgModel? Organization { get; set; }
+    public OrgModel? Organization { get; set; }
 
     // mange-til-mange via koblingstabell
     public ICollection<UserRoleModel> UserRoles { get; set; } = new List<UserRoleModel>();

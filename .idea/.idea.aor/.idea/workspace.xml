@@ -15,12 +15,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/jsLibraryMappings 2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 2.csproj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest 2.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest 2.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest 2.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest 2.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/AOR/Data/DbSeeder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251023130057_InitialCreate.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.Designer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251023130057_InitialCreate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029120527_Seed_TestUsers_Roles_Orgs.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029120527_Seed_TestUsers_Roles_Orgs.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Migrations/AorDbContextModelSnapshot.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/RoleModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/RoleModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/UserModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/UserModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +69,15 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Data/DbSeeder.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
@@ -62,6 +86,12 @@
     <setting file="file://$PROJECT_DIR$/AOR/Models/RoleModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/UserModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
@@ -82,26 +112,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.AOR: http.executor": "Run",
-    ".NET Launch Settings Profile.AOR: https.executor": "Run",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Docker.AOR/Dockerfile.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "databaseKobling",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.AOR: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.AOR: https.executor&quot;: &quot;Run&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Docker.AOR/Dockerfile.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Marius/testbrukere&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Launch Settings Profile.AOR: http">
     <configuration name="AOR: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/AOR/AOR.csproj" />
@@ -175,6 +205,7 @@
       <workItem from="1758045247917" duration="3093000" />
       <workItem from="1758090237962" duration="1385000" />
       <workItem from="1758100014838" duration="8185000" />
+      <workItem from="1761748620570" duration="661000" />
     </task>
     <servers />
   </component>

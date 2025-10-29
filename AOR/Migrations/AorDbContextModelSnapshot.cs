@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    partial class AorDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -121,37 +121,17 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.OrgModel", b =>
                 {
                     b.Property<int>("OrgNr")
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(9)
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("OrgNr"));
-
                     b.Property<string>("OrgName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("OrgNr");
 
                     b.ToTable("Organizations");
-
-                    b.HasData(
-                        new
-                        {
-                            OrgNr = 123456789,
-                            OrgName = "Norsk Luftambulanse"
-                        },
-                        new
-                        {
-                            OrgNr = 234567891,
-                            OrgName = "Luftforsvaret"
-                        },
-                        new
-                        {
-                            OrgNr = 345678912,
-                            OrgName = "Politiets helikoptertjeneste"
-                        });
                 });
 
             modelBuilder.Entity("AOR.Models.PhotoModel", b =>
@@ -228,36 +208,16 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.RoleModel", b =>
                 {
                     b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            RoleName = "Admin"
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            RoleName = "Registerfører"
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            RoleName = "Crew"
-                        });
                 });
 
             modelBuilder.Entity("UserModel", b =>
@@ -286,6 +246,9 @@ namespace AOR.Migrations
                     b.Property<int?>("OrgNr")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OrganizationOrgNr")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -296,79 +259,36 @@ namespace AOR.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("OrgNr");
+                    b.HasIndex("OrganizationOrgNr");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Email = "admin@uia.no",
-                            FirstName = "Kari",
-                            LastName = "Nordmann",
-                            OrgNr = 1,
-                            PasswordHash = "2bX1jws4GYKTlxhloUB09Z66PoJZW+y+hq5R8dnx9l4="
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Email = "reg@uia.no",
-                            FirstName = "Per",
-                            LastName = "Register",
-                            OrgNr = 2,
-                            PasswordHash = "2bX1jws4GYKTlxhloUB09Z66PoJZW+y+hq5R8dnx9l4="
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            Email = "pilot@uia.no",
-                            FirstName = "Ola",
-                            LastName = "Pilot",
-                            OrgNr = 3,
-                            PasswordHash = "2bX1jws4GYKTlxhloUB09Z66PoJZW+y+hq5R8dnx9l4="
-                        });
                 });
 
             modelBuilder.Entity("UserRoleModel", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserRoleId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserRoleId"));
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.Property<int?>("UserModelUserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("RoleId");
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("UserModelUserId");
 
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1,
-                            Id = 0
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            RoleId = 2,
-                            Id = 0
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            RoleId = 3,
-                            Id = 0
-                        });
                 });
 
             modelBuilder.Entity("AOR.Models.ObstacleData", b =>
@@ -409,28 +329,16 @@ namespace AOR.Migrations
                 {
                     b.HasOne("AOR.Models.OrgModel", "Organization")
                         .WithMany("Users")
-                        .HasForeignKey("OrgNr");
+                        .HasForeignKey("OrganizationOrgNr");
 
                     b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("UserRoleModel", b =>
                 {
-                    b.HasOne("AOR.Models.RoleModel", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UserModel", "User")
+                    b.HasOne("UserModel", null)
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
+                        .HasForeignKey("UserModelUserId");
                 });
 
             modelBuilder.Entity("AOR.Models.ObstacleTypeModel", b =>
