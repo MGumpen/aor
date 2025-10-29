@@ -361,7 +361,7 @@
     /* Notification - responsive */
     .drawing-notification {
         position: absolute;
-        bottom: 95px;
+        bottom: 150px;
         left: 50%;
         transform: translateX(-50%);
         background: rgba(255, 255, 255, 0.95);
@@ -664,12 +664,10 @@
         const lat = latlng.lat.toFixed(5);
         const lng = latlng.lng.toFixed(5);
         
-        let actionsHtml = `<button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>`;
-    if (drawingMode !== 'powerline') {
-        actionsHtml = `
-            <button class="point-btn accept" onclick="confirmPoint('${pointId}')" title="Confirm">✓</button>
-            ${actionsHtml}
-        `;
+        // Only show action buttons for 'powerline', none for 'mast' or 'other'
+    let actionsHtml = '';
+    if (drawingMode === 'powerline') {
+        actionsHtml = `<button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>`;
     }
 
     pointItem.innerHTML = `
