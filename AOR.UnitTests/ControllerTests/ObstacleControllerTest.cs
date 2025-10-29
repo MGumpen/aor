@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AOR.Controllers;
 using AOR.Data;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using System.Collections.Generic;
 
 namespace AOR.UnitTests.Controllers
 {
