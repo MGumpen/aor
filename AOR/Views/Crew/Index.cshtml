@@ -574,6 +574,10 @@
     function addPoint(latlng) {
         if (!drawingMode) return;
         
+        if ((drawingMode === 'mast' || drawingMode === 'other') && markers.length >= 1) {
+        alert('Only one point can be added for Mast or Other.');
+        return;
+    }
         pointCounter++;
         const pointId = `point-${pointCounter}`;
         
@@ -660,15 +664,22 @@
         const lat = latlng.lat.toFixed(5);
         const lng = latlng.lng.toFixed(5);
         
-        pointItem.innerHTML = `
-            <div class="point-header">
-                <div class="point-number">${number}</div>
-                <div class="point-actions">
-                    <button class="point-btn accept" onclick="confirmPoint('${pointId}')" title="Confirm">✓</button>
-                    <button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>
-                </div>
+        let actionsHtml = `<button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>`;
+    if (drawingMode !== 'powerline') {
+        actionsHtml = `
+            <button class="point-btn accept" onclick="confirmPoint('${pointId}')" title="Confirm">✓</button>
+            ${actionsHtml}
+        `;
+    }
+
+    pointItem.innerHTML = `
+        <div class="point-header">
+            <div class="point-number">${number}</div>
+            <div class="point-actions">
+                ${actionsHtml}
             </div>
-            <div class="point-coords">${lat}, ${lng}</div>
+        </div>
+        <div class="point-coords">${lat}, ${lng}</div>
         `;
         
         pointsList.appendChild(pointItem);
@@ -737,10 +748,14 @@
     }
 
     function confirmDrawing() {
-        if (currentDrawing.length === 0) {
-            alert('Please add at least one point');
-            return;
-        }
+        if ((drawingMode === 'powerline' && currentDrawing.length < 2) ||
+        ((drawingMode === 'mast' || drawingMode === 'other') && currentDrawing.length < 1)) {
+        alert(
+            drawingMode === 'powerline' ? 'Please add at least two points for a Power Line.'
+                                        : 'Please add a point.'
+        );
+        return;
+    }
 
         const obstacleData = {
             type: drawingMode,
