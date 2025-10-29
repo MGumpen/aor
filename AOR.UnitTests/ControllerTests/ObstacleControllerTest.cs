@@ -1,9 +1,12 @@
 using System.Threading.Tasks;
 using AOR.Controllers;
+using AOR.Data;
 using AOR.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using System.Collections.Generic;
 
@@ -20,15 +23,48 @@ namespace AOR.UnitTests.Controllers
 
     public class ObstacleControllerTests
     {
+        private AorDbContext CreateInMemoryDbContext()
+        {
+            var options = new DbContextOptionsBuilder<AorDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            
+            return new AorDbContext(options);
+        }
+
+        private ILogger<ObstacleController> CreateLogger()
+        {
+            return new LoggerFactory().CreateLogger<ObstacleController>();
+        }
+
         [Fact]
-        public async Task DataForm_Post_ValidModel_Returns_Overview_And_Sets_CreatedAt()
+        public async Task DataForm_Post_ValidModel_Returns_RedirectToDetails_And_Sets_CreatedAt()
         {
             // Arrange
-            var controller = new ObstacleController
+            using var db = CreateInMemoryDbContext();
+            var logger = CreateLogger();
+            var controller = new ObstacleController(db, logger);
+            
+            // Setup HttpContext with form data
+            var httpContext = new DefaultHttpContext();
+            var formCollection = new FormCollection(new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>
             {
-                // Setter TempData manuelt for å slippe DI/ITempDataDictionaryFactory
-                TempData = new TempDataDictionary(new DefaultHttpContext(), new FakeTempDataProvider())
+                { "heightUnit", "meters" },
+                { "heightMeters", "" },
+                { "heightFeet", "" }
+            });
+            httpContext.Request.ContentType = "application/x-www-form-urlencoded";
+            
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
             };
+            
+            // Mock the Request.Form to return our formCollection
+            httpContext.Request.Form = formCollection;
+            
+            // Setup TempData
+            controller.TempData = new TempDataDictionary(httpContext, new FakeTempDataProvider());
 
             var input = new ObstacleData
             {
@@ -39,15 +75,18 @@ namespace AOR.UnitTests.Controllers
             };
 
             // Act
-            var result = await controller.DataForm(input) as ViewResult;
+            var result = await controller.DataForm(input);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("Overview", result!.ViewName);
-
-            var model = Assert.IsType<ObstacleData>(result.Model);
-            Assert.Equal("Test obstacle", model.ObstacleName);
-            Assert.NotEqual(default, model.CreatedAt); // ble satt i controlleren
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal(nameof(ObstacleController.Details), redirectResult.ActionName);
+            
+            // Verify that obstacle was saved to database with CreatedAt set
+            var savedObstacle = await db.Obstacles.FirstOrDefaultAsync();
+            Assert.NotNull(savedObstacle);
+            Assert.Equal("Test obstacle", savedObstacle!.ObstacleName);
+            Assert.NotEqual(default, savedObstacle.CreatedAt); // ble satt i controlleren
         }
     }
 }
