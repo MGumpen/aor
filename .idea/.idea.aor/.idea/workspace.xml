@@ -15,9 +15,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AOR/Data/User.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/DbSeeder.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.Designer.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251029143345_InitialCreate.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/AorDbContextModelSnapshot.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,35 +58,48 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/ApplicationDbContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Data/DbSeeder.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/ApplicationDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/AorDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/AorDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/AorDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Data/AorDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251029143345_InitialCreate.Designer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251029143345_InitialCreate.Designer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251029143345_InitialCreate.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251029143345_InitialCreate.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251030093310_InitialCreate.Designer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251030093310_InitialCreate.Designer.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251030093310_InitialCreate.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/20251030093310_InitialCreate.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/AorDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Migrations/AorDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/OrgModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/OrgModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/OrgModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/OrgModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/RoleModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/RoleModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/RoleModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/RoleModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/RoleModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/UserModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserRoleModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/UserRoleModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserRoleModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserRoleModel.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/marius/Documents/Prosjekter/aor/AOR/Models/UserRoleModel.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bf9021a960b74107a7e141aa06bc9d8a0a53c929178c2fb95b1597be8af8dc/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e52a70dae11948fa5bfb33d03fd2e7d9b6ece182647aa4d9b1221413ac57dc7/IdentityUser.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -104,7 +124,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Marius/testbrukere&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Marius/Identity&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
