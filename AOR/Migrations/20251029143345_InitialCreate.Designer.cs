@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    [Migration("20251023130057_InitialCreate")]
+    [Migration("20251029143345_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -124,15 +124,13 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.OrgModel", b =>
                 {
                     b.Property<int>("OrgNr")
-                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(9)
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("OrgNr"));
 
                     b.Property<string>("OrgName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(128)
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("OrgNr");
 
@@ -213,15 +211,12 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.RoleModel", b =>
                 {
                     b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RoleId"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("RoleId");
 
@@ -254,6 +249,9 @@ namespace AOR.Migrations
                     b.Property<int?>("OrgNr")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OrganizationOrgNr")
+                        .HasColumnType("int");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -264,18 +262,18 @@ namespace AOR.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("OrgNr");
+                    b.HasIndex("OrganizationOrgNr");
 
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("UserRoleModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("UserRoleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserRoleId"));
 
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
@@ -283,9 +281,12 @@ namespace AOR.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int?>("UserModelUserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("RoleId");
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("UserModelUserId");
 
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
@@ -331,28 +332,16 @@ namespace AOR.Migrations
                 {
                     b.HasOne("AOR.Models.OrgModel", "Organization")
                         .WithMany("Users")
-                        .HasForeignKey("OrgNr");
+                        .HasForeignKey("OrganizationOrgNr");
 
                     b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("UserRoleModel", b =>
                 {
-                    b.HasOne("AOR.Models.RoleModel", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("UserModel", "User")
+                    b.HasOne("UserModel", null)
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
+                        .HasForeignKey("UserModelUserId");
                 });
 
             modelBuilder.Entity("AOR.Models.ObstacleTypeModel", b =>

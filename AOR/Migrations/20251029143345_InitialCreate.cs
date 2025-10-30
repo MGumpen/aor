@@ -12,6 +12,9 @@ namespace AOR.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "ObstacleTypes",
                 columns: table => new
@@ -31,9 +34,8 @@ namespace AOR.Migrations
                 name: "Organizations",
                 columns: table => new
                 {
-                    OrgNr = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    OrgName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                    OrgNr = table.Column<int>(type: "int", maxLength: 9, nullable: false),
+                    OrgName = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -76,9 +78,8 @@ namespace AOR.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    RoleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleName = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    RoleName = table.Column<string>(type: "varchar(64)", maxLength: 64, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -101,14 +102,15 @@ namespace AOR.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PasswordHash = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OrgNr = table.Column<int>(type: "int", nullable: true)
+                    OrgNr = table.Column<int>(type: "int", nullable: true),
+                    OrganizationOrgNr = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
                     table.ForeignKey(
-                        name: "FK_Users_Organizations_OrgNr",
-                        column: x => x.OrgNr,
+                        name: "FK_Users_Organizations_OrganizationOrgNr",
+                        column: x => x.OrganizationOrgNr,
                         principalTable: "Organizations",
                         principalColumn: "OrgNr");
                 })
@@ -171,26 +173,20 @@ namespace AOR.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    UserRoleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    UserModelUserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                    table.PrimaryKey("PK_UserRoles", x => x.UserRoleId);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
-                        principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserRoles_Users_UserModelUserId",
+                        column: x => x.UserModelUserId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserId");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -258,15 +254,15 @@ namespace AOR.Migrations
                 columns: new[] { "UserId", "ObstacleId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
-                table: "UserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UserId_RoleId",
                 table: "UserRoles",
                 columns: new[] { "UserId", "RoleId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_UserModelUserId",
+                table: "UserRoles",
+                column: "UserModelUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -275,9 +271,9 @@ namespace AOR.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_OrgNr",
+                name: "IX_Users_OrganizationOrgNr",
                 table: "Users",
-                column: "OrgNr");
+                column: "OrganizationOrgNr");
         }
 
         /// <inheritdoc />
@@ -287,13 +283,13 @@ namespace AOR.Migrations
                 name: "Reports");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "UserRoles");
 
             migrationBuilder.DropTable(
                 name: "Obstacles");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
@@ -309,25 +305,6 @@ namespace AOR.Migrations
 
             migrationBuilder.DropTable(
                 name: "Organizations");
-
-            migrationBuilder.CreateTable(
-                name: "Advices",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Description = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Title = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advices", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
         }
     }
 }

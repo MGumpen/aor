@@ -18,9 +18,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-
       Solution_Name: AOR.sln
-      Test_Project_Path: AOR.Tests/AOR.Tests.csproj
       Wap_Project_Directory: AOR.Package
       Wap_Project_Path: AOR.Package/AOR.Package.wapproj
 
@@ -48,7 +46,7 @@ jobs:
       - name: Restore
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           SLN=$(git ls-files "*.sln" | head -n 1 || true)
           if [ -n "$SLN" ]; then
             echo "Fant løsning: $SLN"
@@ -64,26 +62,31 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           SLN=$(git ls-files "*.sln" | head -n 1 || true)
           if [ -n "$SLN" ]; then
-            dotnet build "$SLN" -c Release --no-restore
+            dotnet build "$SLN" -c ${{ matrix.configuration }} --no-restore
           else
             for p in $(git ls-files "*.csproj"); do
               echo "Build $p"
-              dotnet build "$p" -c Release --no-restore
+              dotnet build "$p" -c ${{ matrix.configuration }} --no-restore
             done
           fi
 
       - name: Test (only if tests exist)
         shell: bash
         run: |
-          set -e
-          TESTS=$(git ls-files "*Tests/*.csproj" "*Test/*.csproj" | wc -l)
-          if [ "$TESTS" -gt 0 ]; then
-            for t in $(git ls-files "*Tests/*.csproj" "*Test/*.csproj"); do
-              echo "Test $t"
-              dotnet test "$t" -c Release --no-build --verbosity normal
+          set -euo pipefail
+          # Collect test project paths that actually end with .csproj
+          mapfile -t TEST_PROJECTS < <(git ls-files -- '*Tests/*.csproj' '*Test/*.csproj' || true)
+          if [ "${#TEST_PROJECTS[@]}" -gt 0 ]; then
+            for t in "${TEST_PROJECTS[@]}"; do
+              if [[ "$t" != *.csproj ]]; then
+                echo "Skipping non-csproj entry: $t"
+                continue
+              fi
+              echo "Running tests in: $t"
+              dotnet test "$t" -c ${{ matrix.configuration }} --no-build --verbosity normal
             done
           else
             echo "Ingen testprosjekter funnet – hopper over test."

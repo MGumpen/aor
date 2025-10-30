@@ -17,9 +17,6 @@ public class ObstacleController : Controller
         _db = db;
         _logger = logger;
     }
-
-    
-
     
     [HttpGet("/Obstacle")]
     public IActionResult Index() => RedirectToAction(nameof(All));
