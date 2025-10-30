@@ -66,9 +66,13 @@ using (var scope = app.Services.CreateScope())
             logger.LogInformation("InMemory provider detected; skipping migrations.");
         }
     }
-    catch (Exception ex)
+    catch (DbUpdateException ex)
     {
-        logger.LogError(ex, "Database migration failed; continuing without applying migrations.");
+        logger.LogError(ex, "Database migration failed due to a database update error; continuing without applying migrations.");
+    }
+    catch (InvalidOperationException ex)
+    {
+        logger.LogError(ex, "Database migration failed due to an invalid operation; continuing without applying migrations.");
     }
 
     // Seed test users and roles
@@ -76,9 +80,13 @@ using (var scope = app.Services.CreateScope())
     {
         await AorDbSeeder.SeedAsync(scope.ServiceProvider, logger);
     }
-    catch (Exception ex)
+    catch (DbUpdateException ex)
     {
-        logger.LogError(ex, "Seeding failed");
+        logger.LogError(ex, "Seeding failed due to a database update error");
+    }
+    catch (InvalidOperationException ex)
+    {
+        logger.LogError(ex, "Seeding failed due to an invalid operation");
     }
 }
 
