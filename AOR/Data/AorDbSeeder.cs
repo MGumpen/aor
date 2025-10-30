@@ -43,6 +43,7 @@ public static class AorDbSeeder
         }
 
         // Roles to ensure
+        // Legg også til 'Registerforer' slik appen leter etter dette rollnavnet
         var roles = new[] { "Crew", "Admin", "Registrar" };
         foreach (var role in roles)
         {
@@ -67,9 +68,10 @@ public static class AorDbSeeder
         // Test users
         var testUsers = new[]
         {
-            new { Email = "crew@test.no", Password = "Test123", Role = "Crew", FirstName = "Kari", LastName = "Crew" },
-            new { Email = "admin@test.no", Password = "Test123", Role = "Admin", FirstName = "Ola", LastName = "Admin" },
-            new { Email = "registrar@test.no", Password = "Test123", Role = "Registrar", FirstName = "Yonas", LastName = "Registrar" }
+            // Bruk sterkere passord som tilfredsstiller standard Identity-policy
+            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew" },
+            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin" },
+            new { Email = "registrar@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Yonas", LastName = "Registrar" }
         };
 
         foreach (var tu in testUsers)

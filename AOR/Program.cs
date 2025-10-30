@@ -34,7 +34,7 @@ using (var scope = app.Services.CreateScope())
     var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
 
     await db.Database.MigrateAsync();                 // <- migrate
-  //  await AOR.Data.DbSeeder.SeedAsync(sp);            // <- SEED (med await)
+    await AOR.Data.AorDbSeeder.SeedAsync();            // <- SEED (med await)
 }
 
 
