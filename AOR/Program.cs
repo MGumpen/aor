@@ -8,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddIdentityCore<User>()
+    .AddEntityFrameworkStores<AorDbContext>();
+
 // Database configuration - MySQL
 var connectionString = builder.Configuration.GetConnectionString("AorDb");
 builder.Services.AddDbContext<AorDbContext>(options =>
@@ -31,7 +34,7 @@ using (var scope = app.Services.CreateScope())
     var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
 
     await db.Database.MigrateAsync();                 // <- migrate
-    await AOR.Data.DbSeeder.SeedAsync(sp);            // <- SEED (med await)
+  //  await AOR.Data.DbSeeder.SeedAsync(sp);            // <- SEED (med await)
 }
 
 
