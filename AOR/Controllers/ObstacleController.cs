@@ -52,7 +52,17 @@ public class ObstacleController : Controller
         });
     }
 
-    
+[HttpGet("/Crew/MyReports")]
+public async Task<IActionResult> MyReports()
+{
+    var obstacles = await _db.Obstacles
+        .OrderByDescending(o => o.CreatedAt)
+        .ToListAsync();
+
+    return View("MyReports", obstacles);
+}
+
+
     [HttpPost]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData)
     {
