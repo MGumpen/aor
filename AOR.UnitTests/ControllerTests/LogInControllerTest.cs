@@ -76,7 +76,7 @@ namespace AOR.UnitTests.ControllerTests
 
         // ✅ Test 1: Gyldig bruker redirecter til riktig side
         [Fact]
-        public async Task Index_Post_ValidRegisterforer_RedirectsToRegisterforerIndex()
+        public async Task Index_Post_ValidRegistrar_RedirectsToRegistrarIndex()
         {
             // Arrange
             var controller = CreateController();
@@ -92,7 +92,7 @@ namespace AOR.UnitTests.ControllerTests
             // Assert
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirect.ActionName);
-            Assert.Equal("Registerforer", redirect.ControllerName);
+            Assert.Equal("Registrar", redirect.ControllerName);
         }
 
         // ✅ Test 2: Feil brukernavn eller passord gir View med feilmelding

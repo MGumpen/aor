@@ -25,9 +25,9 @@
                     
                     if (User?.Identity?.IsAuthenticated == true)
                     {
-                        if (User.IsInRole("Registerforer"))
+                        if (User.IsInRole("Registrar"))
                         {
-                            homeController = "Registerforer";
+                            homeController = "Registrar";
                         }
                         else if (User.IsInRole("Crew"))
                         {
@@ -58,9 +58,9 @@
                         {
                             <li class="nav-item">
                                
-                                @if (User.IsInRole("Registerforer"))
+                                @if (User.IsInRole("Registrar"))
                                 {
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Registerforer" asp-action="Index">Home</a>
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Registrar" asp-action="Index">Home</a>
                                 }
                                 else if (User.IsInRole("Crew"))
                                 {

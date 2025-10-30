@@ -1,23 +1,23 @@
 @model IEnumerable<AOR.Models.ObstacleData>
 @{
-    ViewData["Title"] = "Registerfører - Forside";
+    ViewData["Title"] = "Registrar - Home";
     Layout = "_Layout";
 }
 
-<h1>Velkommen, registerfører</h1>
-<p>Denne siden er kun tilgjengelig for brukere med rollen "Registerfører".</p>
+<h1>Welcome, Registrar</h1>
+<p>This page is only accessible for users with the 'Registrar' role.</p>
 
 <div class="container mt-4">
-    <h2>Registrerte hindringer</h2>
+    <h2>Registered obstacles</h2>
     
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Navn</th>
+                <th>Name</th>
                 <th>Type</th>
-                <th>Høyde</th>
-                <th>Opprettet</th>
-                <th>Detaljer</th>
+                <th>Height</th>
+                <th>Created</th>
+                <th>Details</th>
             </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@
                     <td>@obstacle.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>
                         <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm">
-                            Vis detaljer
+                            View details
                         </a>
                     </td>
                 </tr>

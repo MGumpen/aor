@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using AOR.Models;
 
@@ -9,21 +11,22 @@ public class AorDbContext : DbContext
         : base(options)
     { }
 
-    public DbSet<UserModel> Users { get; set; } = default!;
+    public DbSet<UserModel> Users { get; set; } = null!;
     
-    public DbSet<RoleModel> Roles { get; set; } = default!;
+    public DbSet<RoleModel> Roles { get; set; } = null!;
     
-    public DbSet<UserRoleModel> UserRoles { get; set; } = default!;
+    public DbSet<UserRoleModel> UserRoles { get; set; } = null!;
     
-    public DbSet<OrgModel> Organizations { get; set; } = default!;
+    public DbSet<OrgModel> Organizations { get; set; } = null!;
     
-    public DbSet<ObstacleData> Obstacles { get; set; } = default!;
+    public DbSet<ObstacleData> Obstacles { get; set; } = null!;
     
-    public DbSet<ObstacleTypeModel> ObstacleTypes { get; set; } = default!;
+    public DbSet<ObstacleTypeModel> ObstacleTypes { get; set; } = null!;
     
-    public DbSet<PositionModel> Positions { get; set; } = default!;
+    public DbSet<PositionModel> Positions { get; set; } = null!;
     
-    public DbSet<PhotoModel> Photos { get; set; } = default!;
+    public DbSet<PhotoModel> Photos { get; set; } = null!;
     
-    public DbSet<ReportModel> Reports { get; set; } = default!;
+    public DbSet<ReportModel> Reports { get; set; } = null!;
+    
 }

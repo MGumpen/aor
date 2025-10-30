@@ -27,9 +27,13 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
-    db.Database.Migrate();  // oppretter DB og kjører alle migrasjoner
+    var sp = scope.ServiceProvider;
+    var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
+
+    await db.Database.MigrateAsync();                 // <- migrate
+    await AOR.Data.DbSeeder.SeedAsync(sp);            // <- SEED (med await)
 }
+
 
 // Configure pipeline
 if (!app.Environment.IsDevelopment())
