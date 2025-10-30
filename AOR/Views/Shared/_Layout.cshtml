@@ -1,4 +1,5 @@
 ﻿@using AOR.Controllers
+@inject Microsoft.AspNetCore.Identity.UserManager<AOR.Data.User> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,18 +23,33 @@
                 @{
                     string homeController = "LogIn";
                     string homeAction = "Index";
-                    
+
+                    // Hent roller fra Identity (database) for innlogget bruker
+                    var roles = new List<string>();
+                    string displayName = string.Empty;
                     if (User?.Identity?.IsAuthenticated == true)
                     {
-                        if (User.IsInRole("Registrar"))
+                        var currentUser = await UserManager.GetUserAsync(User);
+                        if (currentUser != null)
+                        {
+                            var userRoles = await UserManager.GetRolesAsync(currentUser);
+                            roles = userRoles?.ToList() ?? new List<string>();
+
+                            var fullName = $"{currentUser.FirstName} {currentUser.LastName}".Trim();
+                            displayName = !string.IsNullOrWhiteSpace(fullName)
+                                ? fullName
+                                : (currentUser.Email ?? User.Identity?.Name ?? "User");
+                        }
+
+                        if (roles.Contains("Registrar"))
                         {
                             homeController = "Registrar";
                         }
-                        else if (User.IsInRole("Crew"))
+                        else if (roles.Contains("Crew"))
                         {
                             homeController = "Crew";
                         }
-                        else if (User.IsInRole("Admin"))
+                        else if (roles.Contains("Admin"))
                         {
                             homeController = "Admin";
                         }
@@ -57,33 +73,42 @@
                         @if (User?.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                               
-                                @if (User.IsInRole("Registrar"))
+                                @* Home-lenke per rolle *@
+                                @if (roles.Contains("Registrar"))
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Registrar" asp-action="Index">Home</a>
                                 }
-                                else if (User.IsInRole("Crew"))
+                                else if (roles.Contains("Crew"))
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="Index">Home</a>
                                 }
-                                else if (User.IsInRole("Admin"))
+                                else if (roles.Contains("Admin"))
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Home</a>
                                 }
                             </li>
                             <li class="nav-item">
-                                @if (User.IsInRole("Crew"))
+                                @if (roles.Contains("Crew"))
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="MyReports">My reports</a>
                                 }
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                            @* Erstatt separate Settings/Log out-lenker med en bruker-dropdown helt til høyre *@
+                            <li class="nav-item dropdown ms-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="me-2"><i class="fa-solid fa-user"></i></span>
+                                    <span>@displayName</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="LogIn" asp-action="Logout">Log out</a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="LogIn" asp-action="Logout">Log out</a>
-                            </li>
-                            
                         }
                     </ul>
                 </div>
