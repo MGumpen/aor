@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,12 +10,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Database configuration - MySQL
-var connectionString = builder.Configuration.GetConnectionString("AorDb");
-builder.Services.AddDbContext<AorDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+var connectionString = builder.Configuration.GetConnectionString("AorDb")
+                       ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (!string.IsNullOrEmpty(connectionString))
+{
+    var serverVersion = new MySqlServerVersion(new Version(8, 0, 33));
+    builder.Services.AddDbContext<AorDbContext>(options =>
+        options.UseMySql(connectionString, serverVersion));
+}
+else
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddDbContext<AorDbContext>(options =>
+            options.UseInMemoryDatabase("AorDevInMemory"));
+    }
+}
 
 
-// AuthenificationS
+// Authenification
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -23,17 +38,44 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     }
 );
 
-builder.Services.AddIdentityCore<User>()
+// Identity with roles
+builder.Services.AddIdentityCore<User>(options => { })
+    .AddRoles<IdentityRole>()
+    .AddSignInManager()
     .AddEntityFrameworkStores<AorDbContext>();
 
 var app = builder.Build();
 
-
-
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
-    db.Database.Migrate();  // oppretter DB og kjører alle migrasjoner
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AorDbContext>();
+        var provider = db.Database.ProviderName ?? string.Empty;
+        if (!provider.Contains("InMemory", StringComparison.OrdinalIgnoreCase))
+        {
+            db.Database.Migrate();
+        }
+        else
+        {
+            logger.LogInformation("InMemory provider detected; skipping migrations.");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database migration failed; continuing without applying migrations.");
+    }
+
+    // Seed test users and roles
+    try
+    {
+        await AorDbSeeder.SeedAsync(scope.ServiceProvider, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Seeding failed");
+    }
 }
 
 // Configure pipeline
