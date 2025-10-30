@@ -23,7 +23,10 @@ public static class AorDbSeeder
                 logger.LogInformation("Database provider: {Provider}", db.Database.ProviderName ?? "(unknown)");
             }
         }
-        catch { /* ignore */ }
+        catch (Exception ex)
+        {
+            logger.LogDebug(ex, "Failed to log database provider.");
+        }
 
         RoleManager<IdentityRole> roleManager;
         UserManager<User> userManager;
@@ -32,7 +35,7 @@ public static class AorDbSeeder
             roleManager = scoped.GetRequiredService<RoleManager<IdentityRole>>();
             userManager = scoped.GetRequiredService<UserManager<User>>();
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "RoleManager or UserManager not available; skipping identity seeding.");
             return;
@@ -40,20 +43,29 @@ public static class AorDbSeeder
 
         // Roller - bruk samme navn som resten av appen
         var roles = new[] { "Registrar", "Crew", "Admin" };
+        
+        // Find roles that don't exist yet
+        var rolesToCreate = new System.Collections.Generic.List<string>();
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
             {
-                var r = new IdentityRole(role);
-                var created = await roleManager.CreateAsync(r);
-                if (created.Succeeded)
-                {
-                    logger.LogInformation($"Created role: {role}");
-                }
-                else
-                {
-                    logger.LogWarning($"Failed to create role {role}: {string.Join(',', created.Errors.Select(e => e.Description))}");
-                }
+                rolesToCreate.Add(role);
+            }
+        }
+        
+        // Create the missing roles
+        foreach (var role in rolesToCreate)
+        {
+            var r = new IdentityRole(role);
+            var created = await roleManager.CreateAsync(r);
+            if (created.Succeeded)
+            {
+                logger.LogInformation($"Created role: {role}");
+            }
+            else
+            {
+                logger.LogWarning($"Failed to create role {role}: {string.Join(',', created.Errors.Select(e => e.Description))}");
             }
         }
 
