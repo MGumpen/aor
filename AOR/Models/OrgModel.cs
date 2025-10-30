@@ -1,5 +1,6 @@
 // OrganizationModel.cs
 using System.ComponentModel.DataAnnotations;
+using AOR.Data;
 
 namespace AOR.Models;
 
@@ -11,5 +12,5 @@ public class OrgModel
     [Required, MaxLength(100)] 
     public string OrgName { get; set; } = string.Empty;
 
-    public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

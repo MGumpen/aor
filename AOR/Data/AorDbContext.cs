@@ -1,19 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using AOR.Models;
 
 namespace AOR.Data;
 
-public class AorDbContext : DbContext
+public class AorDbContext : IdentityDbContext<User>
 {
     public AorDbContext(DbContextOptions<AorDbContext> options)
         : base(options)
     { }
-
-    public DbSet<UserModel> Users { get; set; } = default!;
-    
-    public DbSet<RoleModel> Roles { get; set; } = default!;
-    
-    public DbSet<UserRoleModel> UserRoles { get; set; } = default!;
     
     public DbSet<OrgModel> Organizations { get; set; } = default!;
     

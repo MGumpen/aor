@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AOR.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AOR.Models;
@@ -11,7 +12,7 @@ public class ReportModel
     public int ReportId { get; set; }
 
     public int UserId { get; set; }
-    public UserModel User { get; set; } = default!;
+    public User User { get; set; } = default!;
 
     public int ObstacleId { get; set; }
     public ObstacleData Obstacle { get; set; } = default!;
