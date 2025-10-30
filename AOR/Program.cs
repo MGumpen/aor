@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -29,20 +28,25 @@ else
 }
 
 
-// Authenification
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+// Identity with roles and cookie authentication
+builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
-        options.LoginPath = "/LogIn";
-        options.AccessDeniedPath = "/LogIn/AccessDenied";
-    }
-);
+        // Password settings (optional - configure as needed)
+        options.Password.RequireDigit = true;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+    })
+    .AddEntityFrameworkStores<AorDbContext>()
+    .AddDefaultTokenProviders();
 
-// Identity with roles
-builder.Services.AddIdentityCore<User>(options => { })
-    .AddRoles<IdentityRole>()
-    .AddSignInManager()
-    .AddEntityFrameworkStores<AorDbContext>();
+// Configure cookie authentication paths
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/LogIn";
+    options.AccessDeniedPath = "/LogIn/AccessDenied";
+});
 
 var app = builder.Build();
 
