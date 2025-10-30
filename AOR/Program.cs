@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,14 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddIdentityCore<User>()
-    .AddEntityFrameworkStores<AorDbContext>();
-
 // Database configuration - MySQL
 var connectionString = builder.Configuration.GetConnectionString("AorDb");
 builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+// Identity - registered after DbContext so stores are available
+builder.Services.AddIdentityCore<User>()
+    .AddRoles<IdentityRole>()
+    .AddSignInManager()
+    .AddEntityFrameworkStores<AorDbContext>();
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -34,7 +37,10 @@ using (var scope = app.Services.CreateScope())
     var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
 
     await db.Database.MigrateAsync();                 // <- migrate
-    await AOR.Data.AorDbSeeder.SeedAsync();            // <- SEED (med await)
+
+    // Hent logger fra DI og pass både service provider og logger til seederen
+    var logger = sp.GetRequiredService<ILogger<Program>>();
+    await AOR.Data.AorDbSeeder.SeedAsync(sp, logger);  // <- SEED (med riktige argumenter)
 }
 
 
