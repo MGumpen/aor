@@ -118,3 +118,5 @@ app.MapControllerRoute(
     pattern: "{controller=LogIn}/{action=Index}/{id?}");
 
 app.Run();
+
+//Kjør
