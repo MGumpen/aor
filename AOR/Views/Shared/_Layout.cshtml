@@ -1,4 +1,6 @@
-﻿@using AOR.Controllers
+﻿@using Microsoft.AspNetCore.Identity
+@using AOR.Data
+@inject SignInManager<User> SignInManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -51,42 +53,62 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav ms-auto fs-5">
-                        @if (User?.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav ms-auto fs-5">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <li class="nav-item">
                                
-                                @if (User.IsInRole("Registrar"))
-                                {
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Registrar" asp-action="Index">Home</a>
-                                }
-                                else if (User.IsInRole("Crew"))
-                                {
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="Index">Home</a>
-                                }
-                                else if (User.IsInRole("Admin"))
-                                {
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Home</a>
-                                }
-                            </li>
-                            <li class="nav-item">
+                        @if (User.IsInRole("Registrar"))
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Registrar" asp-action="Index">Home</a>
+                        }
+                        else if (User.IsInRole("Crew"))
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="Index">Home</a>
+                        }
+                        else if (User.IsInRole("Admin"))
+                        {
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Home</a>
+                        }
+                    </li>
+                 <li class="nav-item">
+                                
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa fa-user-circle"></i> @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
+                                </li>
                                 @if (User.IsInRole("Crew"))
                                 {
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="MyReports">My reports</a>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Crew" asp-action="MyReports">My
+                                            reports</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider"/>
+                                    </li>
                                 }
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="LogIn" asp-action="Logout">Log out</a>
-                            </li>
-                            
-                        }
-                    </ul>
-                </div>
+                                <li>
+                                    <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
+                                            <i class="fa fa-sign-out-alt me-2"></i> Logg ut
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    </li>
+                 
+              }
+            </ul>
+            </div>
             </div>
         </nav>
     </header>
