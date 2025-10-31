@@ -16,9 +16,9 @@ namespace AOR.Controllers
 public class LogInController : Controller
 {
     private readonly ILogger<LogInController> _logger;
-    private readonly ApplicationDbContext _db;
+    private readonly AorDbContext _db;
 
-    public LogInController(ApplicationDbContext db, ILogger<LogInController> logger)
+    public LogInController(AorDbContext db, ILogger<LogInController> logger)
     {
         _db = db;
         _logger = logger;
@@ -51,7 +51,7 @@ public class LogInController : Controller
                 //Hardkodede brukere for utvikling
                 var users = new Dictionary<string, (string Password, string Role)>(StringComparer.OrdinalIgnoreCase)
                 {
-                    ["reg@uia.no"] = ("123", "Registerforer"),
+                    ["reg@uia.no"] = ("123", "Registrar"),
                     ["crew@uia.no"] = ("123", "Crew"),
                     ["admin@uia.no"] = ("123", "Admin")
                 };
@@ -72,9 +72,9 @@ public class LogInController : Controller
 
                     _logger.LogInformation($"Bruker {model.Username} logget inn vellykket");
                     
-                    if (user.Role == "Registerforer")
+                    if (user.Role == "Registrar")
                     {
-                        return RedirectToAction("Index", "Registerforer");
+                        return RedirectToAction("Index", "Registrar");
                     }
                     else if (user.Role == "Crew")
                     {

@@ -7,12 +7,13 @@
 <style>
     /* Map container - responsive */
     .map-container {
-        position: relative;
-        width: 100%;
-        height: 87dvh;
-        min-height: 600px;
-        margin: 1rem 0;
-    }
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 160px); /* Account for both header and footer */
+    min-height: 600px;
+    margin: 30px 0;              /* Equal top and bottom margin */
+    border-radius: 8px;
+}
 
     #obstacle-map {
         width: 100%;
@@ -21,20 +22,18 @@
         border-radius: 8px;
     }
 
-    
     .welcome-popup {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-    }
-
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Changed from flex to none */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
     .welcome-popup-content {
         background: white;
         padding: 2rem;
@@ -362,7 +361,7 @@
     /* Notification - responsive */
     .drawing-notification {
         position: absolute;
-        bottom: 95px;
+        bottom: 150px;
         left: 50%;
         transform: translateX(-50%);
         background: rgba(255, 255, 255, 0.95);
@@ -437,8 +436,7 @@
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
         <h3>Welcome to AOR</h3>
-        <p>Aviation Obstacle Registration system. 
-            Use the map to register obstacles by clicking to place markers and dragging to adjust positions.
+        <p> Use the map to register obstacles by clicking to place markers and dragging to adjust positions.
             The system is using your current position.</p>
         <button onclick="closeWelcomePopup()">OK</button>
     </div>
@@ -501,7 +499,22 @@
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
+        localStorage.setItem('aor_welcome_shown', 'true');
     }
+
+    function showWelcomePopup() {
+        const hasSeenPopup = localStorage.getItem('aor_welcome_shown');
+        if (!hasSeenPopup) {
+            document.getElementById('welcome-popup').style.display = 'flex';
+        } else {
+            document.getElementById('welcome-popup').style.display = 'none';
+        }
+    }
+
+ document.addEventListener('DOMContentLoaded', function() {
+        showWelcomePopup();
+        setTimeout(initializeMap, 100);
+    });
 
     function initializeMap() {
         map = L.map('obstacle-map', {
@@ -561,6 +574,10 @@
     function addPoint(latlng) {
         if (!drawingMode) return;
         
+        if ((drawingMode === 'mast' || drawingMode === 'other') && markers.length >= 1) {
+        alert('Only one point can be added for Mast or Other.');
+        return;
+    }
         pointCounter++;
         const pointId = `point-${pointCounter}`;
         
@@ -647,15 +664,20 @@
         const lat = latlng.lat.toFixed(5);
         const lng = latlng.lng.toFixed(5);
         
-        pointItem.innerHTML = `
-            <div class="point-header">
-                <div class="point-number">${number}</div>
-                <div class="point-actions">
-                    <button class="point-btn accept" onclick="confirmPoint('${pointId}')" title="Confirm">✓</button>
-                    <button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>
-                </div>
+        // Only show action buttons for 'powerline', none for 'mast' or 'other'
+    let actionsHtml = '';
+    if (drawingMode === 'powerline') {
+        actionsHtml = `<button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>`;
+    }
+
+    pointItem.innerHTML = `
+        <div class="point-header">
+            <div class="point-number">${number}</div>
+            <div class="point-actions">
+                ${actionsHtml}
             </div>
-            <div class="point-coords">${lat}, ${lng}</div>
+        </div>
+        <div class="point-coords">${lat}, ${lng}</div>
         `;
         
         pointsList.appendChild(pointItem);
@@ -724,10 +746,14 @@
     }
 
     function confirmDrawing() {
-        if (currentDrawing.length === 0) {
-            alert('Please add at least one point');
-            return;
-        }
+        if ((drawingMode === 'powerline' && currentDrawing.length < 2) ||
+        ((drawingMode === 'mast' || drawingMode === 'other') && currentDrawing.length < 1)) {
+        alert(
+            drawingMode === 'powerline' ? 'Please add at least two points for a Power Line.'
+                                        : 'Please add a point.'
+        );
+        return;
+    }
 
         const obstacleData = {
             type: drawingMode,
@@ -785,9 +811,6 @@
         }
     }
     
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(initializeMap, 100);
-    });
     
     window.addEventListener('resize', function() {
         if (map) {

@@ -163,12 +163,18 @@
         </div>
         
         @if (Model.ObstacleHeight.HasValue)
-        {
-            <div class="detail-card">
-                <div class="detail-label">Height</div>
-                <div class="detail-value">@Model.ObstacleHeight.Value m</div>
-            </div>
-        }
+{
+    <div class="detail-card">
+        <div class="detail-label">Height</div>
+        <div class="detail-value">
+            @Model.ObstacleHeight.Value.ToString("F1") m 
+            <span style="color: #6b7280; font-size: 0.875rem;">
+                (≈ @((Model.ObstacleHeight.Value * 3.28084).ToString("F1")) ft)
+            </span>
+        </div>
+    </div>
+}
+
         
         <div class="detail-card">
             <div class="detail-label">Points</div>

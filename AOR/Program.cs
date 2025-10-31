@@ -1,26 +1,27 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
+<<<<<<< HEAD
+=======
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+
+>>>>>>> 77573c463d894b2f407fd6a0a6e502c25110d1e1
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllersWithViews();
 
-// DB-oppsett: ENV (docker) først, så appsettings.*
-var cs =
-    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+// Database configuration - MySQL
+var connectionString = builder.Configuration.GetConnectionString("AorDb");
+builder.Services.AddDbContext<AorDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-if (string.IsNullOrWhiteSpace(cs))
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseInMemoryDatabase("AOR_InMemory"));
-}
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
-}
+// Identity - registered after DbContext so stores are available
+builder.Services.AddIdentityCore<User>()
+    .AddRoles<IdentityRole>()
+    .AddSignInManager()
+    .AddEntityFrameworkStores<AorDbContext>();
 
 // AuthenificationS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -33,6 +34,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var sp = scope.ServiceProvider;
+    var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
+
+    await db.Database.MigrateAsync();                 // <- migrate
+
+    // Hent logger fra DI og pass både service provider og logger til seederen
+    var logger = sp.GetRequiredService<ILogger<Program>>();
+    await AOR.Data.AorDbSeeder.SeedAsync(sp, logger);  // <- SEED (med riktige argumenter)
+}
+
 
 // Configure pipeline
 if (!app.Environment.IsDevelopment())
