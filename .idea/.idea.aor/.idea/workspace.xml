@@ -17,13 +17,6 @@
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInControllerTest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/LogInData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
