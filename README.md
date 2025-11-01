@@ -9,9 +9,9 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 - Forskjellige testingscenarier finner du i Testing.md
 
 # Brukere i Web Applikasjonen: #
-- Crew: crew@uia.no Passord: 123
-- Admin: admin@uia.no Passord: 123
-- Registerfører: reg@uia.no Passord: 123
+- Crew: crew@test.no Passord: Test123$
+- Admin: admin@test.no Passord: Test123$
+- Registerfører: reg@test.no Passord: Test123$
 
 ### Forutsetninger for å starte hele applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
@@ -55,11 +55,11 @@ dotnet run
 
 ### Adminer (Database GUI)
 Åpne http://localhost:8080:
-- System: **MySQL**
-- Server: **mariadb**
-- Username: **aor_user**
-- Password: **Test123**
-- Database: **aor_db**
+- System: MySQL
+- Server: mariadb
+- Username: aor_user
+- Password: Test123
+- Database: aor_db
 
 ### Entity Framework Migrations
 

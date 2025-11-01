@@ -80,7 +80,7 @@ namespace AOR.UnitTests.ControllerTests
         {
             // Arrange
             var controller = CreateController();
-            var model = new LogInData
+            var model = new LogInViewModel
             {
                 Username = "reg@uia.no",
                 Password = "123"
@@ -101,7 +101,7 @@ namespace AOR.UnitTests.ControllerTests
         {
             // Arrange
             var controller = CreateController();
-            var model = new LogInData
+            var model = new LogInViewModel
             {
                 Username = "feil@uia.no",
                 Password = "999"
@@ -129,7 +129,7 @@ namespace AOR.UnitTests.ControllerTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<LogInData>(result!.Model);
+            Assert.IsType<LogInViewModel>(result!.Model);
             Assert.True(result.ViewData.ContainsKey("DbConnected"));
             Assert.True(result.ViewData.ContainsKey("DbError"));
         }
