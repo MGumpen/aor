@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace AOR.Controllers
 {
@@ -107,6 +109,49 @@ namespace AOR.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation("Bruker logget ut.");
             return RedirectToAction(nameof(Index));
+        }
+        
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            // Simply returns the ForgotPassword view (Views/LogIn/ForgotPassword.cshtml)
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(AOR.Models.ForgotPasswordModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // Ikke avslør om brukeren finnes eller er bekreftet
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                TempData["ForgotPassword_Info"] = "Hvis e-postadressen finnes og er bekreftet, er en lenke sendt.";
+                ModelState.Clear();
+                return View(new AOR.Models.ForgotPasswordModel());
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            var callbackUrl = Url.Action(
+                action: "ResetPassword",
+                controller: "LogIn",
+                values: new { email = model.Email, token = encodedToken },
+                protocol: Request.Scheme)!;
+
+            // Din egen løsning (ingen e-post her): eksponer lenken i TempData for dev/test
+            TempData["ForgotPassword_Info"] = "Tilbakestillingslenke (dev):";
+            TempData["ResetLink"] = callbackUrl;
+
+            ModelState.Clear();
+            return View(new AOR.Models.ForgotPasswordModel());
         }
     }
 }
