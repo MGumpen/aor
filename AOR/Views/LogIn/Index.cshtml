@@ -9,17 +9,6 @@
     <h1 class="display-4">Aviation Obstacle Registration</h1>
     <p class="fs-2" style="margin-top: 20px;">Please log in to access the application</p>
     
-    @if (ViewData["DbConnected"] is bool dbOk && dbOk)
-    {
-        <div class="text-success">Tilkoblet MariaDB</div>
-    }
-    else
-    {
-        <div class="text-danger">
-            Ikke tilkoblet MariaDB
-        </div>
-    }
-    
     <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
         
         <div class="mb-4">
