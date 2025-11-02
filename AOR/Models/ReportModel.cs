@@ -25,8 +25,5 @@ public class ReportModel
     [MaxLength(50)]
     public string? Status { get; set; }
 
-    [MaxLength(500)]
-    public string? Comment { get; set; }
-
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

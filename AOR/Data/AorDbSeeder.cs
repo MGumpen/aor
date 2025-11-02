@@ -124,6 +124,7 @@ public static class AorDbSeeder
         var testUsers = new[]
         {
             new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew", OrgName = "Norsk Luftambulanse" },
+            new { Email = "crew2@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kåre", LastName = "Crew", OrgName = "Luftforsvaret" },
             new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin", OrgName = "Luftforsvaret" },
             new { Email = "reg@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Yonas", LastName = "Registrar", OrgName = "Kartverket" }
         };
