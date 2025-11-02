@@ -13,5 +13,6 @@ public class OrgModel
     [Required, MaxLength(128)] 
     public string OrgName { get; set; } = string.Empty;
 
-    public ICollection<UserModel> Users { get; set; } = new List<UserModel>();
+    // Bytt til Identity User for relasjon
+    public ICollection<AOR.Data.User> Users { get; set; } = new List<AOR.Data.User>();
 }
