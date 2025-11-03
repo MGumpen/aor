@@ -17,7 +17,8 @@
                 <th>Type</th>
                 <th>Height</th>
                 <th>Created</th>
-                <th>Details</th>
+                <th>Status</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -28,10 +29,29 @@
                     <td>@obstacle.ObstacleType</td>
                     <td>@(obstacle.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
                     <td>@obstacle.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@(obstacle.Status ?? "Pending")</td>
                     <td>
-                        <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm">
+                        <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm me-1">
                             View details
                         </a>
+
+                        @if (obstacle.Status != "Approved")
+                        {
+                            <form asp-action="Approve" asp-controller="Registrar" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@obstacle.ObstacleId" />
+                                <button type="submit" class="btn btn-success btn-sm me-1">Approve</button>
+                            </form>
+                        }
+
+                        @if (obstacle.Status != "Rejected")
+                        {
+                            <form asp-action="Reject" asp-controller="Registrar" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@obstacle.ObstacleId" />
+                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }

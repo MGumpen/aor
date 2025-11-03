@@ -39,6 +39,9 @@ namespace AOR.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string? CreatedBy { get; set; }
 
+        // Status: Pending, Approved, Rejected
+        public string Status { get; set; } = "Pending";
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();

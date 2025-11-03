@@ -55,7 +55,33 @@ public class ObstacleController : Controller
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
-        // Handle height conversion from form data
+        ProcessHeightConversion(obstacleData);
+        // Process other type-specific fields
+        ProcessTypeSpecificFields(obstacleData);
+
+        if (ModelState.IsValid)
+        {
+            obstacleData.CreatedAt = DateTime.UtcNow;
+            obstacleData.Status = "Pending"; // Yeni eklenen engeller Pending olarak başlar
+            
+            Console.WriteLine("=== SUCCESS - Saving to database ===");
+            _db.Obstacles.Add(obstacleData);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
+        }
+
+        // If validation failed, preserve ViewBag data
+        Console.WriteLine("=== VALIDATION FAILED ===");
+        ViewBag.ObstacleType = obstacleData.ObstacleType;
+        ViewBag.Coordinates = obstacleData.Coordinates;
+        ViewBag.PointCount = obstacleData.PointCount;
+
+        return View(obstacleData);
+    }
+    
+    private void ProcessHeightConversion(ObstacleData obstacleData)
+    {
         var heightUnit = Request.Form["heightUnit"].FirstOrDefault() ?? "meters";
         var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
         var heightFeetStr = Request.Form["heightFeet"].FirstOrDefault();
@@ -79,65 +105,6 @@ public class ObstacleController : Controller
             {
                 obstacleData.ObstacleHeight = feet * 0.3048; // Convert feet to meters for storage
                 Console.WriteLine($"Converted {feet} feet to {obstacleData.ObstacleHeight} meters");
-            }
-        }
-
-        ProcessHeightConversion(obstacleData);
-        // Process other type-specific fields
-        ProcessTypeSpecificFields(obstacleData);
-
-        if (ModelState.IsValid)
-        {
-            obstacleData.CreatedAt = DateTime.UtcNow;
-            _db.Obstacles.Add(obstacleData);
-            await _db.SaveChangesAsync();
-
-            // PRG-mønster
-            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
-        }
-        
-        if (ModelState.IsValid)
-        {
-            obstacleData.CreatedAt = DateTime.UtcNow;
-            Console.WriteLine("=== SUCCESS - Going to Overview ===");
-
-            // Save to database when ready
-            // _context.ObstacleData.Add(obstacleData);
-            // await _context.SaveChangesAsync();
-
-            return View("Overview", obstacleData);
-        }
-
-        // If validation failed, preserve ViewBag data
-        Console.WriteLine("=== VALIDATION FAILED ===");
-        ViewBag.ObstacleType = obstacleData.ObstacleType;
-        ViewBag.Coordinates = obstacleData.Coordinates;
-        ViewBag.PointCount = obstacleData.PointCount;
-
-        return View(obstacleData);
-    }
-    
-    private void ProcessHeightConversion(ObstacleData obstacleData)
-    {
-        // Check if height is already set (from direct meter input)
-        if (obstacleData.ObstacleHeight.HasValue && obstacleData.ObstacleHeight > 0)
-        {
-            return; // Height already set correctly
-        }
-
-        // Try to get height from conversion fields
-        var heightUnit = Request.Form["heightUnit"].FirstOrDefault();
-        var heightInput = Request.Form["heightInput"].FirstOrDefault();
-
-        if (!string.IsNullOrEmpty(heightInput) && double.TryParse(heightInput, out double inputValue))
-        {
-            if (heightUnit == "feet")
-            {
-                obstacleData.ObstacleHeight = inputValue * 0.3048; // Convert feet to meters
-            }
-            else
-            {
-                obstacleData.ObstacleHeight = inputValue; // Already in meters
             }
         }
     }
