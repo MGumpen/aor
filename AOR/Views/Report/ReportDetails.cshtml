@@ -6,42 +6,37 @@
 }
 
 <style>
-    .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: #ffffff;
-        border-radius: 24px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        padding: 24px;
-        border: 1px solid #e5e7eb;
+    @@media (min-width: 992px) { 
+        .container {
+            max-width: 1100px;
+        }
+    }
+
+    @@media (min-width: 1200px) { 
+        .container {
+            max-width: 1250px;
+        }
+    }
+
+    @@media (min-width: 1400px) { 
+        .container {
+            max-width: 2000px;
+        }
     }
     
-    .success-header {
+    @@media (max-width: 767px) { 
+        .container {
+            max-width: 95%;
+            padding: 16px;
+        }
+    }
+    
+    .details-header {
         text-align: center;
         margin-bottom: 32px;
         padding-bottom: 20px;
         border-bottom: 2px solid #10b981;
     }
-    
-    .success-icon {
-        font-size: 3rem;
-        color: #10b981;
-        margin-bottom: 10px;
-    }
-    
-    .obstacle-type-badge {
-        display: inline-block;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin: 0 auto 16px;
-    }
-    
-    .badge-powerline { background: #fee2e2; color: #dc2626; }
-    .badge-mast { background: #dbeafe; color: #2563eb; }
-    .badge-other { background: #d1fae5; color: #059669; }
     
     .details-grid {
         display: grid;
@@ -140,8 +135,8 @@
 </style>
 
 <section class="container">
-    <!-- Success Header -->
-    <div class="success-header">
+   
+    <div class="details-header">
         <h1>Report details</h1>
     </div>
 
@@ -151,20 +146,27 @@
             <div class="detail-label">User</div>
             <div class="detail-value">@Model.User.UserName</div>
         </div>
+        
+        <div class="detail-card">
+            <div class="detail-label">Registered</div>
+            <div class="detail-value">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+        </div>
+        
         <div class="detail-card">
             <div class="detail-label">Status</div>
             <div class="detail-value">@Model.Status?.Status</div>
         </div>
-        <div class="detail-card">
-            <div class="detail-label">Name</div>
-            <div class="detail-value">@Model.Obstacle.ObstacleName</div>
-        </div>
-
+        
         <div class="detail-card">
             <div class="detail-label">Type</div>
             <div class="detail-value">@Model.Obstacle.ObstacleType.ToUpper()</div>
         </div>
 
+        <div class="detail-card">
+            <div class="detail-label">Name</div>
+            <div class="detail-value">@Model.Obstacle.ObstacleName</div>
+        </div>
+        
         @if (Model.Obstacle.ObstacleHeight.HasValue)
         {
             <div class="detail-card">
@@ -177,19 +179,7 @@
                 </div>
             </div>
         }
-
-
-        <div class="detail-card">
-            <div class="detail-label">Points</div>
-            <div class="detail-value">@Model.Obstacle.PointCount coordinate(s)</div>
-        </div>
-
-        <div class="detail-card">
-            <div class="detail-label">Registered</div>
-            <div class="detail-value">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
-        </div>
-
-        <!-- Type-specific fields -->
+        
         @if (Model.Obstacle.ObstacleType.ToLower() == "powerline")
         {
             @if (Model.Obstacle.WireCount.HasValue)
@@ -230,7 +220,6 @@
         }
     </div>
     
-    <!-- Description -->
     @if (!string.IsNullOrEmpty(Model.Obstacle.ObstacleDescription))
     {
         <div class="detail-card" style="margin-bottom: 24px;">
@@ -239,7 +228,6 @@
         </div>
     }
     
-    <!-- Coordinates -->
     @if (!string.IsNullOrEmpty(Model.Obstacle.Coordinates) && Model.Obstacle.Coordinates != "[]")
     {
         <div class="coordinates-section">
@@ -248,35 +236,100 @@
         </div>
     }
     
+    <div id="map-wrapper" style="margin-bottom: 24px;">
+        <h3 style="margin: 0 0 12px 0; color: #0c4a6e;">Map</h3>
+        <div id="report-map" style="height: 320px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
+    </div>
+    
     
     <div class="actions">
-        <a href="/Crew" class="btn btn-primary">Back to Map</a>
-        <a href="/Report/MyReports" class="btn btn-secondary">Your reports</a>
+        @if (User.IsInRole("Crew"))
+        {
+            <a href="/Crew" class="btn btn-primary">Back to Map</a>
+            <a href="/Report/MyReports" class="btn btn-secondary">Your reports</a>
+        }
+        else if (User.IsInRole("Registrar"))
+        {
+            <a href="/Registrar" class="btn btn-primary">Back to Overview</a>
+        //    <a href="/Registrar/Reports" class="btn btn-secondary">All Reports</a>
+        }
     </div>
 </section>
 
 @section Scripts {
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin="">
+    </script>
+
     <script>
-        // Display coordinates
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1) Hent koordinater fra modellen
             const coordinatesJson = '@Html.Raw(Model.Obstacle.Coordinates ?? "[]")';
             const coordinatesDisplay = document.getElementById('coordinates-display');
-            
+
+            let coordinates = [];
+
             if (coordinatesJson && coordinatesJson !== '[]' && coordinatesDisplay) {
                 try {
-                    const coordinates = JSON.parse(coordinatesJson);
+                    coordinates = JSON.parse(coordinatesJson);
                     let html = '';
-                    
+
                     coordinates.forEach((coord, index) => {
                         html += `<div class="coordinate-item">
                                    Point ${index + 1}: ${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}
                                  </div>`;
                     });
-                    
+
                     coordinatesDisplay.innerHTML = html;
                 } catch (e) {
                     coordinatesDisplay.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
                 }
+            }
+
+            // Leaflet-kart vises alltid uten knapp
+            const mapWrapper = document.getElementById('map-wrapper');
+            if (!mapWrapper || !coordinates || coordinates.length === 0) {
+                return; // ingenting å vise
+            }
+
+            const obstacleType = '@Model.Obstacle.ObstacleType?.ToLower()';
+
+            // Opprett Leaflet-kart automatisk
+            const map = L.map('report-map');
+            window.reportMap = map;
+
+            // Bakgrunnskart (OSM)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const latLngs = coordinates.map(c => L.latLng(c.lat, c.lng));
+
+            // 4) Vis enten punkt eller linje
+            const isLineType =
+                obstacleType === 'powerline' ||
+                obstacleType === 'line' ||
+                latLngs.length > 1; // fallback: flere punkter => vis linje
+
+            if (isLineType) {
+                // Polyline for powerline/linje
+                L.polyline(latLngs, { weight: 4 }).addTo(map);
+                latLngs.forEach(p => L.marker(p).addTo(map));
+                map.fitBounds(L.latLngBounds(latLngs), { padding: [20, 20] });
+            } else {
+                // Ett punkt – mast/other
+                const point = latLngs[0];
+                L.marker(point).addTo(map);
+                map.setView(point, 15);
             }
         });
     </script>
