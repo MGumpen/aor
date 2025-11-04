@@ -4,10 +4,35 @@
     Layout = "_Layout";
 }
 
+<style>
+    .registrar-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    @@media (min-width: 1200px) {
+        .container {
+            width: 80%;
+            max-width: 80%;
+        }
+    }
+</style>
+
+
 <h1>Welcome, Registrar</h1>
 
 
-<div class="container mt-4">
+<div class="registrar-container mt-4">
     <h2>Obstacle reports</h2>
     
     <table class="table table-striped">
@@ -74,5 +99,5 @@
             }
         </tbody>
     </table>
-</div>
 
+</div>
