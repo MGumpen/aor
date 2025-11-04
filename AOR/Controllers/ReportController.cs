@@ -30,10 +30,36 @@ public class ReportController : Controller
             .AsNoTracking()
             .Where(r => r.UserId == userId)
             .Include(r => r.Obstacle)
+            .Include(r => r.Status)
             .ToListAsync();
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
         return View(reports);
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> ReportDetails(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return RedirectToAction("Index", "LogIn");
+        }
+
+        var report = await _db.Reports
+            .AsNoTracking()
+            .Where(r => r.UserId == userId && r.ReportId == id)
+            .Include(r => r.Obstacle)
+            .Include(r => r.Status)
+            .Include(r => r.User)
+            .FirstOrDefaultAsync();
+
+        ViewBag.DisplayName = User?.Identity?.Name ?? "User";
+
+        return View("ReportDetails", report);
+    }
+    
+    
 }
+
