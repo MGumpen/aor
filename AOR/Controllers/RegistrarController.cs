@@ -27,15 +27,20 @@ public class RegistrarController : Controller
     {
         try
         {
-            var obstacles = await _context.Obstacles
+            var reports = await _context.Reports
+                .Include(r => r.Obstacle)
+                .Include(r => r.User)
+                .ThenInclude(u => u.Organization)
+                .Include(r => r.Status)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
-            return View(obstacles);
+
+            return View(reports);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching obstacles");
-            return View(new List<ObstacleData>());
+            _logger.LogError(ex, "Error fetching reports");
+            return View(new List<ReportModel>());
         }
     }
 
@@ -44,11 +49,20 @@ public class RegistrarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id)
     {
-        var obstacle = await _context.Obstacles.FindAsync(id);
-        if (obstacle == null) return NotFound();
-        obstacle.Status = "Approved";
+        var report = await _context.Reports
+            .Include(r => r.Obstacle)
+            .FirstOrDefaultAsync(r => r.ReportId == id); 
+
+        if (report == null) return NotFound();
+
+       
+        report.StatusId = 2;
+
         await _context.SaveChangesAsync();
-        TempData["Message"] = $"Obstacle '{obstacle.ObstacleName}' approved.";
+
+        var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
+        TempData["Message"] = $"Report for '{obstacleName}' approved.";
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -57,11 +71,19 @@ public class RegistrarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(int id)
     {
-        var obstacle = await _context.Obstacles.FindAsync(id);
-        if (obstacle == null) return NotFound();
-        obstacle.Status = "Rejected";
+        var report = await _context.Reports
+            .Include(r => r.Obstacle)
+            .FirstOrDefaultAsync(r => r.ReportId == id); 
+
+        if (report == null) return NotFound();
+
+        report.StatusId = 3;
+
         await _context.SaveChangesAsync();
-        TempData["Message"] = $"Obstacle '{obstacle.ObstacleName}' rejected.";
+
+        var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
+        TempData["Message"] = $"Report for '{obstacleName}' rejected.";
+
         return RedirectToAction(nameof(Index));
     }
 

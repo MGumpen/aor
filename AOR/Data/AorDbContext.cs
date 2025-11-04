@@ -43,7 +43,7 @@ public class AorDbContext : IdentityDbContext<User>
         
         builder.Entity<StatusModel>().HasData(
             new StatusModel { StatusId = 1, Status = "Pending" },
-            new StatusModel { StatusId = 2, Status = "Accepted" },
+            new StatusModel { StatusId = 2, Status = "Approved" },
             new StatusModel { StatusId = 3, Status = "Rejected" }
         );
     }
