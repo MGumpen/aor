@@ -93,7 +93,7 @@
         color: #475569;
     }
     
-    .obstacle-actions {
+    .report-actions {
         display: flex;
         gap: 8px;
         justify-content: flex-end;
@@ -245,8 +245,8 @@
                         </div>
                     }
                     
-                    <div class="obstacle-actions">
-                        <a href="/Obstacle/Details/@report.ObstacleId" class="btn-small btn-details">View Details</a>
+                    <div class="report-actions">
+                        <a asp-controller="Report" asp-action="ReportDetails" asp-route-id="@report.ReportId" class="btn-small btn-details">View Details</a>
                     </div>
                 </div>
             }
