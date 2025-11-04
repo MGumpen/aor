@@ -189,13 +189,6 @@
         <!-- Type-specific fields -->
         @if (Model.ObstacleType.ToLower() == "powerline")
         {
-            @if (Model.Voltage.HasValue)
-            {
-                <div class="detail-card">
-                    <div class="detail-label">Voltage</div>
-                    <div class="detail-value">@Model.Voltage kV</div>
-                </div>
-            }
             @if (Model.WireCount.HasValue)
             {
                 <div class="detail-card">
@@ -228,13 +221,6 @@
                 <div class="detail-card">
                     <div class="detail-label">Category</div>
                     <div class="detail-value">@Model.Category</div>
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.Material))
-            {
-                <div class="detail-card">
-                    <div class="detail-label">Material</div>
-                    <div class="detail-value">@Model.Material</div>
                 </div>
             }
         }
