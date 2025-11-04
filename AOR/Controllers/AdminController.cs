@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace AOR.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // GET: /Admin

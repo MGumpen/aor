@@ -6,7 +6,7 @@ using AOR.Models;
 using AOR.Data;
 
 namespace AOR.Controllers;
-[Authorize]
+[Authorize(Roles = "Registrar")]
 public class RegistrarController : Controller
 {
     private readonly ILogger<RegistrarController> _logger;
