@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AOR.Models
 {
-    public class ObstacleData
+    public class ObstacleData : IValidatableObject
     {
         [Key]
-        public int Id { get; set; }
+        public int ObstacleId { get; set; }
         
         [Required(ErrorMessage = "Obstacle name is required")]
         [MaxLength(200)]
@@ -14,13 +14,13 @@ namespace AOR.Models
         [MaxLength(1500)]
         public string? ObstacleDescription { get; set; }
         
-        [Range(0, 500)]
         public double? ObstacleHeight { get; set; }
         
-        [Required]
-        public string ObstacleType { get; set; } = string.Empty; // powerline, mast, other
+        [Required(ErrorMessage = "Obstacle type is required")]
+        public string ObstacleType { get; set; } = string.Empty;
         
-        public string? Coordinates { get; set; } // JSON string of coordinates
+        [Required(ErrorMessage = "Coordinates are required")]
+        public string? Coordinates { get; set; }
         
         public int PointCount { get; set; }
         
@@ -38,5 +38,37 @@ namespace AOR.Models
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string? CreatedBy { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+
+            // Høyde er påkrevd for alle typer
+            if (!ObstacleHeight.HasValue || ObstacleHeight <= 0)
+            {
+                results.Add(new ValidationResult(
+                    "Height is required and must be greater than 0", 
+                    new[] { nameof(ObstacleHeight) }));
+            }
+
+            // Koordinater er påkrevd for alle typer
+            if (string.IsNullOrEmpty(Coordinates) || Coordinates == "[]")
+            {
+                results.Add(new ValidationResult(
+                    "Coordinates are required", 
+                    new[] { nameof(Coordinates) }));
+            }
+
+            // Ekstra validering for "Other" type - beskrivelse er påkrevd
+            if (ObstacleType?.ToLower() == "other" && 
+                string.IsNullOrWhiteSpace(ObstacleDescription))
+            {
+                results.Add(new ValidationResult(
+                    "Description is required for Other obstacle types", 
+                    new[] { nameof(ObstacleDescription) }));
+            }
+
+            return results;
+        }
     }
 }

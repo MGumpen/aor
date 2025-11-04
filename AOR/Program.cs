@@ -1,41 +1,83 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
+<<<<<<< HEAD
+=======
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+
+>>>>>>> de967b4e2b999b393788d8c8b34ce3a11e240d37
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllersWithViews();
 
-// DB-oppsett: ENV (docker) først, så appsettings.*
-var cs =
-    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+// Database configuration - MySQL
+var connectionString = builder.Configuration.GetConnectionString("AorDb");
+builder.Services.AddDbContext<AorDbContext>(options =>
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(11, 4, 0))));
 
-if (string.IsNullOrWhiteSpace(cs))
+// Identity - registered after DbContext so stores are available
+// Use full AddIdentity so SignInManager, UserManager, RoleManager and cookie handling are configured
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseInMemoryDatabase("AOR_InMemory"));
-}
-else
-{
-    builder.Services.AddDbContext<ApplicationDbContext>(o =>
-        o.UseMySql(cs!, ServerVersion.AutoDetect(cs)));
-}
+    // Optional: tweak password requirements for dev/test convenience
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+    .AddEntityFrameworkStores<AorDbContext>()
+    .AddDefaultTokenProviders();
 
-// AuthenificationS
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/LogIn";
-        options.AccessDeniedPath = "/LogIn/AccessDenied";
-    }
-);
+// Configure application cookie (custom login path)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/LogIn";
+    options.AccessDeniedPath = "/LogIn/AccessDenied";
+});
 
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var sp = scope.ServiceProvider;
+
+    try
+    {
+        var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
+
+        // Migrate + seed inside try so app doesn't crash when DB isn't reachable
+        await db.Database.MigrateAsync();                 // <- migrate
+
+        // Hent logger fra DI og pass både service provider og logger til seederen
+        var logger = sp.GetRequiredService<ILogger<Program>>();
+        await AOR.Data.AorDbSeeder.SeedAsync(sp, logger);  // <- SEED (med riktige argumenter)
+    }
+    catch (Exception ex)
+    {
+        // If DB isn't reachable or migration fails, log and continue so web app can start
+        var logger = sp.GetService<ILogger<Program>>();
+        if (logger != null)
+        {
+            logger.LogError(ex, "Database migrate/seed failed at startup. Application will continue to run.");
+        }
+        else
+        {
+            Console.Error.WriteLine("Database migrate/seed failed: " + ex);
+        }
+    }
+}
+
+
 // Configure pipeline
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();

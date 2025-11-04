@@ -1,0 +1,41 @@
+@model IEnumerable<AOR.Models.ObstacleData>
+@{
+    ViewData["Title"] = "Registrar - Home";
+    Layout = "_Layout";
+}
+
+<h1>Welcome, Registrar</h1>
+<p>This page is only accessible for users with the 'Registrar' role.</p>
+
+<div class="container mt-4">
+    <h2>Registered obstacles</h2>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Height</th>
+                <th>Created</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var obstacle in Model)
+            {
+                <tr>
+                    <td>@obstacle.ObstacleName</td>
+                    <td>@obstacle.ObstacleType</td>
+                    <td>@(obstacle.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
+                    <td>@obstacle.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm">
+                            View details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
