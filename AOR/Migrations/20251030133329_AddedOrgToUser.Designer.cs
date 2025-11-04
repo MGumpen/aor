@@ -4,6 +4,7 @@ using AOR.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    partial class AorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251030133329_AddedOrgToUser")]
+    partial class AddedOrgToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,9 +271,8 @@ namespace AOR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.HasKey("ReportId");
 
@@ -413,10 +415,81 @@ namespace AOR.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("UserModel", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int?>("OrgNr")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrganizationOrgNr")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("OrganizationOrgNr");
+
+                    b.ToTable("UserModel");
+                });
+
+            modelBuilder.Entity("UserRoleModel", b =>
+                {
+                    b.Property<int>("UserRoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserRoleId"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserModelUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("UserModelUserId");
+
+                    b.HasIndex("UserId", "RoleId")
+                        .IsUnique();
+
+                    b.ToTable("UserRoleModel");
+                });
+
             modelBuilder.Entity("AOR.Data.User", b =>
                 {
                     b.HasOne("AOR.Models.OrgModel", "Organization")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("OrgNr");
 
                     b.Navigation("Organization");
@@ -445,10 +518,10 @@ namespace AOR.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AOR.Data.User", "User")
-                        .WithMany()
+                    b.HasOne("UserModel", "User")
+                        .WithMany("Reports")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Obstacle");
@@ -507,6 +580,22 @@ namespace AOR.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("UserModel", b =>
+                {
+                    b.HasOne("AOR.Models.OrgModel", "Organization")
+                        .WithMany("Users")
+                        .HasForeignKey("OrganizationOrgNr");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("UserRoleModel", b =>
+                {
+                    b.HasOne("UserModel", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserModelUserId");
+                });
+
             modelBuilder.Entity("AOR.Models.ObstacleTypeModel", b =>
                 {
                     b.Navigation("Obstacles");
@@ -525,6 +614,13 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.PositionModel", b =>
                 {
                     b.Navigation("Obstacles");
+                });
+
+            modelBuilder.Entity("UserModel", b =>
+                {
+                    b.Navigation("Reports");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
