@@ -62,7 +62,7 @@ public class ObstacleController : Controller
         if (ModelState.IsValid)
         {
             obstacleData.CreatedAt = DateTime.UtcNow;
-            obstacleData.Status = "Pending"; // Yeni eklenen engeller Pending olarak başlar
+            obstacleData.Status = "Pending"; 
             
             Console.WriteLine("=== SUCCESS - Saving to database ===");
             _db.Obstacles.Add(obstacleData);
