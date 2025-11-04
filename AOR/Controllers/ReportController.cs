@@ -47,13 +47,27 @@ public class ReportController : Controller
             return RedirectToAction("Index", "LogIn");
         }
 
-        var report = await _db.Reports
+        // Base query with includes
+        var query = _db.Reports
             .AsNoTracking()
-            .Where(r => r.UserId == userId && r.ReportId == id)
             .Include(r => r.Obstacle)
             .Include(r => r.Status)
             .Include(r => r.User)
-            .FirstOrDefaultAsync();
+            .AsQueryable();
+
+        // If the user is Crew, restrict to their own reports.
+        if (User.IsInRole("Crew"))
+        {
+            query = query.Where(r => r.UserId == userId);
+        }
+
+        // Registrar (and other roles) can see any report by id.
+        var report = await query.FirstOrDefaultAsync(r => r.ReportId == id);
+
+        if (report == null)
+        {
+            return NotFound();
+        }
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
