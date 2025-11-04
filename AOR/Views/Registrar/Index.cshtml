@@ -34,7 +34,18 @@
                     <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@report.User?.UserName</td>
                     <td>@(report.User?.Organization?.OrgName ?? "Unknown")</td>
-                    <td>@report.Status.Status</td>
+                    <td>
+                        @{
+                            var statusText = report.Status?.Status ?? "Pending";
+                            var statusClass = statusText.ToLower() switch
+                            {
+                                "approved" => "badge bg-success",
+                                "rejected" => "badge bg-danger",
+                                _ => "badge bg-warning text-dark"
+                            };
+                        }
+                        <span class="@statusClass">@statusText</span>
+                    </td>
                     <td>
                         <a asp-controller="Report" asp-action="ReportDetails" asp-route-id="@report.ReportId" class="btn btn-info btn-sm me-1">
                             View details

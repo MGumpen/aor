@@ -167,7 +167,30 @@
         background: #4338ca;
         color: white;
     }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-badge-pending {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    .status-badge-approved {
+        background: #dcfce7;
+        color: #166534;
+    }
+    .status-badge-rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
 </style>
+
 
 <section class="container">
     <div class="header">
@@ -222,7 +245,18 @@
                         
                         <div class="detail-item">
                             <div class="detail-label">Status:</div>
-                            <div class="detail-value">@report.Status?.Status</div>
+                            <div class="detail-value">
+                                @{
+                                    var statusText = report.Status?.Status ?? "Pending";
+                                    var badgeClass = statusText.ToLower() switch
+                                    {
+                                        "approved" => "status-badge status-badge-approved",
+                                        "rejected" => "status-badge status-badge-rejected",
+                                        _ => "status-badge status-badge-pending"
+                                    };
+                                }
+                                <span class="@badgeClass">@statusText</span>
+                            </div>
                         </div>
                         
                         @if (!string.IsNullOrEmpty(report.Obstacle?.ObstacleType)
