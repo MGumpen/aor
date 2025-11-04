@@ -1,9 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using AOR.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AOR.Data;
 
@@ -42,8 +45,7 @@ public static class AorDbSeeder
             return;
         }
 
-        // Roles to ensure
-        // Legg også til 'Registerforer' slik appen leter etter dette rollnavnet
+        // Roles to ensure (ikke opprett 'Registerforer' her)
         var roles = new[] { "Crew", "Admin", "Registrar" };
         foreach (var role in roles)
         {
@@ -65,13 +67,66 @@ public static class AorDbSeeder
             }
         }
 
-        // Test users
+        // Organisations - opprett noen standardorganisasjoner hvis de ikke finnes
+        try
+        {
+            var db = scoped.GetRequiredService<AorDbContext>();
+
+            var orgs = new[]
+            {
+                new OrgModel { OrgNr = 123456789, OrgName = "Norsk Luftambulanse" },
+                new OrgModel { OrgNr = 234567891, OrgName = "Kartverket" },
+                new OrgModel { OrgNr = 345678912, OrgName = "Luftforsvaret" },
+                new OrgModel { OrgNr = 456789123, OrgName = "Politiets helikoptertjeneste" }
+            };
+
+            var added = false;
+            foreach (var org in orgs)
+            {
+                if (!db.Organizations.Any(o => o.OrgNr == org.OrgNr || o.OrgName == org.OrgName))
+                {
+                    db.Organizations.Add(org);
+                    logger.LogInformation("Added organisation {OrgName} (OrgNr: {OrgNr})", org.OrgName, org.OrgNr);
+                    added = true;
+                }
+                else
+                {
+                    logger.LogInformation("Organisation {OrgName} already exists", org.OrgName);
+                }
+            }
+
+            if (added)
+            {
+                await db.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception while seeding organisations");
+        }
+
+        // Map organisasjoner for enkel tilgang
+        var orgMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            var db = scoped.GetRequiredService<AorDbContext>();
+            foreach (var o in await db.Organizations.ToListAsync())
+            {
+                orgMap[o.OrgName] = o.OrgNr;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Kunne ikke hente organisasjoner etter seeding");
+        }
+
+        // Test users - opprett brukere OG knytt dem til organisasjon via OrgNr
         var testUsers = new[]
         {
-            // Bruk sterkere passord som tilfredsstiller standard Identity-policy
-            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew" },
-            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin" },
-            new { Email = "registrar@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Yonas", LastName = "Registrar" }
+            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew", OrgName = "Norsk Luftambulanse" },
+            new { Email = "crew2@test.no", Password = "Test123$", Role = "Crew", FirstName = "Petter", LastName = "Pilot", OrgName = "Luftforsvaret" },
+            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin", OrgName = "Luftforsvaret" },
+            new { Email = "reg@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Per", LastName = "Registerfører", OrgName = "Kartverket" }
         };
 
         foreach (var tu in testUsers)
@@ -90,6 +145,12 @@ public static class AorDbSeeder
                         LastName = tu.LastName
                     };
 
+                    // Sett OrgNr hvis vi har en mapping
+                    if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr))
+                    {
+                        user.OrgNr = orgNr;
+                    }
+
                     var createRes = await userManager.CreateAsync(user, tu.Password);
                     if (!createRes.Succeeded)
                     {
@@ -104,12 +165,12 @@ public static class AorDbSeeder
                     }
                     else
                     {
-                        logger.LogInformation("Created user {Email} with role {Role}", tu.Email, tu.Role);
+                        logger.LogInformation("Created user {Email} with role {Role} and OrgNr {OrgNr}", tu.Email, tu.Role, user.OrgNr);
                     }
                 }
                 else
                 {
-                    // Ensure role is assigned
+                    // Ensure role is assigned and OrgNr set
                     var rolesForUser = await userManager.GetRolesAsync(existing);
                     if (!rolesForUser.Contains(tu.Role))
                     {
@@ -122,6 +183,13 @@ public static class AorDbSeeder
                         {
                             logger.LogInformation("Added missing role {Role} to existing user {Email}", tu.Role, tu.Email);
                         }
+                    }
+
+                    if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr) && existing.OrgNr != orgNr)
+                    {
+                        existing.OrgNr = orgNr;
+                        await userManager.UpdateAsync(existing);
+                        logger.LogInformation("Updated OrgNr {OrgNr} for existing user {Email}", orgNr, tu.Email);
                     }
                     else
                     {

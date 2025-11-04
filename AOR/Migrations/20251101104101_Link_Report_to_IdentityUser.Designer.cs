@@ -4,6 +4,7 @@ using AOR.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    partial class AorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251101104101_Link_Report_to_IdentityUser")]
+    partial class Link_Report_to_IdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,10 +118,16 @@ namespace AOR.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<bool?>("HasLighting")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MastType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Material")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ObstacleDescription")
@@ -148,6 +157,9 @@ namespace AOR.Migrations
 
                     b.Property<int?>("PositionModelPositionId")
                         .HasColumnType("int");
+
+                    b.Property<double?>("Voltage")
+                        .HasColumnType("double");
 
                     b.Property<int?>("WireCount")
                         .HasColumnType("int");
@@ -245,14 +257,19 @@ namespace AOR.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ReportId"));
 
+                    b.Property<string>("Comment")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int>("ObstacleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -262,46 +279,9 @@ namespace AOR.Migrations
 
                     b.HasIndex("ObstacleId");
 
-                    b.HasIndex("StatusId");
-
                     b.HasIndex("UserId", "ObstacleId");
 
                     b.ToTable("Reports");
-                });
-
-            modelBuilder.Entity("AOR.Models.StatusModel", b =>
-                {
-                    b.Property<int>("StatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StatusId"));
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("StatusId");
-
-                    b.ToTable("Statuses");
-
-                    b.HasData(
-                        new
-                        {
-                            StatusId = 1,
-                            Status = "Pending"
-                        },
-                        new
-                        {
-                            StatusId = 2,
-                            Status = "Accepted"
-                        },
-                        new
-                        {
-                            StatusId = 3,
-                            Status = "Rejected"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -468,12 +448,6 @@ namespace AOR.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AOR.Models.StatusModel", "Status")
-                        .WithMany("Reports")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AOR.Data.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -481,8 +455,6 @@ namespace AOR.Migrations
                         .IsRequired();
 
                     b.Navigation("Obstacle");
-
-                    b.Navigation("Status");
 
                     b.Navigation("User");
                 });
@@ -556,11 +528,6 @@ namespace AOR.Migrations
             modelBuilder.Entity("AOR.Models.PositionModel", b =>
                 {
                     b.Navigation("Obstacles");
-                });
-
-            modelBuilder.Entity("AOR.Models.StatusModel", b =>
-                {
-                    b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
         }

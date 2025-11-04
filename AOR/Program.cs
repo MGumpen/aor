@@ -12,40 +12,68 @@ builder.Services.AddControllersWithViews();
 // Database configuration - MySQL
 var connectionString = builder.Configuration.GetConnectionString("AorDb");
 builder.Services.AddDbContext<AorDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(11, 4, 0))));
 
 // Identity - registered after DbContext so stores are available
-builder.Services.AddIdentityCore<User>()
-    .AddRoles<IdentityRole>()
-    .AddSignInManager()
-    .AddEntityFrameworkStores<AorDbContext>();
+// Use full AddIdentity so SignInManager, UserManager, RoleManager and cookie handling are configured
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    // Optional: tweak password requirements for dev/test convenience
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+})
+    .AddEntityFrameworkStores<AorDbContext>()
+    .AddDefaultTokenProviders();
 
-// AuthenificationS
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/LogIn";
-        options.AccessDeniedPath = "/LogIn/AccessDenied";
-    }
-);
+// Configure application cookie (custom login path)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/LogIn";
+    options.AccessDeniedPath = "/LogIn/AccessDenied";
+});
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     var sp = scope.ServiceProvider;
-    var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
 
-    await db.Database.MigrateAsync();                 // <- migrate
+    try
+    {
+        var db = sp.GetRequiredService<AOR.Data.AorDbContext>();
 
-    // Hent logger fra DI og pass både service provider og logger til seederen
-    var logger = sp.GetRequiredService<ILogger<Program>>();
-    await AOR.Data.AorDbSeeder.SeedAsync(sp, logger);  // <- SEED (med riktige argumenter)
+        // Migrate + seed inside try so app doesn't crash when DB isn't reachable
+        await db.Database.MigrateAsync();                 // <- migrate
+
+        // Hent logger fra DI og pass både service provider og logger til seederen
+        var logger = sp.GetRequiredService<ILogger<Program>>();
+        await AOR.Data.AorDbSeeder.SeedAsync(sp, logger);  // <- SEED (med riktige argumenter)
+    }
+    catch (Exception ex)
+    {
+        // If DB isn't reachable or migration fails, log and continue so web app can start
+        var logger = sp.GetService<ILogger<Program>>();
+        if (logger != null)
+        {
+            logger.LogError(ex, "Database migrate/seed failed at startup. Application will continue to run.");
+        }
+        else
+        {
+            Console.Error.WriteLine("Database migrate/seed failed: " + ex);
+        }
+    }
 }
 
 
 // Configure pipeline
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();

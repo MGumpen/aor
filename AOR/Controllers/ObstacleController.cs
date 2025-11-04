@@ -3,19 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
-
-
+using Microsoft.AspNetCore.Identity;
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
 {
     private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
-
-    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger)
+    private readonly UserManager<User> _userManager;
+    
+    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger, UserManager<User> userManager)
     {
         _db = db;
         _logger = logger;
+        _userManager = userManager;
     }
     
     [HttpGet("/Obstacle")]
@@ -49,7 +50,23 @@ public class ObstacleController : Controller
         });
     }
 
-    
+[HttpGet("/Crew/MyReports")]
+public async Task<IActionResult> MyReports()
+{
+    // Hent rapporter for den innloggede brukeren, inkludert Obstacle og Status for å unngå null-referanser i view
+    var userId = _userManager.GetUserId(User);
+
+    var reports = await _db.Reports
+        .Where(r => r.UserId == userId)
+        .Include(r => r.Obstacle)
+        .Include(r => r.Status)
+        .OrderByDescending(r => r.CreatedAt)
+        .ToListAsync();
+
+    return View("MyReports", reports);
+}
+
+
     [HttpPost]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData)
     {
@@ -68,6 +85,24 @@ public class ObstacleController : Controller
             _db.Obstacles.Add(obstacleData);
             await _db.SaveChangesAsync();
 
+            
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (currentUser != null && !string.IsNullOrEmpty(currentUserId))
+            {
+                var report = new ReportModel
+                {
+                    UserId = currentUserId,
+                    User = currentUser,
+                    ObstacleId = obstacleData.ObstacleId,
+                    CreatedAt = DateTime.UtcNow,
+                    StatusId = 1
+                };
+
+                _db.Reports.Add(report);
+                await _db.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
         }
 
@@ -127,15 +162,10 @@ public class ObstacleController : Controller
         else if (obstacleData.ObstacleType?.ToLower() == "powerline")
         {
             var wireCount = Request.Form["WireCount"].FirstOrDefault();
-            var voltage = Request.Form["Voltage"].FirstOrDefault();
             
             if (int.TryParse(wireCount, out int wires))
             {
                 obstacleData.WireCount = wires;
-            }
-            if (double.TryParse(voltage, out double volt))
-            {
-                obstacleData.Voltage = volt;
             }
         }
         
@@ -146,7 +176,6 @@ public class ObstacleController : Controller
             var material = Request.Form["Material"].FirstOrDefault();
             
             obstacleData.Category = category;
-            obstacleData.Material = material;
         }
     }
 
@@ -169,4 +198,3 @@ public class ObstacleController : Controller
     
     
 }
-
