@@ -132,6 +132,23 @@
         background: #4f46e5;
         color: white;
     }
+    
+    #report-map {
+        height: 300px; 
+    }
+
+    @@media (min-width: 992px) { 
+        #report-map {
+            height: 450px;
+        }
+    }
+
+    @@media (min-width: 1400px) {
+        #report-map {
+            height: 600px;
+        }
+    }
+    
 </style>
 
 <section class="container">
@@ -238,7 +255,7 @@
     
     <div id="map-wrapper" style="margin-bottom: 24px;">
         <h3 style="margin: 0 0 12px 0; color: #0c4a6e;">Map</h3>
-        <div id="report-map" style="height: 320px; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
+        <div id="report-map" style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
     </div>
     
     
