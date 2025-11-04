@@ -39,6 +39,32 @@ public class RegistrarController : Controller
         }
     }
 
+    [Authorize(Roles = "Registrar")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Approve(int id)
+    {
+        var obstacle = await _context.Obstacles.FindAsync(id);
+        if (obstacle == null) return NotFound();
+        obstacle.Status = "Approved";
+        await _context.SaveChangesAsync();
+        TempData["Message"] = $"Obstacle '{obstacle.ObstacleName}' approved.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [Authorize(Roles = "Registrar")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reject(int id)
+    {
+        var obstacle = await _context.Obstacles.FindAsync(id);
+        if (obstacle == null) return NotFound();
+        obstacle.Status = "Rejected";
+        await _context.SaveChangesAsync();
+        TempData["Message"] = $"Obstacle '{obstacle.ObstacleName}' rejected.";
+        return RedirectToAction(nameof(Index));
+    }
+
     public IActionResult Privacy()
     {
         return View();

@@ -72,33 +72,6 @@ public async Task<IActionResult> MyReports()
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
-        // Handle height conversion from form data
-        var heightUnit = Request.Form["heightUnit"].FirstOrDefault() ?? "meters";
-        var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
-        var heightFeetStr = Request.Form["heightFeet"].FirstOrDefault();
-
-        Console.WriteLine($"HeightUnit: {heightUnit}");
-        Console.WriteLine($"HeightMeters: {heightMetersStr}");
-        Console.WriteLine($"HeightFeet: {heightFeetStr}");
-
-        // Process height based on selected unit
-        if (heightUnit == "meters" && !string.IsNullOrEmpty(heightMetersStr))
-        {
-            if (double.TryParse(heightMetersStr, out double meters))
-            {
-                obstacleData.ObstacleHeight = meters;
-                Console.WriteLine($"Set height from meters: {obstacleData.ObstacleHeight}");
-            }
-        }
-        else if (heightUnit == "feet" && !string.IsNullOrEmpty(heightFeetStr))
-        {
-            if (double.TryParse(heightFeetStr, out double feet))
-            {
-                obstacleData.ObstacleHeight = feet * 0.3048; // Convert feet to meters for storage
-                Console.WriteLine($"Converted {feet} feet to {obstacleData.ObstacleHeight} meters");
-            }
-        }
-
         ProcessHeightConversion(obstacleData);
         // Process other type-specific fields
         ProcessTypeSpecificFields(obstacleData);
@@ -106,6 +79,9 @@ public async Task<IActionResult> MyReports()
         if (ModelState.IsValid)
         {
             obstacleData.CreatedAt = DateTime.UtcNow;
+            obstacleData.Status = "Pending"; 
+            
+            Console.WriteLine("=== SUCCESS - Saving to database ===");
             _db.Obstacles.Add(obstacleData);
             await _db.SaveChangesAsync();
 
@@ -129,18 +105,6 @@ public async Task<IActionResult> MyReports()
             }
             return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
         }
-        
-        if (ModelState.IsValid)
-        {
-            obstacleData.CreatedAt = DateTime.UtcNow;
-            Console.WriteLine("=== SUCCESS - Going to Overview ===");
-
-            // Save to database when ready
-            // _context.ObstacleData.Add(obstacleData);
-            // await _context.SaveChangesAsync();
-
-            return View("Overview", obstacleData);
-        }
 
         // If validation failed, preserve ViewBag data
         Console.WriteLine("=== VALIDATION FAILED ===");
@@ -153,25 +117,29 @@ public async Task<IActionResult> MyReports()
     
     private void ProcessHeightConversion(ObstacleData obstacleData)
     {
-        // Check if height is already set (from direct meter input)
-        if (obstacleData.ObstacleHeight.HasValue && obstacleData.ObstacleHeight > 0)
-        {
-            return; // Height already set correctly
-        }
+        var heightUnit = Request.Form["heightUnit"].FirstOrDefault() ?? "meters";
+        var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
+        var heightFeetStr = Request.Form["heightFeet"].FirstOrDefault();
 
-        // Try to get height from conversion fields
-        var heightUnit = Request.Form["heightUnit"].FirstOrDefault();
-        var heightInput = Request.Form["heightInput"].FirstOrDefault();
+        Console.WriteLine($"HeightUnit: {heightUnit}");
+        Console.WriteLine($"HeightMeters: {heightMetersStr}");
+        Console.WriteLine($"HeightFeet: {heightFeetStr}");
 
-        if (!string.IsNullOrEmpty(heightInput) && double.TryParse(heightInput, out double inputValue))
+        // Process height based on selected unit
+        if (heightUnit == "meters" && !string.IsNullOrEmpty(heightMetersStr))
         {
-            if (heightUnit == "feet")
+            if (double.TryParse(heightMetersStr, out double meters))
             {
-                obstacleData.ObstacleHeight = inputValue * 0.3048; // Convert feet to meters
+                obstacleData.ObstacleHeight = meters;
+                Console.WriteLine($"Set height from meters: {obstacleData.ObstacleHeight}");
             }
-            else
+        }
+        else if (heightUnit == "feet" && !string.IsNullOrEmpty(heightFeetStr))
+        {
+            if (double.TryParse(heightFeetStr, out double feet))
             {
-                obstacleData.ObstacleHeight = inputValue; // Already in meters
+                obstacleData.ObstacleHeight = feet * 0.3048; // Convert feet to meters for storage
+                Console.WriteLine($"Converted {feet} feet to {obstacleData.ObstacleHeight} meters");
             }
         }
     }
