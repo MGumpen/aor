@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
 using Microsoft.AspNetCore.Identity;
-
-
 namespace AOR.Controllers;
 
 public class ObstacleController : Controller
@@ -55,11 +53,17 @@ public class ObstacleController : Controller
 [HttpGet("/Crew/MyReports")]
 public async Task<IActionResult> MyReports()
 {
-    var obstacles = await _db.Obstacles
-        .OrderByDescending(o => o.CreatedAt)
+    // Hent rapporter for den innloggede brukeren, inkludert Obstacle og Status for å unngå null-referanser i view
+    var userId = _userManager.GetUserId(User);
+
+    var reports = await _db.Reports
+        .Where(r => r.UserId == userId)
+        .Include(r => r.Obstacle)
+        .Include(r => r.Status)
+        .OrderByDescending(r => r.CreatedAt)
         .ToListAsync();
 
-    return View("MyReports", obstacles);
+    return View("MyReports", reports);
 }
 
 
@@ -117,7 +121,7 @@ public async Task<IActionResult> MyReports()
                     User = currentUser,
                     ObstacleId = obstacleData.ObstacleId,
                     CreatedAt = DateTime.UtcNow,
-                    Status = "Pending"
+                    StatusId = 1
                 };
 
                 _db.Reports.Add(report);
@@ -190,15 +194,10 @@ public async Task<IActionResult> MyReports()
         else if (obstacleData.ObstacleType?.ToLower() == "powerline")
         {
             var wireCount = Request.Form["WireCount"].FirstOrDefault();
-            var voltage = Request.Form["Voltage"].FirstOrDefault();
             
             if (int.TryParse(wireCount, out int wires))
             {
                 obstacleData.WireCount = wires;
-            }
-            if (double.TryParse(voltage, out double volt))
-            {
-                obstacleData.Voltage = volt;
             }
         }
         
@@ -209,7 +208,6 @@ public async Task<IActionResult> MyReports()
             var material = Request.Form["Material"].FirstOrDefault();
             
             obstacleData.Category = category;
-            obstacleData.Material = material;
         }
     }
 
@@ -232,4 +230,3 @@ public async Task<IActionResult> MyReports()
     
     
 }
-

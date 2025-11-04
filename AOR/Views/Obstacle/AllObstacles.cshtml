@@ -217,14 +217,6 @@
                             <div class="detail-value">@obstacle.CreatedAt.ToString("dd.MM.yyyy")</div>
                         </div>
                         
-                        @if (obstacle.ObstacleType.ToLower() == "powerline" && obstacle.Voltage.HasValue)
-                        {
-                            <div class="detail-item">
-                                <div class="detail-label">Voltage:</div>
-                                <div class="detail-value">@obstacle.Voltage kV</div>
-                            </div>
-                        }
-                        
                         @if (obstacle.ObstacleType.ToLower() == "mast" && !string.IsNullOrEmpty(obstacle.MastType))
                         {
                             <div class="detail-item">

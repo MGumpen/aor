@@ -23,6 +23,8 @@ public class AorDbContext : IdentityDbContext<User>
     public DbSet<PhotoModel> Photos { get; set; } = null!;
     
     public DbSet<ReportModel> Reports { get; set; } = null!;
+    
+    public DbSet<StatusModel> Statuses { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -31,13 +33,19 @@ public class AorDbContext : IdentityDbContext<User>
         builder.Entity<ReportModel>(e =>
         {
             e.HasOne(r => r.User)
-                .WithMany()                 // Ingen back-collection nødvendig
+                .WithMany()                 
                 .HasForeignKey(r => r.UserId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict); // unngå cascading slett av rapporter når bruker slettes
+                .OnDelete(DeleteBehavior.Restrict); 
 
             e.HasIndex(r => new { r.UserId, r.ObstacleId });
         });
+        
+        builder.Entity<StatusModel>().HasData(
+            new StatusModel { StatusId = 1, Status = "Pending" },
+            new StatusModel { StatusId = 2, Status = "Accepted" },
+            new StatusModel { StatusId = 3, Status = "Rejected" }
+        );
     }
     
 }
