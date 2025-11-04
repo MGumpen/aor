@@ -1,6 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using AOR.Data
 @inject SignInManager<User> SignInManager
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -66,39 +72,16 @@
             <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
             <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <div class="d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav ms-auto fs-5">
                     @if (User?.Identity?.IsAuthenticated == true)
-                    {
-                        <li class="nav-item">
-
-                            @if (User.IsInRole("Registrar"))
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Registrar" asp-action="Index">Home</a>
-                            }
-                            else if (User.IsInRole("Crew"))
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Crew" asp-action="Index">Home</a>
-                            }
-                            else if (User.IsInRole("Admin"))
-                            {
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Home</a>
-                            }
-                        </li>
-                        <li class="nav-item">
-
-                            @if (User?.Identity?.IsAuthenticated == true)
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-user-circle"></i> @User.Identity.Name
-                                    </a>
+                                    <i class="fa fa-user-circle"></i>
+                                    @($"{currentUser?.FirstName} {currentUser?.LastName}")
+                                </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                         <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
                                         </li>
@@ -122,9 +105,6 @@
                                     </ul>
                                 </li>
                             }
-                        </li>
-
-                    }
                 </ul>
             </div>
         </div>

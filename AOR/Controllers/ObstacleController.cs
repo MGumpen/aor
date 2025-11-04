@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace AOR.Controllers;
@@ -11,11 +12,13 @@ public class ObstacleController : Controller
 {
     private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
-
-    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger)
+    private readonly UserManager<User> _userManager;
+    
+    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger, UserManager<User> userManager)
     {
         _db = db;
         _logger = logger;
+        _userManager = userManager;
     }
     
     [HttpGet("/Obstacle")]
@@ -102,7 +105,24 @@ public async Task<IActionResult> MyReports()
             _db.Obstacles.Add(obstacleData);
             await _db.SaveChangesAsync();
 
-            // PRG-mønster
+            
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (currentUser != null && !string.IsNullOrEmpty(currentUserId))
+            {
+                var report = new ReportModel
+                {
+                    UserId = currentUserId,
+                    User = currentUser,
+                    ObstacleId = obstacleData.ObstacleId,
+                    CreatedAt = DateTime.UtcNow,
+                    Status = "Pending"
+                };
+
+                _db.Reports.Add(report);
+                await _db.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
         }
         
