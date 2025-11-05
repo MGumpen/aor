@@ -6,7 +6,7 @@ using AOR.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AOR.Controllers;
-[Authorize(Roles = "Crew")]
+[Authorize]
 public class ReportController : Controller
 {
     private readonly AorDbContext _db;
@@ -17,7 +17,8 @@ public class ReportController : Controller
         _db = db;
         _userManager = userManager;
     }
-
+    
+    [Authorize(Roles = "Crew")]
     [HttpGet]
     public async Task<IActionResult> MyReports()
     {
@@ -39,6 +40,7 @@ public class ReportController : Controller
         return View(reports);
     }
     
+    [Authorize(Roles = "Crew, Registrar")]
     [HttpGet]
     public async Task<IActionResult> ReportDetails(int id)
     {
