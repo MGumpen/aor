@@ -15,8 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/AOR.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/AOR.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,7 +29,6 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="update" />
         <entry key="$PROJECT_DIR$/../bacit25" value="main" />
       </map>
     </option>
@@ -42,12 +41,12 @@
     &quot;assignee&quot;: &quot;MGumpen&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/MGumpen/aor.git",
-    "accountId": "8fd1febe-46b8-40a8-9dc9-e9ac1b9f35e0"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MGumpen/aor.git&quot;,
+    &quot;accountId&quot;: &quot;868d185d-3199-4df5-80d0-9c9dd6d0785b&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -117,7 +116,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Erfan/FikseRolleAuthorization",
+    "git-widget-placeholder": "Marius/ReportDetails",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -201,7 +200,6 @@
       <workItem from="1758090237962" duration="1385000" />
       <workItem from="1758100014838" duration="8185000" />
       <workItem from="1761748620570" duration="661000" />
-      <workItem from="1762342295569" duration="489000" />
     </task>
     <servers />
   </component>
