@@ -1,14 +1,39 @@
-@model IEnumerable<AOR.Models.ObstacleData>
+@model IEnumerable<AOR.Models.ReportModel>
 @{
     ViewData["Title"] = "Registrar - Home";
     Layout = "_Layout";
 }
 
-<h1>Welcome, Registrar</h1>
-<p>This page is only accessible for users with the 'Registrar' role.</p>
+<style>
+    .registrar-container {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
 
-<div class="container mt-4">
-    <h2>Registered obstacles</h2>
+    
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    @@media (min-width: 1200px) {
+        .container {
+            width: 80%;
+            max-width: 80%;
+        }
+    }
+</style>
+
+
+<h1>Welcome, Registrar</h1>
+
+
+<div class="registrar-container mt-4">
+    <h2>Obstacle reports</h2>
     
     <table class="table table-striped">
         <thead>
@@ -16,26 +41,63 @@
                 <th>Name</th>
                 <th>Type</th>
                 <th>Height</th>
-                <th>Created</th>
+                <th>Created at</th>
+                <th>Created by</th>
+                <th>Organization</th>
+                <th>Status</th>
                 <th>Details</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var obstacle in Model)
+            @foreach (var report in Model)
             {
                 <tr>
-                    <td>@obstacle.ObstacleName</td>
-                    <td>@obstacle.ObstacleType</td>
-                    <td>@(obstacle.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
-                    <td>@obstacle.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@report.Obstacle?.ObstacleName</td>
+                    <td>@report.Obstacle?.ObstacleType</td>
+                    <td>@(report.Obstacle?.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
+                    <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@report.User?.UserName</td>
+                    <td>@(report.User?.Organization?.OrgName ?? "Unknown")</td>
                     <td>
-                        <a href="@Url.Action("Details", "Obstacle", new { id = obstacle.ObstacleId })" class="btn btn-info btn-sm">
+                        @{
+                            var statusText = report.Status?.Status ?? "Pending";
+                            var statusClass = statusText.ToLower() switch
+                            {
+                                "approved" => "badge bg-success",
+                                "rejected" => "badge bg-danger",
+                                _ => "badge bg-warning text-dark"
+                            };
+                        }
+                        <span class="@statusClass">@statusText</span>
+                    </td>
+                    <td>
+                        <a asp-controller="Report" asp-action="ReportDetails" asp-route-id="@report.ReportId" class="btn btn-info btn-sm me-1">
                             View details
                         </a>
+                    </td>
+                    <td>
+                        @if (!string.Equals(report.Status?.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <form asp-action="Approve" asp-controller="Registrar" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@report.ReportId" />
+                                <button type="submit" class="btn btn-success btn-sm me-1">Approve</button>
+                            </form>
+                        }
+
+                        @if (!string.Equals(report.Status?.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <form asp-action="Reject" asp-controller="Registrar" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@report.ReportId" />
+                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-</div>
 
+</div>

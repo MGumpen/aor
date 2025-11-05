@@ -24,20 +24,19 @@ namespace AOR.Models
         
         public int PointCount { get; set; }
         
-        // Power Line specific
-        public double? Voltage { get; set; }
+   
         public int? WireCount { get; set; }
         
-        // Mast specific  
+   
         public string? MastType { get; set; }
         public bool? HasLighting { get; set; }
         
-        // Other obstacle specific
         public string? Category { get; set; }
-        public string? Material { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string? CreatedBy { get; set; }
+
+        // Status: Pending, Approved, Rejected
+        public string Status { get; set; } = "Pending";
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

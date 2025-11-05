@@ -4,6 +4,7 @@ using AOR.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    partial class AorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104104636_Removed_Entity_From_ObstacleData")]
+    partial class Removed_Entity_From_ObstacleData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,10 +151,6 @@ namespace AOR.Migrations
 
                     b.Property<int?>("PositionModelPositionId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int?>("WireCount")
                         .HasColumnType("int");
@@ -299,22 +298,12 @@ namespace AOR.Migrations
                         new
                         {
                             StatusId = 2,
-                            Status = "Approved"
+                            Status = "Accepted"
                         },
                         new
                         {
                             StatusId = 3,
                             Status = "Rejected"
-                        },
-                        new
-                        {
-                            StatusId = 4,
-                            Status = "Draft"
-                        },
-                        new
-                        {
-                            StatusId = 5,
-                            Status = "Deleted"
                         });
                 });
 

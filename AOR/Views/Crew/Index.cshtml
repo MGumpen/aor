@@ -119,28 +119,27 @@
     .action-buttons {
         position: absolute;
         bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
+        left: 20px;
+        right: 20px;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 12px;
         z-index: 1000;
-        width: 100%;
         justify-content: center;
     }
 
     .main-action-btn {
-        padding: 28px 56px;
+        flex: 1;
+        padding: 32px 16px;
         border: none;
         border-radius: 12px;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 600;
         color: white;
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
         backdrop-filter: blur(10px);
-        min-width: 180px;
         text-align: center;
         touch-action: manipulation;
         letter-spacing: 0.5px; 
@@ -173,15 +172,17 @@
         border-color: #dee2e6;
     }
 
-    /* Points panel - responsive */
+    /* Points panel - compact with scrollable content */
     .points-panel {
         position: absolute;
         top: 80px;
         left: 20px;
-        width: 240px;
-        max-height: 400px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
+        width: 280px;                   
+        max-width: 90vw;
+        max-height: 300px;               
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(8px);
         border: 1px solid #e9ecef;
         border-radius: 8px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
@@ -191,29 +192,47 @@
     }
 
     .points-panel-header {
-        padding: 12px 16px;
+        padding: 10px 12px;
         background: rgba(248, 249, 250, 0.8);
         border-bottom: 1px solid rgba(233, 236, 239, 0.5);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-shrink: 0;                  /* Prevents header from shrinking */
     }
 
     .points-panel-title {
-        font-size: 13px;
+        font-size: 18px;
         font-weight: 500;
         color: #495057;
         margin: 0;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+
+    .points-panel-title:hover {
+        color: #0C5AA6;
+    }
+
+
 
     .panel-controls {
         display: flex;
-        gap: 6px;
+        gap: 8px;
+        order: 2;
+    }
+
+    .points-panel.hidden {
+        display: none !important;
     }
 
     .panel-btn {
-        width: 28px;
-        height: 28px;
+        width: 36px;
+        height: 36px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
@@ -221,7 +240,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
+        font-size: 18px;
         font-weight: 500;
         touch-action: manipulation;
     }
@@ -247,19 +266,42 @@
     }
 
     .points-list {
-        max-height: 300px;
+        max-height: 180px;               /* Fits ~2 items, then scrolls */
         overflow-y: auto;
-        padding: 8px;
+        padding: 4px;
+        scrollbar-width: thin;           /* Firefox: thin scrollbar */
+        scrollbar-color: rgba(0,0,0,0.3) transparent; /* Firefox: scrollbar colors */
+    }
+
+    /* Webkit scrollbar styling for better appearance */
+    .points-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .points-list::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.1);
+        border-radius: 3px;
+    }
+
+    .points-list::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.3);
+        border-radius: 3px;
+    }
+
+    .points-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(0,0,0,0.5);
     }
 
     .point-item {
-        padding: 10px 12px;
-        margin-bottom: 6px;
+        padding: 8px 12px;
+        margin-bottom: 4px;
         background: rgba(255, 255, 255, 0.7);
         border: 1px solid rgba(233, 236, 239, 0.5);
         border-radius: 6px;
         transition: all 0.2s ease;
-        font-size: 11px;
+        font-size: 14px;
+        flex-shrink: 0;                  /* Prevents items from shrinking */
+        min-height: 60px;                /* Consistent item height */
     }
 
     .point-item:active {
@@ -280,7 +322,8 @@
     }
 
     .point-number {
-        font-weight: 500;
+        font-size: 18px;
+        font-weight: 600;
         color: #495057;
     }
 
@@ -290,8 +333,8 @@
     }
 
     .point-btn {
-        width: 24px;
-        height: 24px;
+        width: 36px;
+        height: 36px;
         border: none;
         border-radius: 3px;
         cursor: pointer;
@@ -299,7 +342,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 10px;
+        font-size: 18px;
         font-weight: bold;
         touch-action: manipulation;
     }
@@ -322,7 +365,7 @@
     .point-coords {
         color: #6c757d;
         font-family: 'Courier New', monospace;
-        font-size: 10px;
+        font-size: 15px;
         line-height: 1.2;
     }
 
@@ -361,7 +404,7 @@
     /* Notification - responsive */
     .drawing-notification {
         position: absolute;
-        bottom: 150px;
+        bottom: 200px;
         left: 50%;
         transform: translateX(-50%);
         background: rgba(255, 255, 255, 0.95);
@@ -378,30 +421,36 @@
         white-space: nowrap;
     }
 
-    /* Mobile responsiveness */
+    /* Tablet responsiveness */
+    @@media (max-width: 900px) {
+        .main-action-btn {
+            font-size: 20px;
+            padding: 28px 12px;
+        }
+    }
+
+    /* Mobile responsiveness - keep left-aligned */
     @@media (max-width: 768px) {
         .points-panel {
-            width: calc(100% - 40px);
-            max-width: 300px;
-            top: auto;
-            bottom: 120px;
-            left: 50%;
-            transform: translateX(-50%);
+            /* Keep consistent size and position - no centering */
+            top: 80px;
+            left: 10px;  /* Slightly closer to edge on mobile */
         }
 
         .action-buttons {
             gap: 8px;
             bottom: 20px;
+            left: 15px;
+            right: 15px;
         }
 
         .main-action-btn {
-            padding: 12px 20px;
-            font-size: 13px;
-            min-width: 90px;
+            padding: 20px 8px;
+            font-size: 18px;
         }
 
         .drawing-notification {
-            bottom: 85px;
+            bottom: 120px;
             font-size: 10px;
             padding: 5px 10px;
         }
@@ -410,22 +459,32 @@
             padding: 10px 16px;
             font-size: 13px;
         }
+
+
     }
 
     @@media (max-width: 480px) {
         .points-panel {
-            max-height: 250px;
+            /* Keep consistent on very small screens too */
+            left: 5px;  /* Even closer to edge on very small screens */
         }
 
         .action-buttons {
             bottom: 15px;
+            left: 10px;
+            right: 10px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
         }
 
         .main-action-btn {
-            padding: 10px 16px;
-            font-size: 12px;
-            min-width: 80px;
+            padding: 18px 6px;
+            font-size: 16px;
+            flex-shrink: 0;
+            min-width: 0;
         }
+
+
     }
 </style>
 
@@ -454,10 +513,10 @@
     <!-- Points panel -->
     <div class="points-panel" id="points-panel">
         <div class="points-panel-header">
-            <h3 class="points-panel-title" id="panel-title">Points</h3>
+            <h3 class="points-panel-title" id="panel-title" onclick="togglePointsPanel()" title="Click to hide panel">Points</h3>
             <div class="panel-controls">
-                <button class="panel-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
                 <button class="panel-btn confirm" onclick="confirmDrawing()" title="Confirm">✓</button>
+                <button class="panel-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
                 <button class="panel-btn cancel" onclick="cancelDrawing()" title="Cancel">✕</button>
             </div>
         </div>
@@ -496,6 +555,7 @@
     var markers = [];
     var polyline = null;
     var pointCounter = 0;
+    var isPanelVisible = false;
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
@@ -508,6 +568,25 @@
             document.getElementById('welcome-popup').style.display = 'flex';
         } else {
             document.getElementById('welcome-popup').style.display = 'none';
+        }
+    }
+
+    function togglePointsPanel() {
+        const pointsList = document.getElementById('points-list');
+        const title = document.getElementById('panel-title');
+        
+        if (isPanelVisible) {
+            // Hide only the points list, keep header and controls visible
+            pointsList.style.display = 'none';
+            title.setAttribute('title', 'Click to show points');
+            
+            isPanelVisible = false;
+        } else {
+            // Show the points list
+            pointsList.style.display = 'block';
+            title.setAttribute('title', 'Click to hide points');
+            
+            isPanelVisible = true;
         }
     }
 
@@ -566,6 +645,10 @@
         document.getElementById('drawing-notification').style.display = 'block';
         document.getElementById('points-panel').style.display = 'block';
         
+        // Ensure panel content is visible
+        document.getElementById('points-list').style.display = 'block';
+        
+        isPanelVisible = true;
         document.getElementById('points-list').innerHTML = '';
         
         drawingLayer = L.layerGroup().addTo(map);
@@ -789,6 +872,8 @@
         
         document.getElementById('drawing-notification').style.display = 'none';
         document.getElementById('points-panel').style.display = 'none';
+        
+        isPanelVisible = false;
     }
     
     function showMyLocation() {
@@ -810,7 +895,6 @@
             );
         }
     }
-    
     
     window.addEventListener('resize', function() {
         if (map) {

@@ -3,19 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
-
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 namespace AOR.Controllers;
-
+[Authorize(Roles = "Crew")]
 public class ObstacleController : Controller
 {
     private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
-
-    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger)
+    private readonly UserManager<User> _userManager;
+    
+    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger, UserManager<User> userManager)
     {
         _db = db;
         _logger = logger;
+        _userManager = userManager;
     }
     
     [HttpGet("/Obstacle")]
@@ -52,11 +54,17 @@ public class ObstacleController : Controller
 [HttpGet("/Crew/MyReports")]
 public async Task<IActionResult> MyReports()
 {
-    var obstacles = await _db.Obstacles
-        .OrderByDescending(o => o.CreatedAt)
+    // Hent rapporter for den innloggede brukeren, inkludert Obstacle og Status for å unngå null-referanser i view
+    var userId = _userManager.GetUserId(User);
+
+    var reports = await _db.Reports
+        .Where(r => r.UserId == userId)
+        .Include(r => r.Obstacle)
+        .Include(r => r.Status)
+        .OrderByDescending(r => r.CreatedAt)
         .ToListAsync();
 
-    return View("MyReports", obstacles);
+    return View("MyReports", reports);
 }
 
 
@@ -65,7 +73,51 @@ public async Task<IActionResult> MyReports()
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
-        // Handle height conversion from form data
+        ProcessHeightConversion(obstacleData);
+        // Process other type-specific fields
+        ProcessTypeSpecificFields(obstacleData);
+
+        if (ModelState.IsValid)
+        {
+            obstacleData.CreatedAt = DateTime.UtcNow;
+            obstacleData.Status = "Pending"; 
+            
+            Console.WriteLine("=== SUCCESS - Saving to database ===");
+            _db.Obstacles.Add(obstacleData);
+            await _db.SaveChangesAsync();
+
+            
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserId = _userManager.GetUserId(User);
+
+            if (currentUser != null && !string.IsNullOrEmpty(currentUserId))
+            {
+                var report = new ReportModel
+                {
+                    UserId = currentUserId,
+                    User = currentUser,
+                    ObstacleId = obstacleData.ObstacleId,
+                    CreatedAt = DateTime.UtcNow,
+                    StatusId = 1
+                };
+
+                _db.Reports.Add(report);
+                await _db.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
+        }
+
+        // If validation failed, preserve ViewBag data
+        Console.WriteLine("=== VALIDATION FAILED ===");
+        ViewBag.ObstacleType = obstacleData.ObstacleType;
+        ViewBag.Coordinates = obstacleData.Coordinates;
+        ViewBag.PointCount = obstacleData.PointCount;
+
+        return View(obstacleData);
+    }
+    
+    private void ProcessHeightConversion(ObstacleData obstacleData)
+    {
         var heightUnit = Request.Form["heightUnit"].FirstOrDefault() ?? "meters";
         var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
         var heightFeetStr = Request.Form["heightFeet"].FirstOrDefault();
@@ -91,65 +143,6 @@ public async Task<IActionResult> MyReports()
                 Console.WriteLine($"Converted {feet} feet to {obstacleData.ObstacleHeight} meters");
             }
         }
-
-        ProcessHeightConversion(obstacleData);
-        // Process other type-specific fields
-        ProcessTypeSpecificFields(obstacleData);
-
-        if (ModelState.IsValid)
-        {
-            obstacleData.CreatedAt = DateTime.UtcNow;
-            _db.Obstacles.Add(obstacleData);
-            await _db.SaveChangesAsync();
-
-            // PRG-mønster
-            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
-        }
-        
-        if (ModelState.IsValid)
-        {
-            obstacleData.CreatedAt = DateTime.UtcNow;
-            Console.WriteLine("=== SUCCESS - Going to Overview ===");
-
-            // Save to database when ready
-            // _context.ObstacleData.Add(obstacleData);
-            // await _context.SaveChangesAsync();
-
-            return View("Overview", obstacleData);
-        }
-
-        // If validation failed, preserve ViewBag data
-        Console.WriteLine("=== VALIDATION FAILED ===");
-        ViewBag.ObstacleType = obstacleData.ObstacleType;
-        ViewBag.Coordinates = obstacleData.Coordinates;
-        ViewBag.PointCount = obstacleData.PointCount;
-
-        return View(obstacleData);
-    }
-    
-    private void ProcessHeightConversion(ObstacleData obstacleData)
-    {
-        // Check if height is already set (from direct meter input)
-        if (obstacleData.ObstacleHeight.HasValue && obstacleData.ObstacleHeight > 0)
-        {
-            return; // Height already set correctly
-        }
-
-        // Try to get height from conversion fields
-        var heightUnit = Request.Form["heightUnit"].FirstOrDefault();
-        var heightInput = Request.Form["heightInput"].FirstOrDefault();
-
-        if (!string.IsNullOrEmpty(heightInput) && double.TryParse(heightInput, out double inputValue))
-        {
-            if (heightUnit == "feet")
-            {
-                obstacleData.ObstacleHeight = inputValue * 0.3048; // Convert feet to meters
-            }
-            else
-            {
-                obstacleData.ObstacleHeight = inputValue; // Already in meters
-            }
-        }
     }
     private void ProcessTypeSpecificFields(ObstacleData obstacleData)
     {
@@ -170,15 +163,10 @@ public async Task<IActionResult> MyReports()
         else if (obstacleData.ObstacleType?.ToLower() == "powerline")
         {
             var wireCount = Request.Form["WireCount"].FirstOrDefault();
-            var voltage = Request.Form["Voltage"].FirstOrDefault();
             
             if (int.TryParse(wireCount, out int wires))
             {
                 obstacleData.WireCount = wires;
-            }
-            if (double.TryParse(voltage, out double volt))
-            {
-                obstacleData.Voltage = volt;
             }
         }
         
@@ -189,7 +177,6 @@ public async Task<IActionResult> MyReports()
             var material = Request.Form["Material"].FirstOrDefault();
             
             obstacleData.Category = category;
-            obstacleData.Material = material;
         }
     }
 
@@ -212,4 +199,3 @@ public async Task<IActionResult> MyReports()
     
     
 }
-

@@ -4,6 +4,7 @@ using AOR.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AOR.Migrations
 {
     [DbContext(typeof(AorDbContext))]
-    partial class AorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104093212_Added_Report_Deleted_Voltage")]
+    partial class Added_Report_Deleted_Voltage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,10 +118,16 @@ namespace AOR.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
                     b.Property<bool?>("HasLighting")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MastType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Material")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ObstacleDescription")
@@ -148,10 +157,6 @@ namespace AOR.Migrations
 
                     b.Property<int?>("PositionModelPositionId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int?>("WireCount")
                         .HasColumnType("int");
@@ -299,22 +304,12 @@ namespace AOR.Migrations
                         new
                         {
                             StatusId = 2,
-                            Status = "Approved"
+                            Status = "Accepted"
                         },
                         new
                         {
                             StatusId = 3,
                             Status = "Rejected"
-                        },
-                        new
-                        {
-                            StatusId = 4,
-                            Status = "Draft"
-                        },
-                        new
-                        {
-                            StatusId = 5,
-                            Status = "Deleted"
                         });
                 });
 

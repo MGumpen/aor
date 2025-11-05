@@ -10,6 +10,7 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
 # Brukere i Web Applikasjonen: #
 - Crew: crew@test.no Passord: Test123$
+- Crew 2: crew2@test.no Passord: Test123$
 - Admin: admin@test.no Passord: Test123$
 - Registerfører: reg@test.no Passord: Test123$
 

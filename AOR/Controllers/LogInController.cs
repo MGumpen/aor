@@ -153,5 +153,12 @@ namespace AOR.Controllers
             ModelState.Clear();
             return View(new AOR.Models.ForgotPasswordModel());
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();       
+        }
     }
 }
