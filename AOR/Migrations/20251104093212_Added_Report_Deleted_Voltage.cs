@@ -54,7 +54,10 @@ namespace AOR.Migrations
                 {
                     { 1, "Pending" },
                     { 2, "Approved" },
-                    { 3, "Rejected" }
+                    { 3, "Rejected" },
+                    { 4, "Draft" },
+                    { 5, "Deleted" }
+
                 });
 
             migrationBuilder.CreateIndex(
