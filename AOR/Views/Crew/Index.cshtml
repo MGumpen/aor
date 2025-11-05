@@ -206,12 +206,28 @@
         font-weight: 500;
         color: #495057;
         margin: 0;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+
+    .points-panel-title:hover {
+        color: #0C5AA6;
+    }
+
+
 
     .panel-controls {
         display: flex;
         gap: 8px;
         order: 2;
+    }
+
+    .points-panel.hidden {
+        display: none !important;
     }
 
     .panel-btn {
@@ -443,6 +459,8 @@
             padding: 10px 16px;
             font-size: 13px;
         }
+
+
     }
 
     @@media (max-width: 480px) {
@@ -465,6 +483,8 @@
             flex-shrink: 0;
             min-width: 0;
         }
+
+
     }
 </style>
 
@@ -493,7 +513,7 @@
     <!-- Points panel -->
     <div class="points-panel" id="points-panel">
         <div class="points-panel-header">
-            <h3 class="points-panel-title" id="panel-title">Points</h3>
+            <h3 class="points-panel-title" id="panel-title" onclick="togglePointsPanel()" title="Click to hide panel">Points</h3>
             <div class="panel-controls">
                 <button class="panel-btn confirm" onclick="confirmDrawing()" title="Confirm">✓</button>
                 <button class="panel-btn undo" onclick="undoLastPoint()" title="Undo">↶</button>
@@ -535,6 +555,7 @@
     var markers = [];
     var polyline = null;
     var pointCounter = 0;
+    var isPanelVisible = false;
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
@@ -547,6 +568,25 @@
             document.getElementById('welcome-popup').style.display = 'flex';
         } else {
             document.getElementById('welcome-popup').style.display = 'none';
+        }
+    }
+
+    function togglePointsPanel() {
+        const pointsList = document.getElementById('points-list');
+        const title = document.getElementById('panel-title');
+        
+        if (isPanelVisible) {
+            // Hide only the points list, keep header and controls visible
+            pointsList.style.display = 'none';
+            title.setAttribute('title', 'Click to show points');
+            
+            isPanelVisible = false;
+        } else {
+            // Show the points list
+            pointsList.style.display = 'block';
+            title.setAttribute('title', 'Click to hide points');
+            
+            isPanelVisible = true;
         }
     }
 
@@ -605,6 +645,10 @@
         document.getElementById('drawing-notification').style.display = 'block';
         document.getElementById('points-panel').style.display = 'block';
         
+        // Ensure panel content is visible
+        document.getElementById('points-list').style.display = 'block';
+        
+        isPanelVisible = true;
         document.getElementById('points-list').innerHTML = '';
         
         drawingLayer = L.layerGroup().addTo(map);
@@ -828,6 +872,8 @@
         
         document.getElementById('drawing-notification').style.display = 'none';
         document.getElementById('points-panel').style.display = 'none';
+        
+        isPanelVisible = false;
     }
     
     function showMyLocation() {
