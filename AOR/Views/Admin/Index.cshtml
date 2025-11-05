@@ -1,21 +1,70 @@
 @{
-    ViewData["Title"] = "Admin Dashboard";
     Layout = "_Layout";
+    ViewData["Title"] = "Admin - Dashboard";
 }
 
-<section class="container mt-4">
-    <h1 class="mb-2">Welcome, Admin</h1>
-    <p class="text-muted">This is the admin front page (public for now).</p>
+<div class="admin-wrapper">
+    <h1>Admin</h1>
 
-    <div class="row g-3 mt-3">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Incoming Reports</h5>
-                    <p class="card-text">See new obstacle reports and take action.</p>
-                    <a class="btn btn-primary disabled">Inbox (coming soon)</a>
-                </div>
-            </div>
-        </div>
+    <div class="admin-grid">
+        <a class="admin-tile" asp-controller="Admin" asp-action="Map">Maps</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Users">Users</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Statistics">Statistics</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="PreviousReports">Previous reports</a>
     </div>
-</section>
+</div>
+
+@section Styles {
+    <style>
+        .admin-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center
+        }
+
+            .admin-wrapper h1 {
+                margin-bottom: 40px
+            }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 64px;
+            justify-items: center
+        }
+
+        .admin-tile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            text-align: center;
+            width: 260px;
+            height: 130px;
+            border-radius: 18px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: #0d6efd;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,.15);
+            transition: .15s
+        }
+
+            .admin-tile:hover {
+                background: #0b5ed7;
+                transform: translateY(-3px)
+            }
+
+        /* Razor needs @@ to output literal @media */
+        @@media (max-width:800px) {
+            .admin-grid {
+                grid-template-columns: 1fr;
+                gap: 36px
+            }
+        }
+    </style>
+}
+
