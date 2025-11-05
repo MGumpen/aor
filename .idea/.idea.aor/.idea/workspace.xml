@@ -16,7 +16,10 @@
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Map.cshtsml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Map.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/PreviosReports.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/PreviousReports.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +119,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Marius/ReportDetails",
+    "git-widget-placeholder": "Adrian/adminFix",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
