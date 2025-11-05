@@ -149,6 +149,10 @@ namespace AOR.Migrations
                     b.Property<int?>("PositionModelPositionId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int?>("WireCount")
                         .HasColumnType("int");
 
@@ -295,12 +299,22 @@ namespace AOR.Migrations
                         new
                         {
                             StatusId = 2,
-                            Status = "Accepted"
+                            Status = "Approved"
                         },
                         new
                         {
                             StatusId = 3,
                             Status = "Rejected"
+                        },
+                        new
+                        {
+                            StatusId = 4,
+                            Status = "Draft"
+                        },
+                        new
+                        {
+                            StatusId = 5,
+                            Status = "Deleted"
                         });
                 });
 
