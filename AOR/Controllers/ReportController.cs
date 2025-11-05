@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AOR.Controllers;
-
+[Authorize(Roles = "Crew")]
 public class ReportController : Controller
 {
     private readonly AorDbContext _db;
