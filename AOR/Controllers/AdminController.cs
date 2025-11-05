@@ -1,31 +1,22 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-<<<<<<< Updated upstream
-using Microsoft.AspNetCore.Authorization;
-=======
 using System.Security.Claims;
->>>>>>> Stashed changes
 
 namespace AOR.Controllers
 {
+    // Require login
     [Authorize]
     public class AdminController : Controller
     {
         private bool IsAdmin()
         {
-            var email = User.FindFirstValue(ClaimTypes.Email) ?? "";
-            return email.Equals("admin@uia.no", StringComparison.OrdinalIgnoreCase);
+            // Allow either role=Admin OR exact e-mail admin@uia.no
+            var isRoleAdmin = User.IsInRole("Admin");
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "";
+            var isEmailAdmin = email.Equals("admin@uia.no", System.StringComparison.OrdinalIgnoreCase);
+            return isRoleAdmin || isEmailAdmin;
         }
 
-<<<<<<< Updated upstream
-        // GET: /Admin/Inbox
-        public IActionResult Inbox()
-        {
-            // TODO: hent nye rapporter fra databasen
-            // Foreløpig kan vi returnere en tom view
-            return View();
-        }
-=======
         private IActionResult GuardedView(string viewName)
         {
             if (!IsAdmin()) return Forbid();
@@ -39,6 +30,5 @@ namespace AOR.Controllers
 
         [ActionName("PreviousReports")]
         public IActionResult PreviousReports() => GuardedView("PreviousReports");
->>>>>>> Stashed changes
     }
 }
