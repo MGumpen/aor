@@ -53,7 +53,7 @@ namespace AOR.Migrations
                 values: new object[,]
                 {
                     { 1, "Pending" },
-                    { 2, "Accepted" },
+                    { 2, "Approved" },
                     { 3, "Rejected" }
                 });
 
