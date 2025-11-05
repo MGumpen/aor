@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 namespace AOR.Controllers;
-
+[Authorize(Roles = "Crew")]
 public class ObstacleController : Controller
 {
     private readonly AorDbContext _db;
