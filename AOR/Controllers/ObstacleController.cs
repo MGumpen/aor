@@ -190,6 +190,27 @@ public async Task<IActionResult> MyReports()
         return View(obstacles);
     }
 
+    // Returns obstacles created within the last `days` days as JSON
+    [HttpGet("/Obstacle/Recent")]
+    public async Task<IActionResult> Recent(int days = 30)
+    {
+        var cutoff = DateTime.UtcNow.AddDays(-days);
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .Where(o => o.CreatedAt >= cutoff)
+            .OrderByDescending(o => o.CreatedAt)
+            .Select(o => new {
+                o.ObstacleId,
+                o.ObstacleType,
+                o.Coordinates,
+                o.PointCount,
+                CreatedAt = o.CreatedAt
+            })
+            .ToListAsync();
+
+        return Json(obstacles);
+    }
+
     public async Task<IActionResult> Details(int id)
     {
         var obstacle = await _db.Obstacles.FindAsync(id);

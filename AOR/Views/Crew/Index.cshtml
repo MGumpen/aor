@@ -94,6 +94,30 @@
         touch-action: manipulation;
     }
 
+    /* Recent filter button */
+    .recent-btn {
+        position: absolute;
+        top: 20px;
+        left: 160px;
+        z-index: 1000;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+        backdrop-filter: blur(10px);
+        transition: all 0.15s ease;
+    }
+
+    .recent-btn.active {
+        background: #0C5AA6;
+        color: white;
+        border-color: #093a66;
+    }
+
     .location-btn:hover {
         background: rgba(255, 255, 255, 1);
         transform: translateY(-1px);
@@ -450,6 +474,10 @@
     <button class="location-btn" onclick="showMyLocation()">
         My Location
     </button>
+    <!-- Recent 30 days filter button -->
+    <button class="location-btn recent-btn" id="recent-btn" onclick="toggleRecentObstacles()" title="Show obstacles from last 30 days">
+        Last 30 days
+    </button>
     
     <!-- Points panel -->
     <div class="points-panel" id="points-panel">
@@ -490,6 +518,7 @@
 
 <script>
     var map;
+    var recentLayer = null; // LayerGroup for recent obstacles
     var drawingMode = null;
     var currentDrawing = [];
     var drawingLayer = null;
@@ -548,6 +577,102 @@
                 addPoint(e.latlng);
             }
         });
+    }
+
+    // Toggle fetching and showing obstacles created within the last 30 days
+    function toggleRecentObstacles() {
+        const btn = document.getElementById('recent-btn');
+        if (recentLayer) {
+            // hide
+            map.removeLayer(recentLayer);
+            recentLayer = null;
+            btn.classList.remove('active');
+            return;
+        }
+
+        btn.classList.add('active');
+        fetchRecentObstacles(30).catch(err => {
+            console.error('Failed to load recent obstacles', err);
+            btn.classList.remove('active');
+            alert('Could not load recent obstacles. See console for details.');
+        });
+    }
+
+    async function fetchRecentObstacles(days) {
+        const resp = await fetch(`/Obstacle/Recent?days=${days}`);
+        console.log('fetch /Obstacle/Recent status:', resp.status, resp.statusText);
+        if (!resp.ok) throw new Error('Network response was not ok');
+        const items = await resp.json();
+        console.log('Recent obstacles response items:', items);
+        // quick sanity: show count
+        try { console.log('Recent obstacles count:', Array.isArray(items) ? items.length : 'not-array'); } catch(e) {}
+        renderRecentObstacles(items);
+    }
+
+    function renderRecentObstacles(items) {
+        if (!items || items.length === 0) {
+            alert('No obstacles registered in the last 30 days.');
+            return;
+        }
+
+        recentLayer = L.layerGroup();
+        const bounds = [];
+
+        const typeColors = {
+            'powerline': '#E74C3C',
+            'mast': '#0C5AA6',
+            'other': '#00A651'
+        };
+
+        items.forEach(item => {
+            // Support different JSON naming (camelCase vs PascalCase) and both string or already-parsed coords
+            const rawCoords = item.coordinates ?? item.Coordinates ?? item.CoordinatesJson ?? item.coordinatesJson;
+            if (!rawCoords) {
+                console.warn('No coordinates found for item', item);
+                return;
+            }
+
+            let coords = null;
+            if (typeof rawCoords === 'string') {
+                try {
+                    coords = JSON.parse(rawCoords);
+                } catch (e) {
+                    console.warn('Failed to parse coordinates JSON for obstacle', item, e);
+                    return;
+                }
+            } else if (Array.isArray(rawCoords)) {
+                coords = rawCoords;
+            } else {
+                console.warn('Unsupported coordinates format for obstacle', item);
+                return;
+            }
+
+            if (!Array.isArray(coords) || coords.length === 0) return;
+
+            const obstacleTypeVal = (item.obstacleType ?? item.ObstacleType ?? '').toString().toLowerCase();
+            const color = typeColors[obstacleTypeVal] || '#4f46e5';
+
+            if (coords.length > 1) {
+                // draw polyline for multi-point obstacles
+                const latlngs = coords.map(c => [c.lat, c.lng]);
+                const pl = L.polyline(latlngs, { color: color, weight: 3, opacity: 0.8 });
+                pl.bindPopup(`<strong>${item.ObstacleType ?? item.obstacleType}</strong><br/>Points: ${item.PointCount ?? item.pointCount}<br/>Registered: ${new Date(item.CreatedAt ?? item.createdAt).toLocaleString()}<br/><a href='/Obstacle/Details/${item.ObstacleId ?? item.obstacleId}'>View details</a>`);
+                pl.addTo(recentLayer);
+                latlngs.forEach(ll => bounds.push(ll));
+            } else {
+                // single point
+                const c = coords[0];
+                const m = L.circleMarker([c.lat, c.lng], { radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 1 });
+                m.bindPopup(`<strong>${item.ObstacleType ?? item.obstacleType}</strong><br/>Registered: ${new Date(item.CreatedAt ?? item.createdAt).toLocaleString()}<br/><a href='/Obstacle/Details/${item.ObstacleId ?? item.obstacleId}'>View details</a>`);
+                m.addTo(recentLayer);
+                bounds.push([c.lat, c.lng]);
+            }
+        });
+
+        recentLayer.addTo(map);
+        if (bounds.length > 0) {
+            try { map.fitBounds(bounds, { padding: [50, 50] }); } catch (e) { /* ignore if single point */ }
+        }
     }
     
     function startDrawing(type) {
