@@ -1,21 +1,26 @@
 @{
-    ViewData["Title"] = "Admin Dashboard";
     Layout = "_Layout";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<section class="container mt-4">
-    <h1 class="mb-2">Welcome, Admin</h1>
-    <p class="text-muted">This is the admin front page (public for now).</p>
-
-    <div class="row g-3 mt-3">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Incoming Reports</h5>
-                    <p class="card-text">See new obstacle reports and take action.</p>
-                    <a class="btn btn-primary disabled">Inbox (coming soon)</a>
-                </div>
-            </div>
-        </div>
+<div class="admin-wrapper">
+    <h1>Admin Dashboard</h1>
+    <div class="admin-container">
+        <a class="admin-tile" href="@Url.Action("Map","Admin")">Map</a>
+        <a class="admin-tile" href="@Url.Action("Users","Admin")">Users</a>
+        <a class="admin-tile" href="@Url.Action("Statistics","Admin")">Statistics</a>
+        <a class="admin-tile" href="@Url.Action("PreviousReports","Admin")">Previous Reports</a>
     </div>
-</section>
+</div>
+
+@section Styles {
+    <style>
+  .admin-wrapper{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center}
+  .admin-container{display:grid;grid-template-columns:repeat(2,1fr);gap:70px;justify-items:center}
+  .admin-tile{display:flex;align-items:center;justify-content:center;width:260px;height:130px;border-radius:20px;
+              text-decoration:none;background:#007bff;color:#fff;font-size:1.6rem;font-weight:600;
+              box-shadow:0 8px 20px rgba(0,0,0,.15);transition:.2s}
+  .admin-tile:hover{background:#0056b3;transform:translateY(-5px)}
+  @media (max-width:800px){.admin-container{grid-template-columns:1fr;gap:40px}}
+    </style>
+}

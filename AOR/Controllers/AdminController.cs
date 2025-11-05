@@ -1,23 +1,34 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AOR.Controllers
 {
     [Authorize(Roles = "Admin")]
+
     public class AdminController : Controller
     {
-        // GET: /Admin
-        public IActionResult Index()
+        private bool IsAdmin()
         {
-            return View();
+            // Allow either role=Admin OR exact e-mail admin@uia.no
+            var isRoleAdmin = User.IsInRole("Admin");
+            var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity?.Name ?? "";
+            var isEmailAdmin = email.Equals("admin@uia.no", System.StringComparison.OrdinalIgnoreCase);
+            return isRoleAdmin || isEmailAdmin;
         }
 
-        // GET: /Admin/Inbox
-        public IActionResult Inbox()
+        private IActionResult GuardedView(string viewName)
         {
-            // TODO: hent nye rapporter fra databasen
-            // Foreløpig kan vi returnere en tom view
-            return View();
+            if (!IsAdmin()) return Forbid();
+            return View(viewName);
         }
+
+        public IActionResult Index() => GuardedView("Index");
+        public IActionResult Map() => GuardedView("Map");
+        public IActionResult Users() => GuardedView("Users");
+        public IActionResult Statistics() => GuardedView("Statistics");
+
+        [ActionName("PreviousReports")]
+        public IActionResult PreviousReports() => GuardedView("PreviousReports");
     }
 }

@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
+<<<<<<< HEAD
+=======
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 
+>>>>>>> de967b4e2b999b393788d8c8b34ce3a11e240d37
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +37,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/LogIn";
     options.AccessDeniedPath = "/LogIn/AccessDenied";
 });
+
 
 var app = builder.Build();
 
