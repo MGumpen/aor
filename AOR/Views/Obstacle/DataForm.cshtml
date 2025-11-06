@@ -545,7 +545,9 @@
                 return;
             }
 
-            const field = document.querySelector(`[name="${name}"]`);
+            const candidates = Array.from(document.getElementsByName(name));
+            const field = candidates.length > 0 ? candidates[0] : document.getElementById(name);
+
             if (!field) {
                 return;
             }
@@ -557,16 +559,20 @@
             }
 
             if (field.type === 'radio') {
-                const target = Array.from(document.querySelectorAll(`input[type="radio"][name="${name}"]`))
-                    .find(radio => radio.value === value.toString());
-                if (target) {
-                    target.checked = true;
+                const match = candidates.find(radio => radio.value === value.toString());
+                if (match) {
+                    match.checked = true;
                 }
                 return;
             }
 
             const normalizedValue = typeof value === 'string' ? value : value.toString();
             field.value = normalizedValue;
+
+            if (field.type !== 'hidden') {
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
         }
 
         function applyDraftToForm(data) {
@@ -644,21 +650,21 @@
                 }
             };
 
-            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title');
-            setCanonicalField('ObstacleType', 'obstacleType', 'type');
-            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description');
-            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height');
-            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight');
-            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal');
-            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type');
-            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting');
-            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category');
-            setCanonicalField('Coordinates', 'coordinates', 'pointsJson');
-            setCanonicalField('PointCount', 'pointCount', 'points');
-            setCanonicalField('savedAt', 'SavedAt', 'saved_at');
+            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title', 'displayName', 'ObstacleData.ObstacleName', 'obstacle_data.obstacle_name');
+            setCanonicalField('ObstacleType', 'obstacleType', 'type', 'ObstacleData.ObstacleType', 'obstacle_data.obstacle_type', 'hiddenObstacleType');
+            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description', 'ObstacleData.ObstacleDescription', 'obstacle_data.obstacle_description');
+            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height', 'ObstacleData.ObstacleHeight', 'obstacle_data.obstacle_height');
+            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight', 'ObstacleData.heightInput', 'obstacle_data.height_input');
+            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal', 'ObstacleData.WireCount', 'obstacle_data.wire_count');
+            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type', 'ObstacleData.MastType', 'obstacle_data.mast_type');
+            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting', 'ObstacleData.HasLighting', 'obstacle_data.has_lighting');
+            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category', 'ObstacleData.Category', 'obstacle_data.category');
+            setCanonicalField('Coordinates', 'coordinates', 'pointsJson', 'ObstacleData.Coordinates', 'obstacle_data.coordinates', 'coordinatesJson');
+            setCanonicalField('PointCount', 'pointCount', 'points', 'ObstacleData.PointCount', 'obstacle_data.point_count');
+            setCanonicalField('savedAt', 'SavedAt', 'saved_at', 'ObstacleData.SavedAt', 'obstacle_data.saved_at', 'timestamp');
 
             if (data.ObstacleType) {
-                data.ObstacleType = data.ObstacleType.toString();
+                data.ObstacleType = data.ObstacleType.toString().trim();
             }
 
             if (typeof data.HasLighting === 'boolean') {
@@ -695,11 +701,19 @@
 
             data.PointCount = derivePointCount(data);
 
-            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput'].forEach(key => {
+            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput', 'draftTitle', 'displayName'].forEach(key => {
                 if (typeof data[key] === 'string') {
                     data[key] = data[key].trim();
                 }
             });
+
+            if (!data.draftTitle && data.ObstacleName) {
+                data.draftTitle = data.ObstacleName;
+            }
+
+            if (!data.displayName && data.ObstacleName) {
+                data.displayName = data.ObstacleName;
+            }
 
             return data;
         }
@@ -724,12 +738,27 @@
 
             const canonicalDraft = canonicalizeDraftData(draftData);
 
-            if (canonicalDraft.ObstacleName) {
-                canonicalDraft.ObstacleName = canonicalDraft.ObstacleName.toString().trim();
+            const nameField = document.getElementById('ObstacleName');
+            if (!canonicalDraft.ObstacleName && nameField && nameField.value.trim() !== '') {
+                canonicalDraft.ObstacleName = nameField.value.trim();
             }
 
-            if (!canonicalDraft.ObstacleName && draftData.ObstacleName) {
-                canonicalDraft.ObstacleName = draftData.ObstacleName.toString().trim();
+            if (canonicalDraft.ObstacleName) {
+                const trimmedName = canonicalDraft.ObstacleName.toString().trim();
+                canonicalDraft.ObstacleName = trimmedName;
+                if (!canonicalDraft.draftTitle) {
+                    canonicalDraft.draftTitle = trimmedName;
+                }
+                if (!canonicalDraft.displayName) {
+                    canonicalDraft.displayName = trimmedName;
+                }
+            }
+
+            if (!canonicalDraft.ObstacleDescription) {
+                const descriptionField = document.getElementById('ObstacleDescription');
+                if (descriptionField && descriptionField.value.trim() !== '') {
+                    canonicalDraft.ObstacleDescription = descriptionField.value.trim();
+                }
             }
 
             if (!canonicalDraft.ObstacleType) {
@@ -739,8 +768,12 @@
                 }
             }
 
+            if (canonicalDraft.ObstacleType) {
+                canonicalDraft.ObstacleType = canonicalDraft.ObstacleType.toString().trim();
+            }
+
             const coordinatesField = document.getElementById('hiddenCoordinates');
-            if (coordinatesField) {
+            if (coordinatesField && coordinatesField.value) {
                 canonicalDraft.Coordinates = coordinatesField.value;
             }
 
@@ -755,13 +788,41 @@
                 canonicalDraft.heightInput = heightInputElement.value || canonicalDraft.heightInput || '';
             }
 
+            const mastTypeField = document.querySelector('[name="MastType"]');
+            if (!canonicalDraft.MastType && mastTypeField && mastTypeField.value) {
+                canonicalDraft.MastType = mastTypeField.value;
+            }
+
+            const lightingField = document.querySelector('[name="HasLighting"]');
+            if (!canonicalDraft.HasLighting && lightingField && lightingField.value !== '') {
+                canonicalDraft.HasLighting = lightingField.value;
+            }
+
+            const wireCountField = document.querySelector('[name="WireCount"]');
+            if (!canonicalDraft.WireCount && wireCountField && wireCountField.value) {
+                canonicalDraft.WireCount = wireCountField.value;
+            }
+
+            const categoryField = document.querySelector('[name="Category"]');
+            if (!canonicalDraft.Category && categoryField && categoryField.value) {
+                canonicalDraft.Category = categoryField.value;
+            }
+
             canonicalDraft.PointCount = derivePointCount(canonicalDraft);
+            if (!Number.isFinite(canonicalDraft.PointCount)) {
+                canonicalDraft.PointCount = 0;
+            }
+
             canonicalDraft.savedAt = new Date().toISOString();
             canonicalDraft.isDraft = true;
             canonicalDraft.autoSaved = Boolean(options.autoSave);
 
             const existingKey = document.getElementById('currentDraftKey')?.value;
-            const typeSegment = (canonicalDraft.ObstacleType || 'obstacle').toLowerCase().replace(/\s+/g, '-');
+            const typeSegment = (canonicalDraft.ObstacleType || 'obstacle')
+                .toString()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'obstacle';
             const draftKey = existingKey || `draft_${typeSegment}_${Date.now()}`;
             canonicalDraft.draftKey = draftKey;
 

@@ -372,6 +372,9 @@
             const candidateName = getFirstNonEmpty(
                 data.ObstacleName,
                 data.obstacleName,
+                data.displayName,
+                data.draftTitle,
+                data.title,
                 data.name,
                 data.ObstacleId,
                 data.obstacleId
@@ -392,7 +395,15 @@
             const details = document.createElement('div');
             details.className = 'obstacle-details';
 
-            const obstacleTypeRaw = (getFirstNonEmpty(data.ObstacleType, data.obstacleType, data.type) || '').toString();
+            const obstacleTypeRawValue = getFirstNonEmpty(
+                data.ObstacleType,
+                data.obstacleType,
+                data.type,
+                data.hiddenObstacleType,
+                data['ObstacleData.ObstacleType'],
+                data['obstacle_data.obstacle_type']
+            );
+            const obstacleTypeRaw = (obstacleTypeRawValue || '').toString().trim();
             const obstacleType = obstacleTypeRaw.toLowerCase();
             const formattedType = formatObstacleType(obstacleTypeRaw);
             const formattedHeight = formatDraftHeight(data.ObstacleHeight, data.heightInput);
@@ -651,21 +662,21 @@
                 }
             };
 
-            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title');
-            setCanonicalField('ObstacleType', 'obstacleType', 'type');
-            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description');
-            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height');
-            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight');
-            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal');
-            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type');
-            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting');
-            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category');
-            setCanonicalField('Coordinates', 'coordinates', 'pointsJson');
-            setCanonicalField('PointCount', 'pointCount', 'points');
-            setCanonicalField('savedAt', 'SavedAt', 'saved_at');
+            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title', 'displayName', 'ObstacleData.ObstacleName', 'obstacle_data.obstacle_name');
+            setCanonicalField('ObstacleType', 'obstacleType', 'type', 'ObstacleData.ObstacleType', 'obstacle_data.obstacle_type', 'hiddenObstacleType');
+            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description', 'ObstacleData.ObstacleDescription', 'obstacle_data.obstacle_description');
+            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height', 'ObstacleData.ObstacleHeight', 'obstacle_data.obstacle_height');
+            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight', 'ObstacleData.heightInput', 'obstacle_data.height_input');
+            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal', 'ObstacleData.WireCount', 'obstacle_data.wire_count');
+            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type', 'ObstacleData.MastType', 'obstacle_data.mast_type');
+            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting', 'ObstacleData.HasLighting', 'obstacle_data.has_lighting');
+            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category', 'ObstacleData.Category', 'obstacle_data.category');
+            setCanonicalField('Coordinates', 'coordinates', 'pointsJson', 'ObstacleData.Coordinates', 'obstacle_data.coordinates', 'coordinatesJson');
+            setCanonicalField('PointCount', 'pointCount', 'points', 'ObstacleData.PointCount', 'obstacle_data.point_count');
+            setCanonicalField('savedAt', 'SavedAt', 'saved_at', 'ObstacleData.SavedAt', 'obstacle_data.saved_at', 'timestamp');
 
             if (data.ObstacleType) {
-                data.ObstacleType = data.ObstacleType.toString();
+                data.ObstacleType = data.ObstacleType.toString().trim();
             }
 
             if (typeof data.HasLighting === 'boolean') {
@@ -702,11 +713,19 @@
 
             data.PointCount = deriveDraftPointCount(data);
 
-            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput'].forEach(key => {
+            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput', 'draftTitle', 'displayName'].forEach(key => {
                 if (typeof data[key] === 'string') {
                     data[key] = data[key].trim();
                 }
             });
+
+            if (!data.draftTitle && data.ObstacleName) {
+                data.draftTitle = data.ObstacleName;
+            }
+
+            if (!data.displayName && data.ObstacleName) {
+                data.displayName = data.ObstacleName;
+            }
 
             return data;
         }
