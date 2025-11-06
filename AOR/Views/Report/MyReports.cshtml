@@ -204,10 +204,13 @@
             <div><strong>Power Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "powerline"))</div>
             <div><strong>Masts:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "mast"))</div>
             <div><strong>Other:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "other"))</div>
-            </div>
+            <div id="draftsStats" style="display:none;"><strong>Drafts:</strong> <span id="draftsNumber">0</span></div>
+        </div>
         <a href="/Crew" class="btn btn-primary">Add New Obstacle</a>
     </div>
     
+    <div class="obstacles-grid" id="draftsContainer" style="display: none; margin-bottom: 24px;"></div>
+
     @if (Model != null && Model.Any())
     {
         <div class="obstacles-grid">
@@ -296,3 +299,228 @@
         </div>
     }
 </section>
+
+<script>
+    (function () {
+        const draftsContainer = document.getElementById('draftsContainer');
+        if (!draftsContainer) {
+            return;
+        }
+
+        const draftKeys = Object.keys(localStorage)
+            .filter(key => key.startsWith('draft_'))
+            .map(key => {
+                try {
+                    const raw = localStorage.getItem(key);
+                    if (!raw) {
+                        return null;
+                    }
+
+                    const data = JSON.parse(raw);
+                    return { key, data };
+                } catch (error) {
+                    console.warn('Unable to parse draft entry', key, error);
+                    return null;
+                }
+            })
+            .filter(entry => entry && entry.data);
+
+        if (!draftKeys.length) {
+            return;
+        }
+
+        draftKeys.sort((a, b) => {
+            const aDate = new Date(a.data.savedAt || 0).getTime();
+            const bDate = new Date(b.data.savedAt || 0).getTime();
+            return bDate - aDate;
+        });
+
+        draftsContainer.style.display = 'grid';
+        draftsContainer.innerHTML = '';
+
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+
+        const draftsStats = document.getElementById('draftsStats');
+        const draftsNumber = document.getElementById('draftsNumber');
+        if (draftsStats && draftsNumber) {
+            draftsStats.style.display = 'block';
+            draftsNumber.textContent = draftKeys.length.toString();
+        }
+
+        draftKeys.forEach(entry => {
+            const { key, data } = entry;
+            const card = document.createElement('div');
+            card.className = 'obstacle-card';
+            card.style.background = '#fffbe8';
+            card.style.border = '1px solid #fde68a';
+
+            const header = document.createElement('div');
+            header.className = 'obstacle-header';
+
+            const title = document.createElement('h3');
+            title.className = 'obstacle-name';
+            title.textContent = data.ObstacleName && data.ObstacleName.trim().length > 0
+                ? data.ObstacleName
+                : 'Draft Unknown';
+
+            const badge = document.createElement('span');
+            badge.className = 'obstacle-type-badge';
+            badge.style.background = '#fef9c3';
+            badge.style.color = '#b45309';
+            badge.textContent = 'DRAFT';
+
+            header.appendChild(title);
+            header.appendChild(badge);
+            card.appendChild(header);
+
+            const details = document.createElement('div');
+            details.className = 'obstacle-details';
+
+            const detailItems = [
+                {
+                    label: 'Height:',
+                    value: data.ObstacleHeight && data.ObstacleHeight !== ''
+                        ? `${data.ObstacleHeight} m`
+                        : '—'
+                },
+                {
+                    label: 'Points:',
+                    value: data.PointCount && !isNaN(Number(data.PointCount))
+                        ? Number(data.PointCount).toString()
+                        : '0'
+                },
+                {
+                    label: 'Registered:',
+                    value: formatSavedDate(data.savedAt)
+                },
+                {
+                    label: 'Status:',
+                    value: null,
+                    badge: 'DRAFT'
+                }
+            ];
+
+            if (data.ObstacleType && data.ObstacleType.trim() !== '') {
+                detailItems.push({
+                    label: 'Type:',
+                    value: data.ObstacleType
+                });
+            }
+
+            detailItems.forEach(item => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'detail-item';
+
+                const label = document.createElement('div');
+                label.className = 'detail-label';
+                label.textContent = item.label;
+
+                const value = document.createElement('div');
+                value.className = 'detail-value';
+
+                if (item.badge) {
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = 'status-badge status-badge-pending';
+                    statusBadge.style.background = '#fef3c7';
+                    statusBadge.style.color = '#b45309';
+                    statusBadge.textContent = item.badge;
+                    value.appendChild(statusBadge);
+                } else {
+                    value.textContent = item.value ?? '—';
+                }
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(value);
+                details.appendChild(wrapper);
+            });
+
+            card.appendChild(details);
+
+            if (data.ObstacleDescription && data.ObstacleDescription.trim() !== '') {
+                const description = document.createElement('div');
+                description.className = 'obstacle-description';
+
+                const text = data.ObstacleDescription.length > 100
+                    ? `${data.ObstacleDescription.substring(0, 100)}...`
+                    : data.ObstacleDescription;
+
+                description.textContent = text;
+                card.appendChild(description);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'report-actions';
+
+            const continueLink = document.createElement('a');
+            continueLink.className = 'btn-small btn-details';
+            continueLink.href = `/Obstacle/DataForm?draft=${encodeURIComponent(key)}`;
+            continueLink.textContent = 'Continue Editing';
+
+            const deleteLink = document.createElement('a');
+            deleteLink.className = 'btn-small btn-details';
+            deleteLink.style.background = '#fee2e2';
+            deleteLink.style.color = '#991b1b';
+            deleteLink.style.border = '1px solid #fee2e2';
+            deleteLink.href = '#';
+            deleteLink.textContent = 'Delete Draft';
+            deleteLink.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                if (confirm('Delete this draft?')) {
+                    localStorage.removeItem(key);
+                    card.remove();
+
+                    const remaining = draftsContainer.querySelectorAll('.obstacle-card').length;
+                    if (draftsStats && draftsNumber) {
+                        if (remaining === 0) {
+                            draftsStats.style.display = 'none';
+                            draftsContainer.style.display = 'none';
+                        }
+                        draftsNumber.textContent = remaining.toString();
+                    }
+                }
+            });
+
+            actions.appendChild(continueLink);
+            actions.appendChild(deleteLink);
+            card.appendChild(actions);
+
+            draftsContainer.appendChild(card);
+        });
+
+        function formatSavedDate(value) {
+            if (!value) {
+                return 'Just now';
+            }
+
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return 'Just now';
+            }
+
+            const diffMs = Date.now() - date.getTime();
+            if (diffMs < 0) {
+                return 'Just now';
+            }
+
+            const seconds = Math.floor(diffMs / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            if (seconds < 5) return 'Just now';
+            if (seconds < 60) return `${seconds} seconds ago`;
+            if (minutes === 1) return '1 minute ago';
+            if (minutes < 60) return `${minutes} minutes ago`;
+            if (hours === 1) return '1 hour ago';
+            if (hours < 24) return `${hours} hours ago`;
+            if (days === 1) return '1 day ago';
+            if (days === 2) return '2 days ago';
+            if (days >= 3) return date.toLocaleDateString('no-NO');
+
+            return date.toLocaleDateString('no-NO');
+        }
+    })();
+</script>

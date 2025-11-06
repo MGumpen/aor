@@ -176,6 +176,77 @@
         font-weight: 500;
         border: 1px solid #e5e7eb;
     }
+    
+    .pilot-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        justify-content: flex-end;
+    }
+    
+    .pilot-primary, .pilot-secondary, .pilot-draft {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        min-width: 120px;
+    }
+    
+    .pilot-primary {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .pilot-primary:hover {
+        background: #4338ca;
+    }
+    
+    .pilot-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+    
+    .pilot-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    .pilot-draft {
+        background: #fbbf24;
+        color: #92400e;
+        border: 1px solid #f59e0b;
+    }
+    
+    .pilot-draft:hover {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .draft-saved-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+    }
+    
+    .draft-saved-notification.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
 </style>
 
 <section class="pilot-form-container">
@@ -343,12 +414,17 @@
         </div>
 
         <div class="pilot-actions">
-            <a href="/Crew" class="pilot-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
-            <a href="/Obstacle/AllObstacles" class="pilot-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Draft</a>
-            <button type="submit" class="pilot-primary">Register obstacle</button>
+            <a href="/Crew" class="pilot-secondary">Cancel</a>
+            <button type="button" class="pilot-draft" onclick="saveDraft()">Save as Draft</button>
+            <button type="submit" class="pilot-primary">Register Obstacle</button>
         </div>
     </form>
 </section>
+
+<!-- Draft saved notification -->
+<div id="draftNotification" class="draft-saved-notification">
+    Draft saved successfully!
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -409,5 +485,130 @@
                 }
             }
         });
+        
+        // Draft functionality
+        function saveDraft() {
+            const formData = new FormData(document.querySelector('form'));
+            const draftData = {};
+            
+            // Convert FormData to regular object
+            for (let [key, value] of formData.entries()) {
+                draftData[key] = value;
+            }
+            
+            // Add timestamp
+            draftData.savedAt = new Date().toISOString();
+            draftData.isDraft = true;
+            
+            // Generate draft key based on obstacle type and coordinates
+            const draftKey = `draft_${draftData.ObstacleType}_${Date.now()}`;
+            
+            // Save to localStorage
+            localStorage.setItem(draftKey, JSON.stringify(draftData));
+            
+            // Show notification
+            showDraftNotification();
+            
+            // Optional: redirect to drafts page after short delay
+            setTimeout(() => {
+                window.location.href = '/Obstacle/AllObstacles';
+            }, 1500);
+        }
+        
+        function showDraftNotification() {
+            const notification = document.getElementById('draftNotification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Load draft data if available
+        function loadDraft() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const draftKey = urlParams.get('draft');
+            
+            if (draftKey) {
+                const draftData = localStorage.getItem(draftKey);
+                if (draftData) {
+                    try {
+                        const data = JSON.parse(draftData);
+                        
+                        // Populate form fields
+                        Object.keys(data).forEach(key => {
+                            const element = document.querySelector(`[name="${key}"]`);
+                            if (element) {
+                                element.value = data[key];
+                            }
+                        });
+                        
+                        // Update height conversion if height was loaded
+                        if (data.heightInput) {
+                            const heightInput = document.getElementById('heightInput');
+                            if (heightInput) {
+                                heightInput.value = data.heightInput;
+                                updateConversion();
+                            }
+                        }
+                        
+                        // Show notification that draft was loaded
+                        const notification = document.getElementById('draftNotification');
+                        notification.textContent = 'Draft loaded successfully!';
+                        showDraftNotification();
+                        notification.textContent = 'Draft saved successfully!'; // Reset text
+                        
+                    } catch (e) {
+                        console.error('Error loading draft:', e);
+                    }
+                }
+            }
+        }
+        
+        // Load draft on page load if draft parameter exists
+        document.addEventListener('DOMContentLoaded', loadDraft);
+        
+        // Auto-save draft every 30 seconds
+        setInterval(() => {
+            if (document.querySelector('form').checkValidity() === false) {
+                // Only auto-save if form has some content
+                const formData = new FormData(document.querySelector('form'));
+                let hasContent = false;
+                
+                for (let [key, value] of formData.entries()) {
+                    if (value && value.trim() !== '') {
+                        hasContent = true;
+                        break;
+                    }
+                }
+                
+                if (hasContent) {
+                    saveDraftSilently();
+                }
+            }
+        }, 30000); // Auto-save every 30 seconds
+        
+        function saveDraftSilently() {
+            const formData = new FormData(document.querySelector('form'));
+            const draftData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                draftData[key] = value;
+            }
+            
+            draftData.savedAt = new Date().toISOString();
+            draftData.isDraft = true;
+            draftData.autoSaved = true;
+            
+            const draftKey = `autosave_${draftData.ObstacleType}_${Date.now()}`;
+            localStorage.setItem(draftKey, JSON.stringify(draftData));
+            
+            // Keep only last 3 auto-saves
+            const autoSaves = Object.keys(localStorage).filter(key => key.startsWith('autosave_'));
+            if (autoSaves.length > 3) {
+                autoSaves.sort();
+                localStorage.removeItem(autoSaves[0]);
+            }
+        }
     </script>
 }
