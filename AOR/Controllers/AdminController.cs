@@ -1,7 +1,11 @@
 using System.Diagnostics;
+using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace AOR.Controllers;
 
@@ -9,10 +13,32 @@ namespace AOR.Controllers;
 public class AdminController : Controller
 {
     private readonly ILogger<AdminController> _logger;
+    private readonly UserManager<User> _userManager;
 
-    public AdminController(ILogger<AdminController> logger)
+    public AdminController(ILogger<AdminController> logger, UserManager<User> userManager)
     {
         _logger = logger;
+        _userManager = userManager;
+
+    }
+    
+    public async Task<IActionResult> AppUsers()
+    {
+        var users = await _userManager.Users
+            .Include(u => u.Organization)
+            .ToListAsync();
+
+        var userRoles = new Dictionary<string, string>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            userRoles[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+        }
+
+        ViewBag.UserRoles = userRoles;
+
+        return View(users);
     }
     public IActionResult LogIn()
     {
@@ -23,17 +49,16 @@ public class AdminController : Controller
         return View();
     }
     
+    public IActionResult NewUser()
+    {
+        return View();
+    }
     public IActionResult Privacy()
     {
         return View();
     }
     
     public IActionResult Map()
-    {
-        return View();
-    }
-    
-    public IActionResult Users()
     {
         return View();
     }
@@ -58,4 +83,5 @@ public class AdminController : Controller
     {
         return View(new ErrorModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+    
 }

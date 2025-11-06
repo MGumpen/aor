@@ -45,7 +45,6 @@ public static class AorDbSeeder
             return;
         }
 
-        // Roles to ensure (ikke opprett 'Registerforer' her)
         var roles = new[] { "Crew", "Admin", "Registrar" };
         foreach (var role in roles)
         {
@@ -123,10 +122,10 @@ public static class AorDbSeeder
         // Test users - opprett brukere OG knytt dem til organisasjon via OrgNr
         var testUsers = new[]
         {
-            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew", OrgName = "Norsk Luftambulanse" },
-            new { Email = "crew2@test.no", Password = "Test123$", Role = "Crew", FirstName = "Petter", LastName = "Pilot", OrgName = "Luftforsvaret" },
-            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin", OrgName = "Luftforsvaret" },
-            new { Email = "reg@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Per", LastName = "Registerfører", OrgName = "Kartverket" }
+            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew", PhoneNumber = "12345678", OrgName = "Norsk Luftambulanse" },
+            new { Email = "crew2@test.no", Password = "Test123$", Role = "Crew", FirstName = "Petter", LastName = "Pilot", PhoneNumber = "23456789", OrgName = "Luftforsvaret" },
+            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin", PhoneNumber = "87654321", OrgName = "Luftforsvaret" },
+            new { Email = "reg@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Per", LastName = "Registerfører", PhoneNumber = "98765432", OrgName = "Kartverket" }
         };
 
         foreach (var tu in testUsers)
@@ -142,7 +141,9 @@ public static class AorDbSeeder
                         Email = tu.Email,
                         EmailConfirmed = true,
                         FirstName = tu.FirstName,
-                        LastName = tu.LastName
+                        LastName = tu.LastName,
+                        PhoneNumber = tu.PhoneNumber,
+                        PhoneNumberConfirmed = true,
                     };
 
                     // Sett OrgNr hvis vi har en mapping
