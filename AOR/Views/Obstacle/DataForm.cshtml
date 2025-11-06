@@ -230,8 +230,8 @@
     
     .draft-saved-notification {
         position: fixed;
-        top: 20px;
-        right: 20px;
+        top: 110px;
+        left: 50%;
         background: #10b981;
         color: white;
         padding: 12px 20px;
@@ -239,13 +239,14 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         z-index: 1000;
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translate(-50%, -20px);
         transition: all 0.3s ease;
+        text-align: center;
     }
     
     .draft-saved-notification.show {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
     }
 </style>
 

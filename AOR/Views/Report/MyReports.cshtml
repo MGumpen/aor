@@ -409,6 +409,7 @@
             const formattedHeight = formatDraftHeight(data.ObstacleHeight, data.heightInput);
             const pointCount = deriveDraftPointCount(data);
 
+            // Do NOT add any type-specific fields; only show the common ones.
             const detailItems = [
                 { label: 'Height:', value: formattedHeight },
                 { label: 'Points:', value: pointCount.toString() },
@@ -416,23 +417,6 @@
                 { label: 'Status:', value: null, badge: 'DRAFT' },
                 { label: 'Type:', value: formattedType }
             ];
-
-            if (obstacleType === 'mast') {
-                if (data.MastType && data.MastType.trim() !== '') {
-                    detailItems.push({ label: 'Mast Type:', value: data.MastType });
-                }
-                if (typeof data.HasLighting !== 'undefined' && data.HasLighting !== '') {
-                    detailItems.push({ label: 'Has Lighting:', value: formatYesNo(data.HasLighting) });
-                }
-            } else if (obstacleType === 'powerline') {
-                if (data.WireCount && data.WireCount !== '') {
-                    detailItems.push({ label: 'Wire Count:', value: data.WireCount });
-                }
-            } else if (obstacleType === 'other') {
-                if (data.Category && data.Category.trim() !== '') {
-                    detailItems.push({ label: 'Category:', value: data.Category });
-                }
-            }
 
             detailItems.forEach(item => {
                 const wrapper = document.createElement('div');
