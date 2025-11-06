@@ -11,69 +11,78 @@
 }
 
 <style>
-
-.admin-wrapper {
-max-width: 1100px;
-margin: 0 auto;
-padding: 2.5rem 1.5rem;
-}
-
-.admin-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-gap: 1.5rem;
-}
-
-/* Bokser */
-.admin-tile {
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-padding: 2rem 2rem;
-border-radius: 12px;
-border: 1px solid rgba(148, 163, 184, 0.4);
-background: rgba(255, 255, 255, 0.9);
-text-decoration: none;
-color: inherit;
-box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
-transition:
-transform 0.15s ease,
-box-shadow 0.15s ease,
-border-color 0.15s ease,
-background 0.15s ease;
-}
-
-.admin-tile:hover,
-.admin-tile:focus-visible {
-transform: translateY(-3px);
-box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
-border-color: #2563eb;
-background: #f8fafc;
-outline: none;
-}
-
-/* Innhold i bokser */
-.admin-tile h3 {
-font-size: 1.2rem;
-margin-bottom: 0.5rem;
-font-weight: 600;
-}
-
-.admin-tile p {
-margin: 0;
-font-size: 0.9rem;
-line-height: 1.4;
-opacity: 0.9;
-}
-
-/* Responsiv */
-@@media (max-width: 640px) {
-.admin-wrapper {
-padding-inline: 1rem;
-}
-}
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .admin-wrapper {
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    }
+    
+    .admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    }
+    
+    /* Bokser */
+    .admin-tile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2rem 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+    }
+    
+    .admin-tile:hover,
+    .admin-tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
+    border-color: #2563eb;
+    background: #f8fafc;
+    outline: none;
+    }
+    
+    /* Innhold i bokser */
+    .admin-tile h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    }
+    
+    .admin-tile p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0.9;
+    }
+    
+    /* Responsiv */
+    @@media (max-width: 640px) {
+    .admin-wrapper {
+    padding-inline: 1rem;
+        }
+    }
 
 </style>
+
+<section class="container align-content-center">
 
 <div class="admin-wrapper">
     <h2>Welcome, @($"{currentUser?.FirstName} {currentUser?.LastName}")!</h2>
@@ -86,7 +95,7 @@ padding-inline: 1rem;
     </div>
 </div>
 
-
+</section>
     
 
 
