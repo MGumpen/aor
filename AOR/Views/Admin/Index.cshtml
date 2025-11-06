@@ -23,19 +23,22 @@
     .admin-wrapper {
     margin: 0 auto;
     padding: 2.5rem 1.5rem;
+    gap: 2rem;
+    }
+
+    .admin-wrapper h2 {
+        margin-bottom: 2rem;
     }
     
     .admin-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
     }
     
-    /* Bokser */
     .admin-tile {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 2rem 2rem;
     border-radius: 12px;
     border: 1px solid rgba(148, 163, 184, 0.4);
@@ -48,6 +51,12 @@
     box-shadow 0.15s ease,
     border-color 0.15s ease,
     background 0.15s ease;
+    text-align: center;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
     }
     
     .admin-tile:hover,
@@ -59,7 +68,6 @@
     outline: none;
     }
     
-    /* Innhold i bokser */
     .admin-tile h3 {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
@@ -74,11 +82,11 @@
     }
     
     /* Responsiv */
-    @@media (max-width: 640px) {
+    /* @@media (max-width: 640px) {
     .admin-wrapper {
     padding-inline: 1rem;
         }
-    }
+    } */
 
 </style>
 
@@ -90,7 +98,7 @@
     <div class="admin-grid">
         <a class="admin-tile" asp-controller="Admin" asp-action="AppUsers">Users</a>
         <a class="admin-tile" asp-controller="Admin" asp-action="Map">Maps</a>
-        <a class="admin-tile" asp-controller="Admin" asp-action="Statistics">Statistics</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Stats">Statistics</a>
         <a class="admin-tile" asp-controller="Admin" asp-action="PreviousReports">Previous reports</a>
     </div>
 </div>

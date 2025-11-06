@@ -63,7 +63,7 @@ public class AdminController : Controller
         return View();
     }
     
-    public IActionResult Statistics()
+    public IActionResult Stats()
     {
         return View();
     }
