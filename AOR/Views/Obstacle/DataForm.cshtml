@@ -252,16 +252,16 @@
 <section class="pilot-form-container">
     <div class="pilot-form-header">
         <h1>
-            @(obstacleType.ToUpper()) Registration
-            <span class="obstacle-type-badge badge-@obstacleType.ToLower()">@obstacleType</span>
+            <span id="summaryTypeHeading">@obstacleType.ToUpper()</span> Registration
+            <span id="summaryTypeBadge" class="obstacle-type-badge badge-@obstacleType.ToLower()">@obstacleType</span>
         </h1>
         <p>Complete the registration for your @obstacleType.ToLower() obstacle with @pointCount point(s)</p>
     </div>
 
     <div class="obstacle-info">
         <h3>Map Data Summary</h3>
-        <p><strong>Type:</strong> @obstacleType.ToUpper()</p>
-        <p><strong>Points:</strong> @pointCount coordinate(s)</p>
+    <p><strong>Type:</strong> <span id="summaryTypeText">@obstacleType.ToUpper()</span></p>
+    <p><strong>Points:</strong> <span id="summaryPointCount">@pointCount</span> coordinate(s)</p>
         
         @if (pointCount > 0) {
             <div class="coordinates-list">
@@ -273,9 +273,10 @@
 
     <form asp-controller="Obstacle" asp-action="DataForm" method="post">
         <!-- Hidden fields -->
-        <input type="hidden" name="ObstacleType" value="@obstacleType" />
-        <input type="hidden" name="Coordinates" value="@coordinatesJson" />
-        <input type="hidden" name="PointCount" value="@pointCount" />
+    <input type="hidden" name="ObstacleType" id="hiddenObstacleType" value="@obstacleType" />
+    <input type="hidden" name="Coordinates" id="hiddenCoordinates" value="@coordinatesJson" />
+    <input type="hidden" name="PointCount" id="hiddenPointCount" value="@pointCount" />
+    <input type="hidden" id="currentDraftKey" value="" />
         <input type="hidden" name="heightUnit" value="feet" />
 
         <div class="form-grid">
@@ -430,91 +431,180 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const heightInput = document.getElementById('heightInput');
-            const conversionDisplay = document.getElementById('conversionDisplay');
-            const hiddenHeight = document.getElementById('hiddenHeight');
-            
-            function updateConversion() {
-                const inputValue = parseFloat(heightInput.value);
-                let displayValue = '';
-                let heightInMeters = 0;
-                
-                if (!isNaN(inputValue) && inputValue > 0) {
-                    const meters = (inputValue * 0.3048).toFixed(1);
-                    displayValue = `≈ ${meters} m`;
-                    heightInMeters = inputValue * 0.3048;
-                    hiddenHeight.value = heightInMeters;
-                } else {
-                    displayValue = '≈ 0.0 m';
-                    hiddenHeight.value = '';
-                }
-                
-                conversionDisplay.textContent = displayValue;
+        const initialCoordinatesJson = '@Html.Raw(coordinatesJson)';
+        let heightInputElement;
+        let conversionDisplayElement;
+        let hiddenHeightElement;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            heightInputElement = document.getElementById('heightInput');
+            conversionDisplayElement = document.getElementById('conversionDisplay');
+            hiddenHeightElement = document.getElementById('hiddenHeight');
+
+            if (heightInputElement) {
+                heightInputElement.addEventListener('input', updateHeightConversion);
+                updateHeightConversion();
             }
-            
-            if (heightInput) {
-                heightInput.addEventListener('input', updateConversion);
-            }
-            
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                updateConversion();
+
+            renderCoordinatesFromJson(initialCoordinatesJson);
+            updateMapSummaryFromData({
+                ObstacleType: document.getElementById('hiddenObstacleType')?.value,
+                PointCount: document.getElementById('hiddenPointCount')?.value,
+                Coordinates: initialCoordinatesJson
             });
+
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', updateHeightConversion);
+            }
+
+            loadDraft();
         });
 
-        // Coordinates display script
-        document.addEventListener('DOMContentLoaded', function() {
-            const coordinatesJson = '@Html.Raw(coordinatesJson)';
-            const coordinatesDisplay = document.getElementById('coordinates-display');
-            
-            if (coordinatesJson && coordinatesJson !== '[]') {
+        function updateHeightConversion() {
+            if (!heightInputElement || !conversionDisplayElement || !hiddenHeightElement) {
+                return;
+            }
+
+            const inputValue = parseFloat(heightInputElement.value);
+            if (!isNaN(inputValue) && inputValue > 0) {
+                const meters = inputValue * 0.3048;
+                conversionDisplayElement.textContent = `≈ ${meters.toFixed(1)} m`;
+                hiddenHeightElement.value = meters;
+            } else {
+                conversionDisplayElement.textContent = '≈ 0.0 m';
+                hiddenHeightElement.value = '';
+            }
+        }
+
+        function renderCoordinatesFromJson(json) {
+            const display = document.getElementById('coordinates-display');
+            if (!display) {
+                return;
+            }
+
+            if (!json || json === '[]') {
+                display.innerHTML = '<div class="coordinate-item">No coordinates registered yet.</div>';
+                return;
+            }
+
+            let parsed;
+            if (typeof json === 'string') {
                 try {
-                    const coordinates = JSON.parse(coordinatesJson);
-                    let html = '';
-                    
-                    coordinates.forEach((coord, index) => {
-                        html += `<div class="coordinate-item">
-                                   Point ${index + 1}: ${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}
-                                 </div>`;
-                    });
-                    
-                    coordinatesDisplay.innerHTML = html;
-                } catch (e) {
-                    coordinatesDisplay.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
+                    parsed = JSON.parse(json);
+                } catch (error) {
+                    console.warn('Unable to parse coordinates', error);
+                    display.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
+                    return;
+                }
+            } else {
+                parsed = json;
+            }
+
+            if (!Array.isArray(parsed) || !parsed.length) {
+                display.innerHTML = '<div class="coordinate-item">No coordinates registered yet.</div>';
+                return;
+            }
+
+            display.innerHTML = parsed.map((coord, index) => {
+                const lat = typeof coord.lat === 'number' ? coord.lat.toFixed(6) : 'N/A';
+                const lng = typeof coord.lng === 'number' ? coord.lng.toFixed(6) : 'N/A';
+                return `<div class="coordinate-item">Point ${index + 1}: ${lat}, ${lng}</div>`;
+            }).join('');
+        }
+
+        function derivePointCount(data) {
+            if (!data) {
+                return 0;
+            }
+
+            const countFromField = Number(data.PointCount);
+            if (!Number.isNaN(countFromField) && countFromField > 0) {
+                return countFromField;
+            }
+
+            if (data.Coordinates) {
+                try {
+                    const coordinates = typeof data.Coordinates === 'string'
+                        ? JSON.parse(data.Coordinates)
+                        : data.Coordinates;
+
+                    if (Array.isArray(coordinates)) {
+                        return coordinates.length;
+                    }
+                } catch (error) {
+                    console.warn('Unable to parse coordinate data for point count', error);
                 }
             }
-        });
-        
-        // Draft functionality
-        function saveDraft() {
-            const formData = new FormData(document.querySelector('form'));
-            const draftData = {};
-            
-            // Convert FormData to regular object
-            for (let [key, value] of formData.entries()) {
-                draftData[key] = value;
+
+            return 0;
+        }
+
+        function buildDraftData(options = {}) {
+            const form = document.querySelector('form');
+            if (!form) {
+                return null;
             }
-            
-            // Add timestamp
+
+            updateHeightConversion();
+
+            const formData = new FormData(form);
+            const draftData = {};
+
+            formData.forEach((value, key) => {
+                if (key === '__RequestVerificationToken') {
+                    return;
+                }
+                draftData[key] = value;
+            });
+
+            if (!draftData.ObstacleType) {
+                const typeField = document.getElementById('hiddenObstacleType');
+                if (typeField && typeField.value) {
+                    draftData.ObstacleType = typeField.value;
+                }
+            }
+
+            const coordinatesField = document.getElementById('hiddenCoordinates');
+            if (coordinatesField) {
+                draftData.Coordinates = coordinatesField.value;
+            }
+
+            const pointCountValue = derivePointCount(draftData);
+            draftData.PointCount = pointCountValue;
+
             draftData.savedAt = new Date().toISOString();
             draftData.isDraft = true;
-            
-            // Generate draft key based on obstacle type and coordinates
-            const draftKey = `draft_${draftData.ObstacleType}_${Date.now()}`;
-            
-            // Save to localStorage
-            localStorage.setItem(draftKey, JSON.stringify(draftData));
-            
-            // Show notification
-            showDraftNotification();
-            
-            // Optional: redirect to drafts page after short delay
-            setTimeout(() => {
-                window.location.href = '/Obstacle/AllObstacles';
-            }, 1500);
+            draftData.autoSaved = Boolean(options.autoSave);
+
+            const existingKey = document.getElementById('currentDraftKey')?.value;
+            const typeSegment = (draftData.ObstacleType || 'obstacle').toLowerCase().replace(/\s+/g, '-');
+            const draftKey = existingKey || `draft_${typeSegment}_${Date.now()}`;
+            draftData.draftKey = draftKey;
+
+            return draftData;
         }
-        
+
+        function saveDraft() {
+            const draftData = buildDraftData();
+            if (!draftData) {
+                return;
+            }
+
+            localStorage.setItem(draftData.draftKey, JSON.stringify(draftData));
+
+            const currentDraftKeyField = document.getElementById('currentDraftKey');
+            if (currentDraftKeyField) {
+                currentDraftKeyField.value = draftData.draftKey;
+            }
+
+            showDraftNotification();
+
+            setTimeout(() => {
+                window.location.href = '/Crew';
+            }, 1000);
+        }
+
         function showDraftNotification() {
             const notification = document.getElementById('draftNotification');
             notification.classList.add('show');
@@ -534,29 +624,31 @@
                 if (draftData) {
                     try {
                         const data = JSON.parse(draftData);
-                        
-                        // Populate form fields
+                        data.draftKey = draftKey;
+
                         Object.keys(data).forEach(key => {
-                            const element = document.querySelector(`[name="${key}"]`);
-                            if (element) {
-                                element.value = data[key];
+                            const field = document.querySelector(`[name="${key}"]`);
+                            if (field) {
+                                field.value = data[key];
                             }
                         });
-                        
-                        // Update height conversion if height was loaded
-                        if (data.heightInput) {
-                            const heightInput = document.getElementById('heightInput');
-                            if (heightInput) {
-                                heightInput.value = data.heightInput;
-                                updateConversion();
-                            }
+
+                        const currentDraftKeyField = document.getElementById('currentDraftKey');
+                        if (currentDraftKeyField) {
+                            currentDraftKeyField.value = draftKey;
                         }
-                        
-                        // Show notification that draft was loaded
+
+                        if (heightInputElement && typeof data.heightInput !== 'undefined') {
+                            heightInputElement.value = data.heightInput;
+                        }
+                        updateHeightConversion();
+
+                        updateMapSummaryFromData(data);
+
                         const notification = document.getElementById('draftNotification');
                         notification.textContent = 'Draft loaded successfully!';
                         showDraftNotification();
-                        notification.textContent = 'Draft saved successfully!'; // Reset text
+                        notification.textContent = 'Draft saved successfully!';
                         
                     } catch (e) {
                         console.error('Error loading draft:', e);
@@ -565,45 +657,110 @@
             }
         }
         
-        // Load draft on page load if draft parameter exists
-        document.addEventListener('DOMContentLoaded', loadDraft);
-        
-        // Auto-save draft every 30 seconds
+        function updateMapSummaryFromData(data = {}) {
+            const typeRaw = (data.ObstacleType || '').toString();
+            const typeLower = typeRaw ? typeRaw.toLowerCase() : 'unknown';
+            const formattedType = formatObstacleTypeLabel(typeRaw);
+            const typeUpper = formattedType.toUpperCase();
+
+            const heading = document.getElementById('summaryTypeHeading');
+            if (heading) {
+                heading.textContent = typeUpper;
+            }
+
+            const typeText = document.getElementById('summaryTypeText');
+            if (typeText) {
+                typeText.textContent = typeUpper;
+            }
+
+            const typeBadge = document.getElementById('summaryTypeBadge');
+            if (typeBadge) {
+                const badgeType = ['mast', 'powerline', 'other'].includes(typeLower) ? typeLower : 'other';
+                typeBadge.textContent = formattedType;
+                typeBadge.className = `obstacle-type-badge badge-${badgeType}`;
+            }
+
+            const coordinatesValue = typeof data.Coordinates === 'string'
+                ? data.Coordinates
+                : JSON.stringify(data.Coordinates ?? []);
+
+            const hiddenCoordinatesField = document.getElementById('hiddenCoordinates');
+            if (hiddenCoordinatesField) {
+                hiddenCoordinatesField.value = coordinatesValue || '[]';
+            }
+
+            renderCoordinatesFromJson(coordinatesValue);
+
+            const pointCount = derivePointCount({
+                PointCount: data.PointCount,
+                Coordinates: coordinatesValue
+            });
+
+            const pointCountSpan = document.getElementById('summaryPointCount');
+            if (pointCountSpan) {
+                pointCountSpan.textContent = pointCount;
+            }
+
+            const hiddenPointCountField = document.getElementById('hiddenPointCount');
+            if (hiddenPointCountField) {
+                hiddenPointCountField.value = pointCount;
+            }
+
+            const hiddenTypeField = document.getElementById('hiddenObstacleType');
+            if (hiddenTypeField) {
+                hiddenTypeField.value = typeRaw;
+            }
+        }
+
+        function formatObstacleTypeLabel(value) {
+            if (!value) {
+                return 'Draft';
+            }
+
+            const lower = value.toLowerCase();
+            switch (lower) {
+                case 'mast':
+                    return 'Mast';
+                case 'powerline':
+                    return 'Power Line';
+                case 'other':
+                    return 'Other';
+                default:
+                    return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+        }
+
         setInterval(() => {
-            if (document.querySelector('form').checkValidity() === false) {
-                // Only auto-save if form has some content
-                const formData = new FormData(document.querySelector('form'));
-                let hasContent = false;
-                
-                for (let [key, value] of formData.entries()) {
-                    if (value && value.trim() !== '') {
-                        hasContent = true;
-                        break;
-                    }
-                }
-                
-                if (hasContent) {
-                    saveDraftSilently();
+            const form = document.querySelector('form');
+            if (!form) {
+                return;
+            }
+
+            const formData = new FormData(form);
+            let hasContent = false;
+
+            for (let value of formData.values()) {
+                if (value && value.toString().trim() !== '') {
+                    hasContent = true;
+                    break;
                 }
             }
-        }, 30000); // Auto-save every 30 seconds
-        
+
+            if (hasContent) {
+                saveDraftSilently();
+            }
+        }, 30000);
+
         function saveDraftSilently() {
-            const formData = new FormData(document.querySelector('form'));
-            const draftData = {};
-            
-            for (let [key, value] of formData.entries()) {
-                draftData[key] = value;
+            const draftData = buildDraftData({ autoSave: true });
+            if (!draftData) {
+                return;
             }
-            
-            draftData.savedAt = new Date().toISOString();
-            draftData.isDraft = true;
-            draftData.autoSaved = true;
-            
-            const draftKey = `autosave_${draftData.ObstacleType}_${Date.now()}`;
+
+            const typeSegment = (draftData.ObstacleType || 'obstacle').toLowerCase().replace(/\s+/g, '-');
+            const draftKey = `autosave_${typeSegment}_${Date.now()}`;
             localStorage.setItem(draftKey, JSON.stringify(draftData));
-            
-            // Keep only last 3 auto-saves
+
             const autoSaves = Object.keys(localStorage).filter(key => key.startsWith('autosave_'));
             if (autoSaves.length > 3) {
                 autoSaves.sort();

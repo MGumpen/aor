@@ -379,35 +379,35 @@
             const details = document.createElement('div');
             details.className = 'obstacle-details';
 
+            const obstacleTypeRaw = (data.ObstacleType || '').toString();
+            const obstacleType = obstacleTypeRaw.toLowerCase();
+            const formattedType = formatObstacleType(obstacleTypeRaw);
+            const formattedHeight = formatDraftHeight(data.ObstacleHeight);
+            const pointCount = deriveDraftPointCount(data);
+
             const detailItems = [
-                {
-                    label: 'Height:',
-                    value: data.ObstacleHeight && data.ObstacleHeight !== ''
-                        ? `${data.ObstacleHeight} m`
-                        : '—'
-                },
-                {
-                    label: 'Points:',
-                    value: data.PointCount && !isNaN(Number(data.PointCount))
-                        ? Number(data.PointCount).toString()
-                        : '0'
-                },
-                {
-                    label: 'Registered:',
-                    value: formatSavedDate(data.savedAt)
-                },
-                {
-                    label: 'Status:',
-                    value: null,
-                    badge: 'DRAFT'
-                }
+                { label: 'Height:', value: formattedHeight },
+                { label: 'Points:', value: pointCount.toString() },
+                { label: 'Registered:', value: formatSavedDate(data.savedAt) },
+                { label: 'Status:', value: null, badge: 'DRAFT' },
+                { label: 'Type:', value: formattedType }
             ];
 
-            if (data.ObstacleType && data.ObstacleType.trim() !== '') {
-                detailItems.push({
-                    label: 'Type:',
-                    value: data.ObstacleType
-                });
+            if (obstacleType === 'mast') {
+                if (data.MastType && data.MastType.trim() !== '') {
+                    detailItems.push({ label: 'Mast Type:', value: data.MastType });
+                }
+                if (typeof data.HasLighting !== 'undefined' && data.HasLighting !== '') {
+                    detailItems.push({ label: 'Has Lighting:', value: formatYesNo(data.HasLighting) });
+                }
+            } else if (obstacleType === 'powerline') {
+                if (data.WireCount && data.WireCount !== '') {
+                    detailItems.push({ label: 'Wire Count:', value: data.WireCount });
+                }
+            } else if (obstacleType === 'other') {
+                if (data.Category && data.Category.trim() !== '') {
+                    detailItems.push({ label: 'Category:', value: data.Category });
+                }
             }
 
             detailItems.forEach(item => {
@@ -478,6 +478,10 @@
                         if (remaining === 0) {
                             draftsStats.style.display = 'none';
                             draftsContainer.style.display = 'none';
+                            const emptyStateAfterDelete = document.querySelector('.empty-state');
+                            if (emptyStateAfterDelete) {
+                                emptyStateAfterDelete.style.display = '';
+                            }
                         }
                         draftsNumber.textContent = remaining.toString();
                     }
@@ -521,6 +525,82 @@
             if (days >= 3) return date.toLocaleDateString('no-NO');
 
             return date.toLocaleDateString('no-NO');
+        }
+
+        function deriveDraftPointCount(data) {
+            if (!data) {
+                return 0;
+            }
+
+            const count = Number(data.PointCount);
+            if (!Number.isNaN(count) && count >= 0) {
+                return count;
+            }
+
+            if (data.Coordinates) {
+                try {
+                    const coordinates = typeof data.Coordinates === 'string'
+                        ? JSON.parse(data.Coordinates)
+                        : data.Coordinates;
+
+                    if (Array.isArray(coordinates)) {
+                        return coordinates.length;
+                    }
+                } catch (error) {
+                    console.warn('Unable to parse coordinates for draft card', error);
+                }
+            }
+
+            return 0;
+        }
+
+        function formatDraftHeight(value) {
+            const height = Number(value);
+            if (Number.isNaN(height) || height <= 0) {
+                return '—';
+            }
+
+            if (height >= 100) {
+                return `${height.toFixed(1)} m`;
+            }
+
+            return `${height.toFixed(2)} m`;
+        }
+
+        function formatObstacleType(value) {
+            if (!value) {
+                return 'Unknown';
+            }
+
+            const lower = value.toLowerCase();
+            switch (lower) {
+                case 'mast':
+                    return 'Mast';
+                case 'powerline':
+                    return 'Power Line';
+                case 'other':
+                    return 'Other';
+                default:
+                    return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+        }
+
+        function formatYesNo(value) {
+            if (typeof value === 'boolean') {
+                return value ? 'Yes' : 'No';
+            }
+
+            if (typeof value === 'string') {
+                const trimmed = value.trim().toLowerCase();
+                if (trimmed === 'true') {
+                    return 'Yes';
+                }
+                if (trimmed === 'false') {
+                    return 'No';
+                }
+            }
+
+            return value || '—';
         }
     })();
 </script>
