@@ -33,7 +33,7 @@ public class AdminController : Controller
     
     public async Task<IActionResult> AppUsers()
     {
-        var users = await _userManager.Users
+        var users = await _context.Users
             .Include(u => u.Organization)
             .ToListAsync();
 
@@ -41,8 +41,9 @@ public class AdminController : Controller
 
         foreach (var user in users)
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            userRoles[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+            var rolesForUser = await _userManager.GetRolesAsync(user);
+
+            userRoles[user.Id] = string.Join(", ", rolesForUser);
         }
 
         ViewBag.UserRoles = userRoles;
@@ -62,6 +63,10 @@ public class AdminController : Controller
         return View();
     }
     
+    public IActionResult Orgs()
+    {
+        return View();
+    }
     public IActionResult Map()
     {
         return View();

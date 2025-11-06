@@ -1,0 +1,33 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Admin - Dashboard";
+}
+
+<section class="container align-content-center">
+    
+    <div class="site-header d-flex align-items-center justify-content-between mb-3 position-relative">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-primary">Back</a>
+        <h1 class="position-absolute top-50 start-50 translate-middle mb-0 text-center">All users</h1>
+        <a asp-controller="Admin" asp-action="NewOrg" class="btn btn-primary">Add organization</a>
+    </div>
+
+    <table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Org Nr</th>
+        <th>Organization</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {<tr>
+    <td>Org Nr</td>
+    <td>Org Name</td>
+    </tr>
+    }
+    
+        </tbody>
+        
+    </table>
+
+</section>
