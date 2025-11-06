@@ -1,0 +1,84 @@
+﻿@using AOR.Data
+@using Microsoft.AspNetCore.Identity
+@model IEnumerable<User>
+@inject UserManager<User> UserManager
+
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Users";
+}
+@{
+    var roles = ViewBag.UserRoles as IDictionary<string, string>;
+}
+
+<style>
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .site-header {
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
+</style>
+
+
+<section class="container align-content-center">
+    <div class="site-header d-flex align-items-center justify-content-between mb-3 position-relative">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-primary">Back</a>
+        <h1 class="position-absolute top-50 start-50 translate-middle mb-0 text-center">All users</h1>
+        <a asp-controller="Admin" asp-action="NewUser" class="btn btn-primary">New user</a>
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Email</th>
+            <th>Phone number</th>
+            <th>Organization</th>
+            <th>Role(s)</th>
+            <th>Edit user</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@(user.Organization?.OrgName ?? "Ingen organisasjon")</td>
+                <td>
+                    @if (roles != null && roles.ContainsKey(user.Id))
+                    {
+                        var roleString = roles[user.Id] ?? string.Empty;
+                        var roleNames = roleString.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (var roleName in roleNames)
+                        {
+                            @roleName.Trim()
+                            <br />
+                        }
+                    }
+                </td>
+                <td>
+                    <a asp-controller="Admin" asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-info btn-sm me-1">
+                        Edit user
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>
