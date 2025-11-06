@@ -37,7 +37,7 @@
 <section class="container align-content-center">
 
     <div class="site-header text-center mb-3">
-        <h1 class="mb-0">Registrer ny bruker</h1>
+        <h1 class="mb-0">Register new user</h1>
     </div>
 
     <form asp-action="NewUser" asp-controller="Admin" method="post" class="mt-4">
@@ -88,7 +88,7 @@
             <div class="col-md-6 mb-3">
                 <label asp-for="OrgNr" class="form-label"></label>
                 <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
-                    <option value="">Velg organisasjon...</option>
+                    <option value="">Choose organization...</option>
                 </select>
                 <span asp-validation-for="OrgNr" class="text-danger"></span>
             </div>
@@ -103,7 +103,7 @@
                         id="roleDropdownButton"
                         data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        <span id="roleDropdownText">Velg rolle(r)...</span>
+                        <span id="roleDropdownText">Choose role(s)...</span>
                     </button>
 
                     <div class="dropdown-menu role-dropdown-menu" aria-labelledby="roleDropdownButton">
@@ -139,8 +139,8 @@
         </div>
 
         <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-success me-2">Lagre bruker</button>
-            <a asp-controller="Admin" asp-action="AppUsers" class="btn btn-outline-secondary">Avbryt</a>
+            <button type="submit" class="btn btn-success me-2">Save user</button>
+            <a asp-controller="Admin" asp-action="AppUsers" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>
 </section>

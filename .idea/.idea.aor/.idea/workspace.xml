@@ -15,12 +15,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/AppUsers.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/AppUsers.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +55,7 @@
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/NewOrgViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />

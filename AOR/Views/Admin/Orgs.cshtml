@@ -1,13 +1,32 @@
+@model IEnumerable<AOR.Models.OrgModel>
+
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Admin - Dashboard";
 }
+<style>
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .site-header {
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
+</style>
+
 
 <section class="container align-content-center">
     
     <div class="site-header d-flex align-items-center justify-content-between mb-3 position-relative">
         <a asp-controller="Admin" asp-action="Index" class="btn btn-primary">Back</a>
-        <h1 class="position-absolute top-50 start-50 translate-middle mb-0 text-center">All users</h1>
+        <h1 class="position-absolute top-50 start-50 translate-middle mb-0 text-center">All organizations</h1>
         <a asp-controller="Admin" asp-action="NewOrg" class="btn btn-primary">Add organization</a>
     </div>
 
@@ -19,14 +38,14 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var user in Model)
-    {<tr>
-    <td>Org Nr</td>
-    <td>Org Name</td>
-    </tr>
-    }
-    
-        </tbody>
+        @foreach (var org in Model)
+        {
+            <tr>
+                <td>@org.OrgNr</td>
+                <td>@org.OrgName</td>
+            </tr>
+        }
+    </tbody>
         
     </table>
 
