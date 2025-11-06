@@ -1,3 +1,6 @@
+
+@model AOR.ViewModels.NewUserViewModel
+
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Users";
@@ -12,13 +15,89 @@
         margin-left: auto;
         margin-right: auto;
     }
+
+    .site-header {
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
 </style>
 
 <section class="container align-content-center">
-  
-    <div class="d-flex align-items-center mb-3">
-        <a asp-controller="Admin" asp-action="AppUsers" class="btn btn-primary me-auto">Back</a>
-        <h1 class="mx-auto mb-0 text-center">Registrer new user</h1>
+
+    <div class="site-header text-center mb-3">
+        <h1 class="mb-0">Registrer ny bruker</h1>
     </div>
-    
+
+    <form asp-action="NewUser" asp-controller="Admin" method="post" class="mt-4">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="OrgNr" class="form-label"></label>
+                <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
+                    <option value="">Velg organisasjon...</option>
+                </select>
+                <span asp-validation-for="OrgNr" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="RoleId" class="form-label"></label>
+                <select asp-for="RoleId" asp-items="Model.Roles" class="form-select">
+                    <option value="">Velg rolle...</option>
+                </select>
+                <span asp-validation-for="RoleId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-success me-2">Lagre bruker</button>
+            <a asp-controller="Admin" asp-action="AppUsers" class="btn btn-outline-secondary">Avbryt</a>
+        </div>
+    </form>
 </section>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
