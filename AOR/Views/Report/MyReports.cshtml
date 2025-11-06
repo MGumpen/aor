@@ -317,7 +317,14 @@
                     }
 
                     const data = JSON.parse(raw);
-                    return { key, data };
+                    const canonical = canonicalizeDraftData(data);
+                    try {
+                        localStorage.setItem(key, JSON.stringify(canonical));
+                    } catch (saveError) {
+                        console.warn('Unable to rewrite canonical draft entry', key, saveError);
+                    }
+
+                    return { key, data: canonical };
                 } catch (error) {
                     console.warn('Unable to parse draft entry', key, error);
                     return null;
@@ -362,9 +369,15 @@
 
             const title = document.createElement('h3');
             title.className = 'obstacle-name';
-            title.textContent = data.ObstacleName && data.ObstacleName.trim().length > 0
-                ? data.ObstacleName
-                : 'Draft Unknown';
+            const candidateName = getFirstNonEmpty(
+                data.ObstacleName,
+                data.obstacleName,
+                data.name,
+                data.ObstacleId,
+                data.obstacleId
+            );
+
+            title.textContent = candidateName ? candidateName.toString() : 'Draft Unknown';
 
             const badge = document.createElement('span');
             badge.className = 'obstacle-type-badge';
@@ -379,10 +392,10 @@
             const details = document.createElement('div');
             details.className = 'obstacle-details';
 
-            const obstacleTypeRaw = (data.ObstacleType || '').toString();
+            const obstacleTypeRaw = (getFirstNonEmpty(data.ObstacleType, data.obstacleType, data.type) || '').toString();
             const obstacleType = obstacleTypeRaw.toLowerCase();
             const formattedType = formatObstacleType(obstacleTypeRaw);
-            const formattedHeight = formatDraftHeight(data.ObstacleHeight);
+            const formattedHeight = formatDraftHeight(data.ObstacleHeight, data.heightInput);
             const pointCount = deriveDraftPointCount(data);
 
             const detailItems = [
@@ -456,7 +469,22 @@
 
             const continueLink = document.createElement('a');
             continueLink.className = 'btn-small btn-details';
-            continueLink.href = `/Obstacle/DataForm?draft=${encodeURIComponent(key)}`;
+            const continueParams = new URLSearchParams();
+            continueParams.set('draft', key);
+
+            if (obstacleType) {
+                continueParams.set('type', obstacleType);
+            }
+
+            if (data.Coordinates) {
+                continueParams.set('coordinates', data.Coordinates);
+            }
+
+            if (!Number.isNaN(pointCount) && pointCount >= 0) {
+                continueParams.set('count', pointCount.toString());
+            }
+
+            continueLink.href = `/Obstacle/DataForm?${continueParams.toString()}`;
             continueLink.textContent = 'Continue Editing';
 
             const deleteLink = document.createElement('a');
@@ -554,17 +582,25 @@
             return 0;
         }
 
-        function formatDraftHeight(value) {
-            const height = Number(value);
-            if (Number.isNaN(height) || height <= 0) {
+        function formatDraftHeight(valueMeters, valueFeet) {
+            let meters = Number(valueMeters);
+
+            if (Number.isNaN(meters) || meters <= 0) {
+                const feet = Number(valueFeet);
+                if (!Number.isNaN(feet) && feet > 0) {
+                    meters = feet * 0.3048;
+                }
+            }
+
+            if (Number.isNaN(meters) || meters <= 0) {
                 return '—';
             }
 
-            if (height >= 100) {
-                return `${height.toFixed(1)} m`;
+            if (meters >= 100) {
+                return `${meters.toFixed(1)} m`;
             }
 
-            return `${height.toFixed(2)} m`;
+            return `${meters.toFixed(2)} m`;
         }
 
         function formatObstacleType(value) {
@@ -601,6 +637,113 @@
             }
 
             return value || '—';
+        }
+
+        function canonicalizeDraftData(source = {}) {
+            const data = { ...source };
+
+            const getFirstValue = (...keys) => getFirstNonEmptyFrom(data, ...keys);
+
+            const setCanonicalField = (canonicalKey, ...aliases) => {
+                const value = getFirstValue(canonicalKey, ...aliases);
+                if (value !== undefined) {
+                    data[canonicalKey] = value;
+                }
+            };
+
+            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title');
+            setCanonicalField('ObstacleType', 'obstacleType', 'type');
+            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description');
+            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height');
+            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight');
+            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal');
+            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type');
+            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting');
+            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category');
+            setCanonicalField('Coordinates', 'coordinates', 'pointsJson');
+            setCanonicalField('PointCount', 'pointCount', 'points');
+            setCanonicalField('savedAt', 'SavedAt', 'saved_at');
+
+            if (data.ObstacleType) {
+                data.ObstacleType = data.ObstacleType.toString();
+            }
+
+            if (typeof data.HasLighting === 'boolean') {
+                data.HasLighting = data.HasLighting ? 'true' : 'false';
+            } else if (typeof data.HasLighting === 'string') {
+                const trimmed = data.HasLighting.trim().toLowerCase();
+                if (trimmed === 'yes') {
+                    data.HasLighting = 'true';
+                } else if (trimmed === 'no') {
+                    data.HasLighting = 'false';
+                } else {
+                    data.HasLighting = data.HasLighting.trim();
+                }
+            }
+
+            if (data.Coordinates && typeof data.Coordinates !== 'string') {
+                try {
+                    data.Coordinates = JSON.stringify(data.Coordinates);
+                } catch (error) {
+                    console.warn('Unable to stringify coordinates during canonicalization', error);
+                    data.Coordinates = '[]';
+                }
+            }
+
+            const parsedHeight = Number(data.ObstacleHeight);
+            if (!Number.isNaN(parsedHeight) && parsedHeight > 0) {
+                data.ObstacleHeight = parsedHeight;
+            }
+
+            if ((!data.heightInput || data.heightInput === '') && parsedHeight > 0) {
+                const feet = parsedHeight / 0.3048;
+                data.heightInput = (Math.round(feet * 10) / 10).toString();
+            }
+
+            data.PointCount = deriveDraftPointCount(data);
+
+            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput'].forEach(key => {
+                if (typeof data[key] === 'string') {
+                    data[key] = data[key].trim();
+                }
+            });
+
+            return data;
+        }
+
+        function getFirstNonEmpty(...values) {
+            for (const value of values) {
+                if (value === undefined || value === null) {
+                    continue;
+                }
+
+                const candidate = typeof value === 'string' ? value.trim() : value;
+                if (candidate !== '' && !(typeof candidate === 'number' && Number.isNaN(candidate))) {
+                    return candidate;
+                }
+            }
+
+            return undefined;
+        }
+
+        function getFirstNonEmptyFrom(data, ...keys) {
+            for (const key of keys) {
+                if (Object.prototype.hasOwnProperty.call(data, key)) {
+                    const candidate = data[key];
+                    if (candidate !== undefined && candidate !== null) {
+                        if (typeof candidate === 'string') {
+                            const trimmed = candidate.trim();
+                            if (trimmed !== '') {
+                                return trimmed;
+                            }
+                        } else if (!(typeof candidate === 'number' && Number.isNaN(candidate))) {
+                            return candidate;
+                        }
+                    }
+                }
+            }
+
+            return undefined;
         }
     })();
 </script>
