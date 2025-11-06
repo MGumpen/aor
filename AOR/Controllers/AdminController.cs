@@ -187,12 +187,16 @@ public class AdminController : Controller
             return View(model);
         }
 
-        if (!string.IsNullOrEmpty(model.RoleId))
+        if (model.RoleIds != null && model.RoleIds.Any())
         {
-            var role = await _roleManager.FindByIdAsync(model.RoleId);
-            if (role != null)
+            var selectedRoleNames = _roleManager.Roles
+                .Where(r => model.RoleIds.Contains(r.Id))
+                .Select(r => r.Name)
+                .ToList();
+
+            if (selectedRoleNames.Any())
             {
-                await _userManager.AddToRoleAsync(user, role.Name);
+                await _userManager.AddToRolesAsync(user, selectedRoleNames);
             }
         }
 
