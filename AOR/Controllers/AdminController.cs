@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using AOR.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -33,7 +32,7 @@ public class AdminController : Controller
     
     public async Task<IActionResult> AppUsers()
     {
-        var users = await _userManager.Users
+        var users = await _context.Users
             .Include(u => u.Organization)
             .ToListAsync();
 
@@ -41,8 +40,9 @@ public class AdminController : Controller
 
         foreach (var user in users)
         {
-            var roles = await _userManager.GetRolesAsync(user);
-            userRoles[user.Id] = roles.FirstOrDefault() ?? string.Empty;
+            var rolesForUser = await _userManager.GetRolesAsync(user);
+
+            userRoles[user.Id] = string.Join(", ", rolesForUser);
         }
 
         ViewBag.UserRoles = userRoles;
@@ -89,6 +89,22 @@ public class AdminController : Controller
     }
     
     [HttpGet]
+    public async Task<IActionResult> Orgs()
+    {
+        var orgs = await _context.Organizations
+            .OrderBy(o => o.OrgNr)
+            .ToListAsync();
+
+        return View(orgs);
+    }
+    
+    [HttpGet]
+    public IActionResult NewOrg()
+    {
+        return View(new OrgModel());
+    }
+    
+    [HttpGet]
     public IActionResult NewUser()
     {
         var vm = new NewUserViewModel
@@ -112,6 +128,7 @@ public class AdminController : Controller
         return View(vm);
     }
 
+    
     [HttpPost]
     public async Task<IActionResult> NewUser(NewUserViewModel model)
     {
@@ -202,6 +219,34 @@ public class AdminController : Controller
 
         _logger.LogInformation("Bruker {Email} opprettet OK og eventuelt rolle satt", user.Email);
         return RedirectToAction("AppUsers");
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> NewOrg(OrgModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var exists = await _context.Organizations.AnyAsync(o => o.OrgNr == model.OrgNr);
+        if (exists)
+        {
+            ModelState.AddModelError(nameof(model.OrgNr),
+                "En organisasjon med dette organisasjonsnummeret finnes allerede.");
+            return View(model);
+        }
+
+        var org = new OrgModel
+        {
+            OrgNr = model.OrgNr,
+            OrgName = model.OrgName
+        };
+
+        _context.Organizations.Add(org);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Orgs));
     }
     
 }

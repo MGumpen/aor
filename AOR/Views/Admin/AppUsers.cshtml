@@ -59,7 +59,19 @@
                 <td>@user.Email</td>
                 <td>@user.PhoneNumber</td>
                 <td>@(user.Organization?.OrgName ?? "Ingen organisasjon")</td>
-                <td>@(roles != null && roles.ContainsKey(user.Id) ? roles[user.Id] : "")</td>
+                <td>
+                    @if (roles != null && roles.ContainsKey(user.Id))
+                    {
+                        var roleString = roles[user.Id] ?? string.Empty;
+                        var roleNames = roleString.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                        foreach (var roleName in roleNames)
+                        {
+                            @roleName.Trim()
+                            <br />
+                        }
+                    }
+                </td>
                 <td>
                     <a asp-controller="Admin" asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-info btn-sm me-1">
                         Edit user

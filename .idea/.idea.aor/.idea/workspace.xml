@@ -19,6 +19,11 @@
       <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,13 +58,16 @@
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/NewOrgViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bf9021a960b74107a7e141aa06bc9d8a0a53c929178c2fb95b1597be8af8dc/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e52a70dae11948fa5bfb33d03fd2e7d9b6ece182647aa4d9b1221413ac57dc7/IdentityUser.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
