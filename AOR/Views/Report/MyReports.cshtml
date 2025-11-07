@@ -17,9 +17,17 @@
         text-align: center;
     }
     
+    /* Separate grids for drafts and registered obstacles */
+    #draftsContainer {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));  /* Smaller cards */
+        gap: 16px;  /* Less gap for drafts */
+        margin-bottom: 32px;
+    }
+    
     .obstacles-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));  /* Regular size */
         gap: 20px;
     }
     
@@ -30,6 +38,12 @@
         padding: 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         transition: all 0.2s ease;
+    }
+    
+    /* Draft cards smaller styling */
+    #draftsContainer .obstacle-card {
+        padding: 16px;  /* Less padding */
+        border-radius: 12px;  /* Slightly less rounded */
     }
     
     .obstacle-card:hover {
@@ -51,6 +65,11 @@
         margin: 0;
     }
     
+    /* Smaller title for drafts */
+    #draftsContainer .obstacle-name {
+        font-size: 1.1rem;
+    }
+    
     .obstacle-type-badge {
         padding: 4px 12px;
         border-radius: 20px;
@@ -70,8 +89,19 @@
         margin-bottom: 16px;
     }
     
+    /* Smaller details for drafts */
+    #draftsContainer .obstacle-details {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    
     .detail-item {
         font-size: 0.875rem;
+    }
+    
+    /* Smaller font for draft details */
+    #draftsContainer .detail-item {
+        font-size: 0.8125rem;
     }
     
     .detail-label {
@@ -91,6 +121,13 @@
         margin-bottom: 16px;
         font-size: 0.875rem;
         color: #475569;
+    }
+    
+    /* Smaller description for drafts */
+    #draftsContainer .obstacle-description {
+        padding: 10px;
+        margin-bottom: 12px;
+        font-size: 0.8125rem;
     }
     
     .report-actions {
@@ -188,7 +225,6 @@
         background: #fee2e2;
         color: #991b1b;
     }
-    
 </style>
 
 
@@ -232,7 +268,7 @@
                         {
                             <div class="detail-item">
                                 <div class="detail-label">Height:</div>
-                                <div class="detail-value">@($"{report.Obstacle.ObstacleHeight.Value} m")</div>
+                                <div class="detail-value">@($"{report.Obstacle.ObstacleHeight.Value:F1} m")</div>
                             </div>
                         }
                         
@@ -302,6 +338,41 @@
 
 <script>
     (function () {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        let draftKeyToDelete = null;
+
+        @if (TempData["DeleteDraft"] != null)
+        {
+            <text>draftKeyToDelete = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["DeleteDraft"]));</text>
+        }
+
+        if (!draftKeyToDelete && window.sessionStorage) {
+            draftKeyToDelete = window.sessionStorage.getItem('deleteDraft');
+        }
+
+        if (!draftKeyToDelete) {
+            return;
+        }
+
+        try {
+            if (window.sessionStorage) {
+                window.sessionStorage.removeItem('deleteDraft');
+            }
+
+            if (window.localStorage && window.localStorage.getItem(draftKeyToDelete)) {
+                window.localStorage.removeItem(draftKeyToDelete);
+            }
+        } catch (error) {
+            console.warn('Unable to clear stored draft state', draftKeyToDelete, error);
+        }
+    })();
+</script>
+
+<script>
+    (function () {
         const draftsContainer = document.getElementById('draftsContainer');
         if (!draftsContainer) {
             return;
@@ -361,6 +432,7 @@
             const { key, data } = entry;
             const card = document.createElement('div');
             card.className = 'obstacle-card';
+            card.dataset.draftKey = key;
             card.style.background = '#fffbe8';
             card.style.border = '1px solid #fde68a';
 
@@ -382,19 +454,7 @@
 
             title.textContent = candidateName ? candidateName.toString() : 'Draft Unknown';
 
-            const badge = document.createElement('span');
-            badge.className = 'obstacle-type-badge';
-            badge.style.background = '#fef9c3';
-            badge.style.color = '#b45309';
-            badge.textContent = 'DRAFT';
-
-            header.appendChild(title);
-            header.appendChild(badge);
-            card.appendChild(header);
-
-            const details = document.createElement('div');
-            details.className = 'obstacle-details';
-
+            // Get obstacle type for badge display
             const obstacleTypeRawValue = getFirstNonEmpty(
                 data.ObstacleType,
                 data.obstacleType,
@@ -406,16 +466,28 @@
             const obstacleTypeRaw = (obstacleTypeRawValue || '').toString().trim();
             const obstacleType = obstacleTypeRaw.toLowerCase();
             const formattedType = formatObstacleType(obstacleTypeRaw);
+
+            // Create type badge (like registered obstacles)
+            const typeBadge = document.createElement('span');
+            typeBadge.className = `obstacle-type-badge badge-${obstacleType || 'other'}`;
+            typeBadge.textContent = formattedType;
+
+            header.appendChild(title);
+            header.appendChild(typeBadge);
+            card.appendChild(header);
+
+            const details = document.createElement('div');
+            details.className = 'obstacle-details';
+
             const formattedHeight = formatDraftHeight(data.ObstacleHeight, data.heightInput);
             const pointCount = deriveDraftPointCount(data);
 
-            // Do NOT add any type-specific fields; only show the common ones.
+            // Updated detail items WITHOUT the "Type:" row
             const detailItems = [
                 { label: 'Height:', value: formattedHeight },
                 { label: 'Points:', value: pointCount.toString() },
                 { label: 'Registered:', value: formatSavedDate(data.savedAt) },
-                { label: 'Status:', value: null, badge: 'DRAFT' },
-                { label: 'Type:', value: formattedType }
+                { label: 'Status:', value: null, badge: 'DRAFT' }
             ];
 
             detailItems.forEach(item => {
@@ -451,8 +523,8 @@
                 const description = document.createElement('div');
                 description.className = 'obstacle-description';
 
-                const text = data.ObstacleDescription.length > 100
-                    ? `${data.ObstacleDescription.substring(0, 100)}...`
+                const text = data.ObstacleDescription.length > 80
+                    ? `${data.ObstacleDescription.substring(0, 80)}...`
                     : data.ObstacleDescription;
 
                 description.textContent = text;
@@ -518,6 +590,7 @@
             draftsContainer.appendChild(card);
         });
 
+        // All helper functions remain the same
         function formatSavedDate(value) {
             if (!value) {
                 return 'Just now';
@@ -591,11 +664,7 @@
                 return '—';
             }
 
-            if (meters >= 100) {
-                return `${meters.toFixed(1)} m`;
-            }
-
-            return `${meters.toFixed(2)} m`;
+            return `${meters.toFixed(1)} m`;
         }
 
         function formatObstacleType(value) {

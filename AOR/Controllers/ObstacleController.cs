@@ -5,6 +5,8 @@ using AOR.Data;
 using AOR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Globalization;
 namespace AOR.Controllers;
 [Authorize(Roles = "Crew")]
 public class ObstacleController : Controller
@@ -69,7 +71,7 @@ public async Task<IActionResult> MyReports()
 
 
     [HttpPost]
-    public async Task<IActionResult> DataForm(ObstacleData obstacleData)
+    public async Task<IActionResult> DataForm(ObstacleData obstacleData, string? draft)
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
@@ -104,11 +106,28 @@ public async Task<IActionResult> MyReports()
                 _db.Reports.Add(report);
                 await _db.SaveChangesAsync();
             }
-            return RedirectToAction(nameof(Details), new { id = obstacleData.ObstacleId });
+
+            if (!string.IsNullOrEmpty(draft))
+            {
+                TempData["DeleteDraft"] = draft;
+            }
+
+            return RedirectToAction("MyReports", "Report");
         }
 
         // If validation failed, preserve ViewBag data
         Console.WriteLine("=== VALIDATION FAILED ===");
+        foreach (var kvp in ModelState)
+        {
+            var errors = kvp.Value.Errors;
+            if (errors != null && errors.Count > 0)
+            {
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"ModelState error for '{kvp.Key}': {error.ErrorMessage}");
+                }
+            }
+        }
         ViewBag.ObstacleType = obstacleData.ObstacleType;
         ViewBag.Coordinates = obstacleData.Coordinates;
         ViewBag.PointCount = obstacleData.PointCount;
@@ -122,27 +141,70 @@ public async Task<IActionResult> MyReports()
         var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
         var heightFeetStr = Request.Form["heightFeet"].FirstOrDefault();
 
+        if (string.IsNullOrWhiteSpace(heightMetersStr))
+        {
+            heightMetersStr = Request.Form[nameof(ObstacleData.ObstacleHeight)].FirstOrDefault();
+        }
+
+        if (string.IsNullOrWhiteSpace(heightFeetStr))
+        {
+            heightFeetStr = Request.Form["heightInput"].FirstOrDefault();
+        }
+
         Console.WriteLine($"HeightUnit: {heightUnit}");
         Console.WriteLine($"HeightMeters: {heightMetersStr}");
         Console.WriteLine($"HeightFeet: {heightFeetStr}");
 
         // Process height based on selected unit
-        if (heightUnit == "meters" && !string.IsNullOrEmpty(heightMetersStr))
+        var parsed = TryParseDouble(heightMetersStr);
+
+        if (!parsed.HasValue && !string.IsNullOrWhiteSpace(heightFeetStr))
         {
-            if (double.TryParse(heightMetersStr, out double meters))
+            var feetValue = TryParseDouble(heightFeetStr);
+            if (feetValue.HasValue)
             {
-                obstacleData.ObstacleHeight = meters;
-                Console.WriteLine($"Set height from meters: {obstacleData.ObstacleHeight}");
+                parsed = feetValue.Value * 0.3048;
+                Console.WriteLine($"Converted {feetValue.Value} feet to {parsed.Value} meters");
             }
         }
-        else if (heightUnit == "feet" && !string.IsNullOrEmpty(heightFeetStr))
+
+        if (!parsed.HasValue && obstacleData.ObstacleHeight.HasValue)
         {
-            if (double.TryParse(heightFeetStr, out double feet))
-            {
-                obstacleData.ObstacleHeight = feet * 0.3048; // Convert feet to meters for storage
-                Console.WriteLine($"Converted {feet} feet to {obstacleData.ObstacleHeight} meters");
-            }
+            parsed = obstacleData.ObstacleHeight.Value;
         }
+
+        if (parsed.HasValue && parsed.Value > 0)
+        {
+            obstacleData.ObstacleHeight = parsed.Value;
+            ModelState.Remove(nameof(ObstacleData.ObstacleHeight));
+            ModelState.SetModelValue(
+                nameof(ObstacleData.ObstacleHeight),
+                new ValueProviderResult(parsed.Value.ToString(CultureInfo.InvariantCulture)));
+            ModelState.ClearValidationState(nameof(ObstacleData.ObstacleHeight));
+            ModelState.MarkFieldValid(nameof(ObstacleData.ObstacleHeight));
+            TryValidateModel(obstacleData);
+            Console.WriteLine($"Final obstacle height (meters): {obstacleData.ObstacleHeight}");
+        }
+    }
+
+    private double? TryParseDouble(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        if (double.TryParse(value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double invariant))
+        {
+            return invariant;
+        }
+
+        if (double.TryParse(value, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out double current))
+        {
+            return current;
+        }
+
+        return null;
     }
     private void ProcessTypeSpecificFields(ObstacleData obstacleData)
     {

@@ -6,6 +6,7 @@
     string obstacleType = ViewBag.ObstacleType ?? "other";
     string coordinatesJson = ViewBag.Coordinates ?? "[]";
     int pointCount = ViewBag.PointCount ?? 0;
+    string? draftKey = Context.Request.Query["draft"];
 }
 
 <style>
@@ -258,7 +259,6 @@
         </h1>
         <p>Complete the registration for your @obstacleType.ToLower() obstacle with @pointCount point(s)</p>
     </div>
-
     <div class="obstacle-info">
         <h3>Map Data Summary</h3>
     <p><strong>Type:</strong> <span id="summaryTypeText">@obstacleType.ToUpper()</span></p>
@@ -274,10 +274,14 @@
 
     <form asp-controller="Obstacle" asp-action="DataForm" method="post">
         <!-- Hidden fields -->
-    <input type="hidden" name="ObstacleType" id="hiddenObstacleType" value="@obstacleType" />
-    <input type="hidden" name="Coordinates" id="hiddenCoordinates" value="@coordinatesJson" />
-    <input type="hidden" name="PointCount" id="hiddenPointCount" value="@pointCount" />
-    <input type="hidden" id="currentDraftKey" value="" />
+        @if (!string.IsNullOrWhiteSpace(draftKey))
+        {
+            <input type="hidden" name="draft" value="@draftKey" />
+        }
+        <input type="hidden" name="ObstacleType" id="hiddenObstacleType" value="@obstacleType" />
+        <input type="hidden" name="Coordinates" id="hiddenCoordinates" value="@coordinatesJson" />
+        <input type="hidden" name="PointCount" id="hiddenPointCount" value="@pointCount" />
+        <input type="hidden" id="currentDraftKey" value="" />
         <input type="hidden" name="heightUnit" value="feet" />
 
         <div class="form-grid">
@@ -456,7 +460,16 @@
 
             const form = document.querySelector('form');
             if (form) {
-                form.addEventListener('submit', updateHeightConversion);
+                form.addEventListener('submit', function () {
+                    updateHeightConversion();
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const draftKey = urlParams.get('draft');
+
+                    if (draftKey) {
+                        sessionStorage.setItem('deleteDraft', draftKey);
+                    }
+                });
             }
 
             loadDraft();
