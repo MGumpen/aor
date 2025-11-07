@@ -16,6 +16,9 @@
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" afterDir="false" />
@@ -91,7 +94,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "AdminPage",
+    "git-widget-placeholder": "Erfan/RolleBytting",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
