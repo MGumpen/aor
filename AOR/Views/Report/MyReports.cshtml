@@ -44,6 +44,30 @@
     #draftsContainer .obstacle-card {
         padding: 16px;  /* Less padding */
         border-radius: 12px;  /* Slightly less rounded */
+        background: #fffdea;
+        border: 1px dashed #fcd34d;
+        position: relative;
+    }
+    #draftsContainer .obstacle-card::before {
+        content: "Draft";
+        position: absolute;
+        top: 12px;
+        left: -32px;
+        transform: rotate(-90deg);
+        background: #fcd34d;
+        color: #8b5a03;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        padding: 2px 10px;
+        border-radius: 12px 12px 0 0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    #draftsContainer .obstacle-type-badge,
+    .draft-type-badge {
+        background: #f6f7f8;
+        color: #475569;
     }
     
     .obstacle-card:hover {
@@ -469,7 +493,7 @@
 
             // Create type badge (like registered obstacles)
             const typeBadge = document.createElement('span');
-            typeBadge.className = `obstacle-type-badge badge-${obstacleType || 'other'}`;
+            typeBadge.className = 'obstacle-type-badge draft-type-badge';
             typeBadge.textContent = formattedType;
 
             header.appendChild(title);
@@ -486,8 +510,7 @@
             const detailItems = [
                 { label: 'Height:', value: formattedHeight },
                 { label: 'Points:', value: pointCount.toString() },
-                { label: 'Registered:', value: formatSavedDate(data.savedAt) },
-                { label: 'Status:', value: null, badge: 'DRAFT' }
+                { label: 'Registered:', value: formatSavedDate(data.savedAt) }
             ];
 
             detailItems.forEach(item => {

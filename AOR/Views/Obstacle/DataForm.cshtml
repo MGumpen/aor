@@ -856,19 +856,32 @@
                 currentDraftKeyField.value = draftData.draftKey;
             }
 
-            showDraftNotification();
+            showDraftNotification('Draft saved successfully!');
 
             setTimeout(() => {
                 window.location.href = '/Crew';
             }, 1000);
         }
 
-        function showDraftNotification() {
+        function showDraftNotification(message) {
             const notification = document.getElementById('draftNotification');
+            if (!notification) {
+                return;
+            }
+
+            if (typeof message === 'string' && message.trim()) {
+                notification.textContent = message;
+            }
+
+            if (notification.hideTimeout) {
+                clearTimeout(notification.hideTimeout);
+            }
+
             notification.classList.add('show');
-            
-            setTimeout(() => {
+
+            notification.hideTimeout = setTimeout(() => {
                 notification.classList.remove('show');
+                notification.hideTimeout = undefined;
             }, 3000);
         }
         
@@ -924,10 +937,7 @@
                             currentDraftKeyField.value = draftKey;
                         }
 
-                        const notification = document.getElementById('draftNotification');
-                        notification.textContent = 'Draft loaded successfully!';
-                        showDraftNotification();
-                        notification.textContent = 'Draft saved successfully!';
+                        showDraftNotification('Draft loaded successfully!');
                         
                     } catch (e) {
                         console.error('Error loading draft:', e);
