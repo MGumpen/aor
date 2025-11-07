@@ -35,4 +35,74 @@
         </div>
     </form>
 </div>
+}
+
+
+@* ---------------------------------------------------------------
+   ROLLEVALG – popup med knapper for hver rolle (fast størrelse)
+   --------------------------------------------------------------- *@
+@if (Model?.ShowRolePicker == true && Model?.AvailableRoles != null && Model.AvailableRoles.Count > 0)
+{
+    <div class="modal fade show" id="rolePickerModal"
+         tabindex="-1"
+         aria-labelledby="rolePickerLabel"
+         aria-modal="true"
+         role="dialog"
+         style="display:block;">
+        <div class="modal-dialog modal-dialog-centered" style="width:30vw; min-width:320px; max-width:480px;">
+        <div class="modal-content shadow-sm border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title" id="rolePickerLabel">Velg rolle</h5>
+                <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="text-muted mb-4">Du har flere roller. Velg hvilken du vil bruke nå.</p>
+
+                <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
+
+                    @foreach (var r in Model.AvailableRoles)
+                    {
+                        <button type="submit"
+                                name="selectedRole"
+                                value="@r"
+                                class="btn btn-primary role-btn">
+                            Fortsett som @r
+                        </button>
+                    }
+                </form>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center">
+                <a class="btn btn-outline-secondary btn-sm"
+                   asp-controller="LogIn"
+                   asp-action="Index">
+                    Avbryt
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Backdrop -->
+    <div class="modal-backdrop fade show"></div>
+
+    <!-- Stil for å holde knappene like store -->
+    <style>
+        .role-btn {
+            width: 240px;          /* fast bredde */
+            min-height: 42px;      /* litt høyde for konsistent look */
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        @@media (max-width: 500px) {
+            .role-btn {
+                width: 100%;       /* full bredde på små skjermer */
+            }
+        }
+    </style>
+}
 
