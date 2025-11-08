@@ -27,6 +27,7 @@
     <h3>Funksjoner er under utvikling</h3>
 
     <button type="submit" class="btn btn-primary">Lagre</button>
+    <a asp-controller="Account" asp-action="EditUser" class="btn btn-secondary ms-2">Rediger bruker</a>
 </form>
 
 @if (TempData["Message"] != null)
@@ -35,4 +36,3 @@
         @TempData["Message"]
     </div>
 }
-
