@@ -35,12 +35,10 @@
         </div>
     </form>
 </div>
-}
 
 
-@* ---------------------------------------------------------------
-   ROLLEVALG – popup med knapper for hver rolle (fast størrelse)
-   --------------------------------------------------------------- *@
+
+
 @if (Model?.ShowRolePicker == true && Model?.AvailableRoles != null && Model.AvailableRoles.Count > 0)
 {
     <div class="modal fade show" id="rolePickerModal"
@@ -52,12 +50,12 @@
         <div class="modal-dialog modal-dialog-centered" style="width:30vw; min-width:320px; max-width:480px;">
         <div class="modal-content shadow-sm border-0">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="rolePickerLabel">Velg rolle</h5>
+                <h5 class="modal-title" id="rolePickerLabel">Choose role</h5>
                 <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
             </div>
 
             <div class="modal-body text-center">
-                <p class="text-muted mb-4">Du har flere roller. Velg hvilken du vil bruke nå.</p>
+                <p class="text-muted mb-4">Choose your user role.</p>
 
                 <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
                     @Html.AntiForgeryToken()
@@ -69,7 +67,7 @@
                                 name="selectedRole"
                                 value="@r"
                                 class="btn btn-primary role-btn">
-                            Fortsett som @r
+                            Continue as @r
                         </button>
                     }
                 </form>
@@ -79,7 +77,7 @@
                 <a class="btn btn-outline-secondary btn-sm"
                    asp-controller="LogIn"
                    asp-action="Index">
-                    Avbryt
+                    Cancel
                 </a>
             </div>
         </div>
