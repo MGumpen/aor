@@ -54,7 +54,7 @@ public class AdminController : Controller
         return View();
     }
     
-    public IActionResult PreviousReports()
+    public IActionResult Reports()
     {
         return View();
     }
