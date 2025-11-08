@@ -4,6 +4,8 @@
     Layout = "_Layout";
     ViewData["Title"] = "Edit user";
     var isAdmin = User.IsInRole("Admin");
+    var isCrew = User.IsInRole("Crew");
+    var isReg = User.IsInRole("Registrar");
 }
 
 <section class="container align-content-center">
@@ -16,47 +18,45 @@
             <form asp-action="EditUser" method="post" novalidate>
                 @Html.AntiForgeryToken()
 
-                @* Hidden identifier - bruker UserName (controller bør bruke dette for å finne brukeren) *@
                 <input asp-for="UserName" type="hidden" />
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <div class="mb-3">
-                    <label asp-for="FirstName" class="form-label">Fornavn</label>
+                    <label asp-for="FirstName" class="form-label">First name</label>
                     <input asp-for="FirstName" class="form-control" />
                     <span asp-validation-for="FirstName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="LastName" class="form-label">Etternavn</label>
+                    <label asp-for="LastName" class="form-label">Last name</label>
                     <input asp-for="LastName" class="form-control" />
                     <span asp-validation-for="LastName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="PhoneNumber" class="form-label">Telefonnummer</label>
+                    <label asp-for="PhoneNumber" class="form-label">Phone number</label>
                     <input asp-for="PhoneNumber" class="form-control" />
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
 
-                @* Passordfelt: kun for vanlige brukere som redigerer egne innstillinger *@
                 @if (!isAdmin)
                 {
                     <div class="mb-3">
-                        <label asp-for="OldPassword" class="form-label">Gammelt passord</label>
+                        <label asp-for="OldPassword" class="form-label">Old password</label>
                         <input asp-for="OldPassword" class="form-control" autocomplete="current-password" />
                         <span asp-validation-for="OldPassword" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Password" class="form-label">Nytt passord</label>
+                        <label asp-for="Password" class="form-label">New password</label>
                         <input asp-for="Password" class="form-control" autocomplete="new-password" />
-                        <span class="form-text">La feltet stå tomt hvis du ikke vil endre passordet.</span>
+                        <span class="form-text">Let the field be empty if you don't want to change password.</span>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="ConfirmPassword" class="form-label">Bekreft passord</label>
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm password</label>
                         <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
@@ -65,34 +65,33 @@
                 @if (isAdmin)
                 {
                     <hr />
-                    <h5>Admin-felter</h5>
+                    
 
                     <div class="mb-3">
-                        <label asp-for="Email" class="form-label">E-post</label>
+                        <label asp-for="Email" class="form-label">Email</label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="OrgNr" class="form-label">Organisasjon</label>
+                        <label asp-for="OrgNr" class="form-label">Organization</label>
                         @if (Model.Organizations != null)
                         {
                             <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
-                                <option value="">-- Velg organisasjon --</option>
+                                <option value="">-- Choose organization --</option>
                             </select>
                         }
                         else
                         {
                             <select asp-for="OrgNr" class="form-select">
-                                <option value="">Ingen organisasjoner tilgjengelig</option>
+                                <option value="">No organizations available</option>
                             </select>
                         }
                         <span asp-validation-for="OrgNr" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Rolle</label>
-                        @* Checkbox-liste for å velge én eller flere roller for admin *@
+                        <label class="form-label">Role</label>
                         @if (Model.Roles != null)
                         {
                             <div class="role-checkboxes">
@@ -108,7 +107,7 @@
                         }
                         else
                         {
-                            <div class="form-text">Ingen roller tilgjengelig</div>
+                            <div class="form-text">No roles available</div>
                         }
                         <span asp-validation-for="RoleIds" class="text-danger"></span>
                     </div>
@@ -116,14 +115,18 @@
 
                 <div class="d-flex justify-content-between mt-4">
                     <div>
-                        <button type="submit" class="btn btn-primary">Lagre endringer</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
                         @if (isAdmin)
                         {
-                            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-secondary ms-2">Avbryt</a>
+                            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
                         }
-                        else
+                        @if (isCrew)
                         {
-                            <a asp-controller="Admin" asp-action="Settings" class="btn btn-secondary ms-2">Avbryt</a>
+                            <a asp-controller="Crew" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+                        }
+                        @if (isReg)
+                        {
+                            <a asp-controller="Registrar" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
                         }
                     </div>
                 </div>
