@@ -15,8 +15,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AOR/Views/Admin/AdminEditUser.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +63,7 @@
     <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/EditUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/AdminEditUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bf9021a960b74107a7e141aa06bc9d8a0a53c929178c2fb95b1597be8af8dc/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
@@ -172,6 +176,7 @@
       <workItem from="1758090237962" duration="1385000" />
       <workItem from="1758100014838" duration="8185000" />
       <workItem from="1761748620570" duration="661000" />
+      <workItem from="1762780121531" duration="1988000" />
     </task>
     <servers />
   </component>

@@ -40,8 +40,7 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
 
-                @if (!isAdmin)
-                {
+                
                     <h3 class="mt-3">Password change</h3>
                     <p class="form-text">Let the fields stay empty if you don't want to change password.</p>
                     <div class="mb-3 mt-2">
@@ -61,58 +60,9 @@
                         <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
-                }
+                
 
-                @if (isAdmin)
-                {
-                    <hr />
-                    
-
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Email</label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="OrgNr" class="form-label">Organization</label>
-                        @if (Model.Organizations != null)
-                        {
-                            <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
-                                <option value="">-- Choose organization --</option>
-                            </select>
-                        }
-                        else
-                        {
-                            <select asp-for="OrgNr" class="form-select">
-                                <option value="">No organizations available</option>
-                            </select>
-                        }
-                        <span asp-validation-for="OrgNr" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Role</label>
-                        @if (Model.Roles != null)
-                        {
-                            <div class="role-checkboxes">
-                                @foreach (var r in Model.Roles)
-                                {
-                                    var isChecked = Model.RoleIds != null && Model.RoleIds.Contains(r.Value);
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="RoleIds" value="@r.Value" id="role_@r.Value" @(isChecked ? "checked" : "") />
-                                        <label class="form-check-label" for="role_@r.Value">@r.Text</label>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="form-text">No roles available</div>
-                        }
-                        <span asp-validation-for="RoleIds" class="text-danger"></span>
-                    </div>
-                }
+                
 
                 <div class="d-flex justify-content-between mt-4">
                     <div>

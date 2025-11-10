@@ -266,10 +266,8 @@ public class AccountController : Controller
         user.LastName = model.LastName;
         user.PhoneNumber = model.PhoneNumber;
 
-        // Kun admin kan oppdatere e-post, organisasjon og roller
         if (isAdmin)
         {
-            // Oppdater epost via UserManager for å sikre normalisering
             var emailResult = await _userManager.SetEmailAsync(user, model.Email);
             if (!emailResult.Succeeded)
             {
@@ -431,4 +429,201 @@ public class AccountController : Controller
         return RedirectToAction("Settings", "Admin");
     }
 
+
+
+    [HttpGet]
+    public async Task<IActionResult> AdminEditUser(string id)
+    {
+        
+        User? user;
+        if (!string.IsNullOrEmpty(id))
+        {
+            user = await _userManager.FindByIdAsync(id);
+        }
+        else
+        {
+            user = await _userManager.GetUserAsync(User);
+        }
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var vm = new NewUserViewModel
+        {
+            UserName = user.UserName,
+            Email = user.Email ?? string.Empty,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            OrgNr = user.OrgNr ?? 0,
+            Organizations = _context.Organizations
+                .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                .ToList(),
+            Roles = _roleManager.Roles
+                .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                .ToList()
+        };
+
+        // Fyll inn valgte roller
+        var userRoles = await _userManager.GetRolesAsync(user);
+        if (userRoles.Any())
+        {
+            // Konverter rollenames til role Ids
+            var roleIds = _roleManager.Roles
+                .Where(r => r.Name != null && userRoles.Contains(r.Name))
+                .Select(r => r.Id)
+                .ToList();
+
+            vm.RoleIds = roleIds;
+        }
+
+        return View(vm);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AdminEditUser(NewUserViewModel model)
+    {
+        // Bestem om aktuell bruker er admin før validering
+        var isAdmin = User.IsInRole("Admin");
+
+        // Hvis ikke admin, fjerner vi ModelState-feil relatert til admin-felter som ikke er synlige
+        if (!isAdmin)
+        {
+            ModelState.Remove(nameof(model.OrgNr));
+            ModelState.Remove(nameof(model.RoleIds));
+            ModelState.Remove(nameof(model.Email));
+        }
+
+        if (!ModelState.IsValid)
+        {
+            model.Organizations = _context.Organizations
+                .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                .ToList();
+            model.Roles = _roleManager.Roles
+                .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                .ToList();
+
+            return View(model);
+        }
+
+        var user = await _userManager.FindByNameAsync(model.UserName ?? string.Empty);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.PhoneNumber = model.PhoneNumber;
+
+        if (isAdmin)
+        {
+            var emailResult = await _userManager.SetEmailAsync(user, model.Email);
+            if (!emailResult.Succeeded)
+            {
+                foreach (var err in emailResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, err.Description);
+                }
+                model.Organizations = _context.Organizations
+                    .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                    .ToList();
+                model.Roles = _roleManager.Roles
+                    .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                    .ToList();
+                return View(model);
+            }
+            if (model.OrgNr != 0)
+            {
+                var org = await _context.Organizations.FirstOrDefaultAsync(o => o.OrgNr == model.OrgNr);
+                if (org == null)
+                {
+                    ModelState.AddModelError(nameof(model.OrgNr), "Organisasjonen finnes ikke.");
+                    model.Organizations = _context.Organizations
+                        .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                        .ToList();
+                    model.Roles = _roleManager.Roles
+                        .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                        .ToList();
+                    return View(model);
+                }
+
+                user.OrgNr = model.OrgNr;
+            }
+
+            // Oppdater roller
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            var newRoleIds = model.RoleIds ?? new List<string>();
+
+            // Finn rollenames fra roleIds
+            var newRoleNames = _roleManager.Roles
+                .Where(r => newRoleIds.Contains(r.Id) && r.Name != null)
+                .Select(r => r.Name!)
+                .ToList();
+
+            var toRemove = currentRoles.Except(newRoleNames).ToList();
+            var toAdd = newRoleNames.Except(currentRoles).ToList();
+
+            if (toRemove.Any())
+            {
+                await _userManager.RemoveFromRolesAsync(user, toRemove);
+            }
+
+            if (toAdd.Any())
+            {
+                await _userManager.AddToRolesAsync(user, toAdd);
+            }
+        }
+
+        
+
+        // Ensure username always equals email before saving (bruk UserManager for normalisering)
+        if (!string.IsNullOrWhiteSpace(user.Email))
+        {
+            var setUserNameResult = await _userManager.SetUserNameAsync(user, user.Email);
+            if (!setUserNameResult.Succeeded)
+            {
+                foreach (var err in setUserNameResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, err.Description);
+                }
+                model.Organizations = _context.Organizations
+                    .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                    .ToList();
+                model.Roles = _roleManager.Roles
+                    .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                    .ToList();
+                return View(model);
+            }
+        }
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            foreach (var err in updateResult.Errors)
+            {
+                ModelState.AddModelError(string.Empty, err.Description);
+            }
+
+            model.Organizations = _context.Organizations
+                .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
+                .ToList();
+            model.Roles = _roleManager.Roles
+                .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
+                .ToList();
+            return View(model);
+        }
+
+        if (isAdmin)
+        {
+            return RedirectToAction("AppUsers");
+        }
+
+        return RedirectToAction("Settings", "Admin");
+    }
+    
+    
 }
