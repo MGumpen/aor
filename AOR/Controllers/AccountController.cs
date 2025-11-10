@@ -485,16 +485,8 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> AdminEditUser(NewUserViewModel model)
     {
-        // Bestem om aktuell bruker er admin før validering
         var isAdmin = User.IsInRole("Admin");
 
-        // Hvis ikke admin, fjerner vi ModelState-feil relatert til admin-felter som ikke er synlige
-        if (!isAdmin)
-        {
-            ModelState.Remove(nameof(model.OrgNr));
-            ModelState.Remove(nameof(model.RoleIds));
-            ModelState.Remove(nameof(model.Email));
-        }
 
         if (!ModelState.IsValid)
         {
@@ -578,9 +570,7 @@ public class AccountController : Controller
             }
         }
 
-        
 
-        // Ensure username always equals email before saving (bruk UserManager for normalisering)
         if (!string.IsNullOrWhiteSpace(user.Email))
         {
             var setUserNameResult = await _userManager.SetUserNameAsync(user, user.Email);
