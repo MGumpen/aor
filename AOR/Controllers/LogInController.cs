@@ -33,8 +33,20 @@ namespace AOR.Controllers
         // -------------------- LOGIN --------------------
 
         [HttpGet]
-        public IActionResult Index(string? returnUrl = null)
+        public async Task<IActionResult> Index(string? returnUrl = null)
         {
+            // Hvis brukeren er innlogget og kommer til login-siden, logg dem ut automatisk
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                await _signInManager.SignOutAsync();
+                _logger.LogInformation("Bruker ble automatisk logget ut ved tilgang til login-siden.");
+            }
+
+            // Sett cache-headers for å unngå at login-siden caches
+            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0";
+            Response.Headers["Pragma"] = "no-cache";
+            Response.Headers["Expires"] = "0";
+
             return View(new LogInViewModel { ReturnUrl = returnUrl });
         }
 

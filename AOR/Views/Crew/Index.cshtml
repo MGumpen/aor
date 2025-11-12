@@ -3,6 +3,13 @@
     Layout = "_Layout";
 }
 
+<script>
+    // Forhindrer at siden lagres i bfcache når du navigerer bort
+    window.addEventListener('unload', function() {});
+</script>
+
+<!-- Rest av ditt eksisterende innhold -->
+
 <!-- Map-specific styles -->
 <style>
     /* Map container - responsive */
