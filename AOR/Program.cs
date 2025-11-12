@@ -35,6 +35,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/LogIn/AccessDenied";
 });
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.AddServerHeader = false;
+});
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace AOR.ViewModels;
+namespace AOR.Models;
 
 public class NewUserViewModel
 {
@@ -13,7 +13,6 @@ public class NewUserViewModel
     [Display(Name = "Phone Number")]
     public string? PhoneNumber { get; set; } = string.Empty;
     
-    [Required]
     [DataType(DataType.Password)]
     public string Password { get; set; } = string.Empty;
 
@@ -21,6 +20,10 @@ public class NewUserViewModel
     [Compare(nameof(Password), ErrorMessage = "Passordene er ikke like.")]
     [Display(Name = "Confirm Password")]
     public string? ConfirmPassword { get; set; }
+
+    [DataType(DataType.Password)]
+    [Display(Name = "Old Password")]
+    public string? OldPassword { get; set; }
 
     [Display(Name = "First Name")]
     public string? FirstName { get; set; }
@@ -37,6 +40,7 @@ public class NewUserViewModel
     [Display(Name = "Rolle")]
     [Required(ErrorMessage = "Velg minst én rolle")]
     public List<string> RoleIds { get; set; } = new();
+
 
     [ValidateNever]
     public IEnumerable<SelectListItem>? Roles { get; set; }
