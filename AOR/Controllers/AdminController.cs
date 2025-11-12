@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AOR.Controllers;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Policy = "AsAdmin")]
 public class AdminController : Controller
 {
     private readonly ILogger<AdminController> _logger;
