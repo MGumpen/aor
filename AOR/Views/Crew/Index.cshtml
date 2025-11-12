@@ -556,6 +556,7 @@
     var polyline = null;
     var pointCounter = 0;
     var isPanelVisible = false;
+    var myLocationMarker = null;
     var last30DaysLayer = null;
     var showingLast30Days = false;
 
@@ -638,11 +639,22 @@
     }
     
     function startDrawing(type) {
-        drawingMode = type;
+        if (drawingLayer) {
+            map.removeLayer(drawingLayer);
+            drawingLayer = null;
+        }
+
+        if (polyline) {
+            polyline.remove();
+            polyline = null;
+        }
+
         currentDrawing = [];
         markers = [];
         pointCounter = 0;
-        
+
+        drawingMode = type;
+
         const titles = {
             'powerline': 'Power Line',
             'mast': 'Masts', 
@@ -937,12 +949,16 @@
                 function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
-                    map.setView([lat, lng], 15);
-                    
-                    L.marker([lat, lng])
+
+                    if (myLocationMarker) {
+                        map.removeLayer(myLocationMarker);
+                    }
+
+                    myLocationMarker = L.marker([lat, lng])
                         .bindPopup('Your Current Location')
                         .addTo(map);
+
+                    map.setView([lat, lng], 15);
                 },
                 function(error) {
                     alert('Could not get your location. Please ensure location services are enabled.');
