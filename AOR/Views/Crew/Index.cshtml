@@ -556,6 +556,7 @@
     var polyline = null;
     var pointCounter = 0;
     var isPanelVisible = false;
+    var myLocationMarker = null;
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
@@ -893,12 +894,16 @@
                 function(position) {
                     const lat = position.coords.latitude;
                     const lng = position.coords.longitude;
-                    
-                    map.setView([lat, lng], 15);
-                    
-                    L.marker([lat, lng])
+
+                    if (myLocationMarker) {
+                        map.removeLayer(myLocationMarker);
+                    }
+
+                    myLocationMarker = L.marker([lat, lng])
                         .bindPopup('Your Current Location')
                         .addTo(map);
+
+                    map.setView([lat, lng], 15);
                 },
                 function(error) {
                     alert('Could not get your location. Please ensure location services are enabled.');
