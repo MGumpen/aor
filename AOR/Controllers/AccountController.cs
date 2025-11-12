@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AOR.Controllers;
 
+[Authorize]
 public class AccountController : Controller
 {
     private readonly ILogger<AccountController> _logger;
@@ -217,7 +219,8 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditUser(NewUserViewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditUser(NewUserViewModel model, string? returnUrl = null)
     {
         // Bestem om aktuell bruker er admin før validering
         var isAdmin = User.IsInRole("Admin");
@@ -362,13 +365,20 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // Redirect tilbake: admin -> AppUsers, vanlig bruker -> Settings
-        if (isAdmin)
+        // Prioriter ReturnUrl hvis satt og lokal
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
-            return RedirectToAction("AppUsers");
+            return LocalRedirect(returnUrl);
         }
-
-        return RedirectToAction("Settings", "Admin");
+        // Ellers rute til Index for aktiv rolle
+        var active = User.FindFirst("ActiveRole")?.Value;
+        return active switch
+        {
+            "Admin"     => RedirectToAction("Index", "Admin"),
+            "Crew"      => RedirectToAction("Index", "Crew"),
+            "Registrar" => RedirectToAction("Index", "Registrar"),
+            _           => RedirectToAction("Index", "Home")
+        };
     }
 
 
@@ -425,7 +435,8 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> AdminEditUser(NewUserViewModel model)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AdminEditUser(NewUserViewModel model, string? returnUrl = null)
     {
         var isAdmin = User.IsInRole("Admin");
 
@@ -549,12 +560,20 @@ public class AccountController : Controller
             return View(model);
         }
 
-        if (isAdmin)
+        // Prioriter ReturnUrl hvis satt og lokal
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
-            return RedirectToAction("AppUsers");
+            return LocalRedirect(returnUrl);
         }
-
-        return RedirectToAction("Settings", "Admin");
+        // Ellers rute til Index for aktiv rolle
+        var active = User.FindFirst("ActiveRole")?.Value;
+        return active switch
+        {
+            "Admin"     => RedirectToAction("Index", "Admin"),
+            "Crew"      => RedirectToAction("Index", "Crew"),
+            "Registrar" => RedirectToAction("Index", "Registrar"),
+            _           => RedirectToAction("Index", "Home")
+        };
     }
     
     
