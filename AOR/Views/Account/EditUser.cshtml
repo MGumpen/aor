@@ -3,9 +3,12 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Edit user";
-    var isAdmin = User.IsInRole("Admin");
-    var isCrew = User.IsInRole("Crew");
-    var isReg = User.IsInRole("Registrar");
+    
+    string targetController = "LogIn";
+    if (User.HasClaim("ActiveRole", "Admin"))      { targetController = "Admin"; }
+    else if (User.HasClaim("ActiveRole", "Crew"))  { targetController = "Crew"; }
+    else if (User.HasClaim("ActiveRole", "Registrar")) { targetController = "Registrar"; }
+    var returnUrl = Url.Action("Index", targetController);
 }
 
 <section class="container align-content-center">
@@ -15,8 +18,9 @@
 
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <form asp-action="EditUser" method="post" novalidate>
+            <form asp-controller="Account" asp-action="EditUser" method="post" novalidate>
                 @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
 
                 <input asp-for="UserName" type="hidden" />
 
@@ -67,18 +71,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
-                        @if (isAdmin)
-                        {
-                            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-                        }
-                        @if (isCrew)
-                        {
-                            <a asp-controller="Crew" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-                        }
-                        @if (isReg)
-                        {
-                            <a asp-controller="Registrar" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
-                        }
+                        <a asp-controller="@targetController" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
                     </div>
                 </div>
             </form>
