@@ -556,6 +556,8 @@
     var polyline = null;
     var pointCounter = 0;
     var isPanelVisible = false;
+    var last30DaysLayer = null;
+    var showingLast30Days = false;
 
     function closeWelcomePopup() {
         document.getElementById('welcome-popup').style.display = 'none';
@@ -593,6 +595,12 @@
  document.addEventListener('DOMContentLoaded', function() {
         showWelcomePopup();
         setTimeout(initializeMap, 100);
+        
+        // Show the Last 30 Days button only on Crew page
+        const last30DaysBtn = document.getElementById('last30DaysBtn');
+        if (last30DaysBtn) {
+            last30DaysBtn.style.display = 'inline-block';
+        }
     });
 
     function initializeMap() {
@@ -681,6 +689,36 @@
             pointId: pointId
         });
 
+        // Add permanent number label to the marker
+        const numberIcon = L.divIcon({
+            className: 'marker-number-label',
+            html: `<div style="
+                background: white;
+                border: 2px solid ${colors[drawingMode]};
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 14px;
+                color: ${colors[drawingMode]};
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            ">${pointCounter}</div>`,
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+        
+        const numberMarker = L.marker(latlng, {
+            icon: numberIcon,
+            interactive: false,
+            pointId: pointId + '_label'
+        });
+        
+        numberMarker.addTo(drawingLayer);
+        markers.push(numberMarker);
+
         // MOBILE-FRIENDLY: Support both mouse and touch events
         let isDragging = false;
         
@@ -703,6 +741,13 @@
                 if (isDragging) {
                     const newLatLng = e.latlng || map.mouseEventToLatLng(e.originalEvent.touches[0]);
                     marker.setLatLng(newLatLng);
+                    
+                    // Update the number label position
+                    const labelMarker = markers.find(m => m.options.pointId === pointId + '_label');
+                    if (labelMarker) {
+                        labelMarker.setLatLng(newLatLng);
+                    }
+                    
                     updateCurrentDrawing();
                     updatePointInList(pointId, newLatLng);
                     if (drawingMode === 'powerline') {
@@ -790,6 +835,13 @@
             markers.splice(markerIndex, 1);
         }
         
+        // Also remove the number label
+        const labelIndex = markers.findIndex(marker => marker.options.pointId === pointId + '_label');
+        if (labelIndex !== -1) {
+            drawingLayer.removeLayer(markers[labelIndex]);
+            markers.splice(labelIndex, 1);
+        }
+        
         const pointItem = document.getElementById(pointId);
         if (pointItem) {
             pointItem.remove();
@@ -810,7 +862,10 @@
     }
 
     function updateCurrentDrawing() {
-        currentDrawing = markers.map(marker => marker.getLatLng());
+        // Only get positions from actual markers, not labels
+        currentDrawing = markers
+            .filter(marker => !marker.options.pointId.includes('_label'))
+            .map(marker => marker.getLatLng());
     }
 
     function updatePolyline() {
@@ -903,4 +958,116 @@
             }, 100);
         }
     });
+
+    async function toggleLast30Days() {
+        const btn = document.getElementById('last30DaysBtn');
+        
+        if (showingLast30Days) {
+            // Hide the layer
+            if (last30DaysLayer) {
+                map.removeLayer(last30DaysLayer);
+                last30DaysLayer = null;
+            }
+            showingLast30Days = false;
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="fa fa-calendar-days me-2"></i>Last 30 Days';
+        } else {
+            // Show the layer
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Loading...';
+                
+                const response = await fetch('/Obstacle/Last30Days');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch obstacles');
+                }
+                
+                const obstacles = await response.json();
+                displayLast30DaysObstacles(obstacles);
+                
+                showingLast30Days = true;
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fa fa-calendar-check me-2"></i>Hide Last 30 Days';
+            } catch (error) {
+                console.error('Error loading obstacles:', error);
+                alert('Failed to load obstacles from last 30 days');
+                btn.innerHTML = '<i class="fa fa-calendar-days me-2"></i>Last 30 Days';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    }
+
+    function displayLast30DaysObstacles(obstacles) {
+        if (last30DaysLayer) {
+            map.removeLayer(last30DaysLayer);
+        }
+        
+        last30DaysLayer = L.layerGroup().addTo(map);
+        
+        if (obstacles.length === 0) {
+            alert('No obstacles registered in the last 30 days');
+            return;
+        }
+        
+        const colors = {
+            'powerline': '#E74C3C',
+            'mast': '#0C5AA6',
+            'other': '#00A651'
+        };
+        
+        obstacles.forEach(obstacle => {
+            try {
+                const coords = JSON.parse(obstacle.coordinates);
+                const color = colors[obstacle.obstacleType.toLowerCase()] || '#4f46e5';
+                
+                if (coords.length === 1) {
+                    // Single point - create a marker
+                    const marker = L.circleMarker([coords[0].lat, coords[0].lng], {
+                        radius: 10,
+                        fillColor: color,
+                        color: '#fff',
+                        weight: 3,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                    
+                    marker.bindPopup(`
+                        <strong>${obstacle.obstacleName}</strong><br/>
+                        <em>${obstacle.obstacleType}</em><br/>
+                        Registered: ${new Date(obstacle.createdAt).toLocaleDateString()}<br/>
+                        <a href="/Obstacle/Details/${obstacle.obstacleId}">View Details</a>
+                    `);
+                    
+                    marker.addTo(last30DaysLayer);
+                } else {
+                    // Multiple points - create a polyline
+                    const latlngs = coords.map(c => [c.lat, c.lng]);
+                    const polyline = L.polyline(latlngs, {
+                        color: color,
+                        weight: 4,
+                        opacity: 0.8
+                    });
+                    
+                    polyline.bindPopup(`
+                        <strong>${obstacle.obstacleName}</strong><br/>
+                        <em>${obstacle.obstacleType}</em><br/>
+                        Points: ${coords.length}<br/>
+                        Registered: ${new Date(obstacle.createdAt).toLocaleDateString()}<br/>
+                        <a href="/Obstacle/Details/${obstacle.obstacleId}">View Details</a>
+                    `);
+                    
+                    polyline.addTo(last30DaysLayer);
+                }
+            } catch (error) {
+                console.error('Error parsing obstacle coordinates:', error, obstacle);
+            }
+        });
+        
+        // Fit map to show all obstacles
+        if (last30DaysLayer.getLayers().length > 0) {
+            const group = new L.featureGroup(last30DaysLayer.getLayers());
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    }
 </script>
