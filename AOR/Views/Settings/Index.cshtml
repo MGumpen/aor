@@ -3,18 +3,39 @@
 @{
     ViewData["Title"] = "Settings";
     Layout = "_Layout";
+
+    var theme = (Context.Request.Cookies["theme"] ?? "light").ToLowerInvariant();
 }
 
 <h2>@ViewData["Title"]</h2>
 
+<!-- ÉN ENESTE TOGGLE-KNAPP (behold kun denne) -->
+<form asp-controller="Settings" asp-action="ToggleTheme" method="post" class="mb-3">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="returnUrl" value="@Url.Action("Index","Settings")" />
+    <button type="submit" class="btn btn-secondary">
+        @(theme == "dark" ? "Bytt til lys modus" : "Bytt til mørk modus")
+    </button>
+</form>
+
 <form asp-action="Index" method="post">
+    <div class="mb-3">
+        <label asp-for="Language" class="form-label">Språk</label>
+        <select asp-for="Language" class="form-select">
+            <option value="en">Engelsk</option>
+            <option value="no">Norsk</option>
+        </select>
+    </div>
+
     <div class="mb-3">
         <label asp-for="Theme" class="form-label">Tema</label>
         <select asp-for="Theme" class="form-select">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
+            <option value="light">Lyst</option>
+            <option value="dark">Mørkt</option>
         </select>
     </div>
+
+    <h3>Funksjoner er under utvikling</h3>
 
     <button type="submit" class="btn btn-primary">Lagre</button>
 </form>

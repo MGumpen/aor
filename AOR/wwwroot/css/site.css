@@ -47,3 +47,39 @@ body {
     padding: 24px;
     border: 1px solid #e5e7eb;
 }
+
+/* === Navbar-tekst i mørk modus === */
+
+/* Gjør navbar-lenker og brand lyse i dark */
+html.theme-dark .navbar,
+html.theme-dark .navbar .navbar-brand,
+html.theme-dark .navbar .nav-link {
+  color: var(--fg) !important;
+}
+
+/* Hover/aktiv tilstand i dark */
+html.theme-dark .navbar .nav-link:hover,
+html.theme-dark .navbar .nav-link:focus,
+html.theme-dark .navbar .nav-link.active {
+  color: #ffffff !important;
+  text-decoration: none;
+}
+
+/* Toggler-ikon og kant i dark */
+html.theme-dark .navbar-light .navbar-toggler {
+  border-color: var(--border) !important;
+}
+html.theme-dark .navbar-light .navbar-toggler-icon {
+  filter: invert(1) brightness(1.2);
+}
+
+/* Sørg for at bg-white ikke "tvinger" lys bakgrunn i dark */
+html.theme-dark .navbar-light.bg-white {
+  background-color: var(--navbar-bg) !important;
+}
+
+/* Footer-linkene kan også bli lyse i dark */
+html.theme-dark a,
+html.theme-dark .nav-link {
+  color: var(--fg) !important;
+}
