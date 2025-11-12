@@ -258,6 +258,25 @@ public async Task<IActionResult> MyReports()
         if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
     }
+
+    [HttpGet("/Obstacle/Last30Days")]
+    public async Task<IActionResult> Last30Days()
+    {
+        var cutoffDate = DateTime.UtcNow.AddDays(-30);
+        var obstacles = await _db.Obstacles
+            .AsNoTracking()
+            .Where(o => o.CreatedAt >= cutoffDate)
+            .Select(o => new {
+                o.ObstacleId,
+                o.ObstacleName,
+                o.ObstacleType,
+                o.Coordinates,
+                o.CreatedAt
+            })
+            .ToListAsync();
+        
+        return Json(obstacles);
+    }
     
     
 }
