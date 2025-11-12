@@ -28,6 +28,14 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     .AddEntityFrameworkStores<AorDbContext>()
     .AddDefaultTokenProviders();
 
+// Authorization policies basert på ActiveRole-claim
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AsAdmin",     p => p.RequireClaim("ActiveRole", "Admin"));
+    options.AddPolicy("AsCrew",      p => p.RequireClaim("ActiveRole", "Crew"));
+    options.AddPolicy("AsRegistrar", p => p.RequireClaim("ActiveRole", "Registrar"));
+});
+
 // Configure application cookie (custom login path)
 builder.Services.ConfigureApplicationCookie(options =>
 {
