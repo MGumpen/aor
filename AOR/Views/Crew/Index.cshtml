@@ -630,11 +630,22 @@
     }
     
     function startDrawing(type) {
-        drawingMode = type;
+        if (drawingLayer) {
+            map.removeLayer(drawingLayer);
+            drawingLayer = null;
+        }
+
+        if (polyline) {
+            polyline.remove();
+            polyline = null;
+        }
+
         currentDrawing = [];
         markers = [];
         pointCounter = 0;
-        
+
+        drawingMode = type;
+
         const titles = {
             'powerline': 'Power Line',
             'mast': 'Masts', 
