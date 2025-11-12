@@ -175,7 +175,10 @@
 
 <section class="container">
     <div class="details-header">
-        @if (User.IsInRole("Registrar"))
+        @{
+            var activeRole = User.FindFirst("ActiveRole")?.Value;
+        }
+        @if (activeRole == "Registrar" || activeRole == "Admin")
         {
             <a href="/Registrar" class="btn btn-primary back-button">Back to Overview</a>
             //    <a href="/Registrar/Reports" class="btn btn-secondary">All Reports</a>
@@ -297,7 +300,7 @@
         </div>
     </div>
     
-    @if (User.IsInRole("Crew"))
+    @if (activeRole == "Crew")
     {
         <a href="/Crew" class="btn btn-primary mb-4">Back to Map</a>
         <a href="/Report/MyReports" class="btn btn-secondary mb-4">Your reports</a>
