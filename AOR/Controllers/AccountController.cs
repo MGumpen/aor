@@ -402,7 +402,7 @@ public class AccountController : Controller
             return NotFound();
         }
 
-        var vm = new NewUserViewModel
+        var vm = new EditUserViewModel
         {
             UserName = user.UserName,
             Email = user.Email ?? string.Empty,
@@ -436,7 +436,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AdminEditUser(NewUserViewModel model, string? returnUrl = null)
+    public async Task<IActionResult> AdminEditUser(EditUserViewModel model, string? returnUrl = null)
     {
         var isAdmin = User.IsInRole("Admin");
 
@@ -569,10 +569,10 @@ public class AccountController : Controller
         var active = User.FindFirst("ActiveRole")?.Value;
         return active switch
         {
-            "Admin"     => RedirectToAction("Index", "Admin"),
+            "Admin"     => RedirectToAction("AppUsers", "Account"),
             "Crew"      => RedirectToAction("Index", "Crew"),
             "Registrar" => RedirectToAction("Index", "Registrar"),
-            _           => RedirectToAction("Index", "Home")
+            _           => RedirectToAction("Index", "LogIn")
         };
     }
     
