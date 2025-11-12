@@ -48,38 +48,120 @@ body {
     border: 1px solid #e5e7eb;
 }
 
-/* === Navbar-tekst i mørk modus === */
+/* === THEME VARIABLES & OVERRIDES === */
 
-/* Gjør navbar-lenker og brand lyse i dark */
+/* Light (default) */
+html.theme-light {
+  --bg: #ffffff;
+  --fg: #212529;
+  --muted-bg: #f8f9fa;
+  --muted-fg: #6c757d;
+  --border: #dee2e6;
+  --link: #0d6efd;
+  --card-bg: #ffffff;
+  --navbar-bg: #ffffff;
+  --footer-bg: #ffffff;
+}
+
+/* Dark */
+html.theme-dark {
+  --bg: #121212;
+  --fg: #e9ecef;
+  --muted-bg: #1c1c1c;
+  --muted-fg: #adb5bd;
+  --border: #2b2b2b;
+  --link: #66a2ff;
+  --card-bg: #1a1a1a;
+  --navbar-bg: #1a1a1a;
+  --footer-bg: #1a1a1a;
+}
+
+/* Base colors */
+html.theme-light body,
+html.theme-dark body {
+  background-color: var(--bg) !important;
+  color: var(--fg) !important;
+}
+
+/* Links */
+html.theme-light a,
+html.theme-dark a {
+  color: var(--link);
+}
+
+/* Navbar & footer backgrounds */
+html.theme-light .navbar,
+html.theme-dark .navbar {
+  background-color: var(--navbar-bg) !important;
+}
+html.theme-light .footer,
+html.theme-dark .footer {
+  background-color: var(--footer-bg) !important;
+  color: var(--muted-fg) !important;
+}
+
+/* Cards / panels / generic boxes */
+html.theme-light .card,
+html.theme-dark .card,
+html.theme-light .box-shadow,
+html.theme-dark .box-shadow {
+  background-color: var(--card-bg) !important;
+  color: var(--fg) !important;
+  border-color: var(--border) !important;
+}
+
+/* Borders / hr */
+html.theme-light .border-bottom,
+html.theme-dark .border-bottom,
+html.theme-light .border-top,
+html.theme-dark .border-top {
+  border-color: var(--border) !important;
+}
+
+/* Forms (help dark inputs look right) */
+html.theme-dark .form-control,
+html.theme-dark .form-select,
+html.theme-dark .btn-light {
+  background-color: #222 !important;
+  color: var(--fg) !important;
+  border-color: var(--border) !important;
+}
+
+/* Tables */
+html.theme-dark table,
+html.theme-dark .table {
+  color: var(--fg);
+}
+html.theme-dark .table thead th {
+  color: var(--fg);
+  border-bottom-color: var(--border);
+}
+html.theme-dark .table td,
+html.theme-dark .table th {
+  border-color: var(--border);
+}
+
+/* Alerts */
+html.theme-dark .alert {
+  background-color: #1e1e1e;
+  color: var(--fg);
+  border-color: var(--border);
+}
+
+/* === You already had these navbar text overrides; keep them === */
 html.theme-dark .navbar,
 html.theme-dark .navbar .navbar-brand,
 html.theme-dark .navbar .nav-link {
   color: var(--fg) !important;
 }
-
-/* Hover/aktiv tilstand i dark */
 html.theme-dark .navbar .nav-link:hover,
 html.theme-dark .navbar .nav-link:focus,
 html.theme-dark .navbar .nav-link.active {
   color: #ffffff !important;
   text-decoration: none;
 }
-
-/* Toggler-ikon og kant i dark */
-html.theme-dark .navbar-light .navbar-toggler {
-  border-color: var(--border) !important;
-}
-html.theme-dark .navbar-light .navbar-toggler-icon {
-  filter: invert(1) brightness(1.2);
-}
-
-/* Sørg for at bg-white ikke "tvinger" lys bakgrunn i dark */
-html.theme-dark .navbar-light.bg-white {
-  background-color: var(--navbar-bg) !important;
-}
-
-/* Footer-linkene kan også bli lyse i dark */
+html.theme-dark .navbar-light .navbar-toggler { border-color: var(--border) !important; }
+html.theme-dark .navbar-light .navbar-toggler-icon { filter: invert(1) brightness(1.2); }
+html.theme-dark .navbar-light.bg-white { background-color: var(--navbar-bg) !important; }
 html.theme-dark a,
-html.theme-dark .nav-link {
-  color: var(--fg) !important;
-}
+html.theme-dark .nav-link { color: var(--fg) !important; }
