@@ -693,8 +693,8 @@
         const numberIcon = L.divIcon({
             className: 'marker-number-label',
             html: `<div style="
-                background: white;
-                border: 2px solid ${colors[drawingMode]};
+                background: ${colors[drawingMode]};
+                border: 2px solid white;
                 border-radius: 50%;
                 width: 24px;
                 height: 24px;
@@ -703,7 +703,7 @@
                 justify-content: center;
                 font-weight: bold;
                 font-size: 14px;
-                color: ${colors[drawingMode]};
+                color: white;
                 box-shadow: 0 2px 4px rgba(0,0,0,0.3);
             ">${pointCounter}</div>`,
             iconSize: [24, 24],
