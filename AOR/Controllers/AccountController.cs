@@ -266,65 +266,7 @@ public class AccountController : Controller
         user.LastName = model.LastName;
         user.PhoneNumber = model.PhoneNumber;
 
-        if (isAdmin)
-        {
-            var emailResult = await _userManager.SetEmailAsync(user, model.Email);
-            if (!emailResult.Succeeded)
-            {
-                foreach (var err in emailResult.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, err.Description);
-                }
-                model.Organizations = _context.Organizations
-                    .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
-                    .ToList();
-                model.Roles = _roleManager.Roles
-                    .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
-                    .ToList();
-                return View(model);
-            }
-            if (model.OrgNr != 0)
-            {
-                var org = await _context.Organizations.FirstOrDefaultAsync(o => o.OrgNr == model.OrgNr);
-                if (org == null)
-                {
-                    ModelState.AddModelError(nameof(model.OrgNr), "Organisasjonen finnes ikke.");
-                    model.Organizations = _context.Organizations
-                        .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
-                        .ToList();
-                    model.Roles = _roleManager.Roles
-                        .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
-                        .ToList();
-                    return View(model);
-                }
-
-                user.OrgNr = model.OrgNr;
-            }
-
-            // Oppdater roller
-            var currentRoles = await _userManager.GetRolesAsync(user);
-
-            var newRoleIds = model.RoleIds ?? new List<string>();
-
-            // Finn rollenames fra roleIds
-            var newRoleNames = _roleManager.Roles
-                .Where(r => newRoleIds.Contains(r.Id) && r.Name != null)
-                .Select(r => r.Name!)
-                .ToList();
-
-            var toRemove = currentRoles.Except(newRoleNames).ToList();
-            var toAdd = newRoleNames.Except(currentRoles).ToList();
-
-            if (toRemove.Any())
-            {
-                await _userManager.RemoveFromRolesAsync(user, toRemove);
-            }
-
-            if (toAdd.Any())
-            {
-                await _userManager.AddToRolesAsync(user, toAdd);
-            }
-        }
+        
 
         // Håndtere passordendring: kun hvis IKKE admin og passord er satt
         if (!isAdmin && !string.IsNullOrWhiteSpace(model.Password))

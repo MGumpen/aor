@@ -22,6 +22,9 @@
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+                @if (isAdmin)
+                {
+                    
                 <div class="mb-3">
                     <label asp-for="FirstName" class="form-label">First name</label>
                     <input asp-for="FirstName" class="form-control" />
@@ -40,8 +43,7 @@
                     <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 </div>
                 
-                @if (isAdmin)
-                {
+                
                     <hr />
                     
 
@@ -94,7 +96,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <div>
                         <button type="submit" class="btn btn-primary">Save changes</button>
-                            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+                            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-secondary ms-2">Cancel</a>
                        
                     </div>
                 </div>
