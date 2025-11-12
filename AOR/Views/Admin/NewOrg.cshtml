@@ -1,0 +1,65 @@
+@model AOR.Models.OrgModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Add organization";
+}
+
+<style>
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .site-header {
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
+
+    .role-dropdown .role-dropdown-menu {
+        min-width: 100%;
+        margin-top: 0;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .role-dropdown .form-check {
+        margin-bottom: 0.25rem;
+    }
+</style>
+
+<section class="container align-content-center">
+
+    <div class="site-header text-center mb-3">
+        <h1 class="mb-0">Register new organization</h1>
+    </div>
+
+    <form asp-action="NewOrg" asp-controller="Admin" method="post">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="OrgNr" class="form-label"></label>
+                <input asp-for="OrgNr" class="form-control" type="text" inputmode="numeric" value="" />
+                <span asp-validation-for="OrgNr" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="OrgName" class="form-label"></label>
+                <input asp-for="OrgName" class="form-control" />
+                <span asp-validation-for="OrgName" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-success me-2">Save</button>
+            <a asp-controller="Admin" asp-action="Orgs" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+    
+</section>

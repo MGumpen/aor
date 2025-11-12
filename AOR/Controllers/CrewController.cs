@@ -5,7 +5,7 @@ using AOR.Models;
 
 namespace AOR.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Crew")]
 public class CrewController : Controller
 {
     private readonly ILogger<CrewController> _logger;
@@ -35,6 +35,6 @@ public IActionResult LogIn()
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

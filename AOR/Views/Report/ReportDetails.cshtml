@@ -1,0 +1,386 @@
+@model AOR.Models.ReportModel
+
+@{
+    ViewData["Title"] = "Report details";
+    Layout = "_Layout";
+}
+
+<style>
+    section.container {
+        width: 100%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .details-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
+
+    .details-header .back-button {
+        position: absolute;
+        left: 0;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-badge.pending {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    .status-badge.approved {
+        background: #dcfce7;
+        color: #166534;
+    }
+    .status-badge.rejected {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .detail-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+    }
+    
+    .detail-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .detail-value {
+        font-size: 1rem;
+        color: #1e293b;
+        word-break: break-word;
+    }
+    
+    .coordinates-section {
+        background: #f0f9ff;
+        border: 1px solid #0ea5e9;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .coordinates-list {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .coordinate-item {
+        padding: 6px 10px;
+        margin-bottom: 4px;
+        background: #f8fafc;
+        border-radius: 6px;
+        border-left: 3px solid #3b82f6;
+    }
+    
+    .actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        text-align: center;
+        transition: all 0.2s ease;
+        display: inline-block;
+    }
+    
+    .btn-primary {
+        background: #4f46e5;
+        color: white;
+        border: 2px solid #4f46e5;
+    }
+    
+    .btn-primary:hover {
+        background: #4338ca;
+        border-color: #4338ca;
+        color: white;
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: #4f46e5;
+        border: 2px solid #4f46e5;
+    }
+    
+    .btn-secondary:hover {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    #map-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    #report-map {
+        height: 300px;
+        width: 100%;
+    }
+
+    @@media (min-width: 992px) { 
+        #report-map {
+            height: 450px;
+            width: 80%;
+            max-width: 80%;
+        }
+    }
+
+    @@media (min-width: 1200px) {
+        #report-map {
+            height: 600px;
+            width: 80%;
+            max-width: 80%;
+        }
+    }
+    
+</style>
+
+<section class="container">
+    <div class="details-header">
+        @if (User.IsInRole("Registrar"))
+        {
+            <a href="/Registrar" class="btn btn-primary back-button">Back to Overview</a>
+            //    <a href="/Registrar/Reports" class="btn btn-secondary">All Reports</a>
+        }
+        <h1>Report details</h1>
+    </div>
+    
+
+    <div class="details-grid">
+        
+        <div class="detail-card">
+            <div class="detail-label">User</div>
+            <div class="detail-value">@Model.User.UserName</div>
+        </div>
+        
+        <div class="detail-card">
+            <div class="detail-label">Registered</div>
+            <div class="detail-value">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+        </div>
+        
+        <div class="detail-card">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">
+                @{
+                    var statusText = Model.Status?.Status ?? "Pending";
+                    var badgeClass = statusText.ToLower() switch
+                    {
+                        "approved" => "status-badge approved",
+                        "rejected" => "status-badge rejected",
+                        _ => "status-badge pending"
+                    };
+                }
+                <span class="@badgeClass">@statusText</span>
+            </div>
+        </div>
+        
+        <div class="detail-card">
+            <div class="detail-label">Type</div>
+            <div class="detail-value">@Model.Obstacle.ObstacleType.ToUpper()</div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-label">Name</div>
+            <div class="detail-value">@Model.Obstacle.ObstacleName</div>
+        </div>
+        
+        @if (Model.Obstacle.ObstacleHeight.HasValue)
+        {
+            <div class="detail-card">
+                <div class="detail-label">Height</div>
+                <div class="detail-value">
+                    @Model.Obstacle.ObstacleHeight.Value.ToString("F1") m
+                    <span style="color: #6b7280; font-size: 0.875rem;">
+                        (≈ @((Model.Obstacle.ObstacleHeight.Value * 3.28084).ToString("F1")) ft)
+                    </span>
+                </div>
+            </div>
+        }
+        
+        @if (Model.Obstacle.ObstacleType.ToLower() == "powerline")
+        {
+            @if (Model.Obstacle.WireCount.HasValue)
+            {
+                <div class="detail-card">
+                    <div class="detail-label">Wire Count</div>
+                    <div class="detail-value">@Model.Obstacle.WireCount wires</div>
+                </div>
+            }
+        }
+        else if (Model.Obstacle.ObstacleType.ToLower() == "mast")
+        {
+            @if (!string.IsNullOrEmpty(Model.Obstacle.MastType))
+            {
+                <div class="detail-card">
+                    <div class="detail-label">Mast Type</div>
+                    <div class="detail-value">@Model.Obstacle.MastType</div>
+                </div>
+            }
+
+            @if (Model.Obstacle.HasLighting.HasValue)
+            {
+                <div class="detail-card">
+                    <div class="detail-label">Aviation Lighting</div>
+                    <div class="detail-value">@(Model.Obstacle.HasLighting.Value ? "Yes" : "No")</div>
+                </div>
+            }
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(Model.Obstacle.Category))
+            {
+                <div class="detail-card">
+                    <div class="detail-label">Category</div>
+                    <div class="detail-value">@Model.Obstacle.Category</div>
+                </div>
+            }
+        }
+    </div>
+    
+    @if (!string.IsNullOrEmpty(Model.Obstacle.ObstacleDescription))
+    {
+        <div class="detail-card" style="margin-bottom: 24px;">
+            <div class="detail-label">Description</div>
+            <div class="detail-value">@Model.Obstacle.ObstacleDescription</div>
+        </div>
+    }
+    
+    @if (!string.IsNullOrEmpty(Model.Obstacle.Coordinates) && Model.Obstacle.Coordinates != "[]")
+    {
+        <div class="coordinates-section">
+            <h3 style="margin: 0 0 12px 0; color: #0c4a6e;">GPS Coordinates</h3>
+            <div class="coordinates-list" id="coordinates-display"></div>
+        </div>
+    }
+    
+    <div style="margin-bottom: 24px;">
+        <h3 style="margin: 0 0 12px 0; color: #0c4a6e; text-align: left;">Map</h3>
+        <div id="map-wrapper">
+            <div id="report-map" style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
+        </div>
+    </div>
+    
+    @if (User.IsInRole("Crew"))
+    {
+        <a href="/Crew" class="btn btn-primary">Back to Map</a>
+        <a href="/Report/MyReports" class="btn btn-secondary">Your reports</a>
+    }
+    
+</section>
+
+@section Scripts {
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin="">
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 1) Hent koordinater fra modellen
+            const coordinatesJson = '@Html.Raw(Model.Obstacle.Coordinates ?? "[]")';
+            const coordinatesDisplay = document.getElementById('coordinates-display');
+
+            let coordinates = [];
+
+            if (coordinatesJson && coordinatesJson !== '[]' && coordinatesDisplay) {
+                try {
+                    coordinates = JSON.parse(coordinatesJson);
+                    let html = '';
+
+                    coordinates.forEach((coord, index) => {
+                        html += `<div class="coordinate-item">
+                                   Point ${index + 1}: ${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}
+                                 </div>`;
+                    });
+
+                    coordinatesDisplay.innerHTML = html;
+                } catch (e) {
+                    coordinatesDisplay.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
+                }
+            }
+
+            // Leaflet-kart vises alltid uten knapp
+            const mapWrapper = document.getElementById('map-wrapper');
+            if (!mapWrapper || !coordinates || coordinates.length === 0) {
+                return; // ingenting å vise
+            }
+
+            const obstacleType = '@Model.Obstacle.ObstacleType?.ToLower()';
+
+            // Opprett Leaflet-kart automatisk
+            const map = L.map('report-map');
+            window.reportMap = map;
+
+            // Bakgrunnskart (OSM)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+
+            const latLngs = coordinates.map(c => L.latLng(c.lat, c.lng));
+
+            // 4) Vis enten punkt eller linje
+            const isLineType =
+                obstacleType === 'powerline' ||
+                obstacleType === 'line' ||
+                latLngs.length > 1; // fallback: flere punkter => vis linje
+
+            if (isLineType) {
+                // Polyline for powerline/linje
+                L.polyline(latLngs, { weight: 4 }).addTo(map);
+                latLngs.forEach(p => L.marker(p).addTo(map));
+                map.fitBounds(L.latLngBounds(latLngs), { padding: [20, 20] });
+            } else {
+                // Ett punkt – mast/other
+                const point = latLngs[0];
+                L.marker(point).addTo(map);
+                map.setView(point, 15);
+            }
+        });
+    </script>
+}

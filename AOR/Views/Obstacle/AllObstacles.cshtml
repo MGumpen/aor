@@ -217,14 +217,6 @@
                             <div class="detail-value">@obstacle.CreatedAt.ToString("dd.MM.yyyy")</div>
                         </div>
                         
-                        @if (obstacle.ObstacleType.ToLower() == "powerline" && obstacle.Voltage.HasValue)
-                        {
-                            <div class="detail-item">
-                                <div class="detail-label">Voltage:</div>
-                                <div class="detail-value">@obstacle.Voltage kV</div>
-                            </div>
-                        }
-                        
                         @if (obstacle.ObstacleType.ToLower() == "mast" && !string.IsNullOrEmpty(obstacle.MastType))
                         {
                             <div class="detail-item">
@@ -244,7 +236,7 @@
                     }
                     
                     <div class="obstacle-actions">
-                        <a href="/Obstacle/Details/@obstacle.Id" class="btn-small btn-details">View Details</a>
+                        <a href="/Obstacle/Details/@obstacle.ObstacleId" class="btn-small btn-details">View Details</a>
                     </div>
                 </div>
             }

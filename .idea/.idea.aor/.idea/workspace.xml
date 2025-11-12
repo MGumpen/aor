@@ -15,12 +15,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/CrewController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
-
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/LogInViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +34,13 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/../bacit25" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -48,8 +57,19 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Views/Crew/MyReports.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/NewOrgViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bf9021a960b74107a7e141aa06bc9d8a0a53c929178c2fb95b1597be8af8dc/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/e52a70dae11948fa5bfb33d03fd2e7d9b6ece182647aa4d9b1221413ac57dc7/IdentityUser.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -74,7 +94,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Marius/header",
+    "git-widget-placeholder": "Erfan/RolleBytting",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -157,6 +177,7 @@
       <workItem from="1758045247917" duration="3093000" />
       <workItem from="1758090237962" duration="1385000" />
       <workItem from="1758100014838" duration="8185000" />
+      <workItem from="1761748620570" duration="661000" />
     </task>
     <servers />
   </component>
