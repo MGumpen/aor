@@ -288,7 +288,7 @@
             @if (obstacleType.ToLower() == "powerline") {
                 <div class="form-row">
                     <label class="pilot-label">Power Line Name/ID <span style="color: red;">*</span></label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" required />
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" maxlength="50" required />
                     <span class="pilot-help">Enter the power line identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
@@ -297,8 +297,8 @@
                     <label class="pilot-label">Wire Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 50.8" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 50.8" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -310,13 +310,13 @@
                 
                 <div class="form-row">
                     <label class="pilot-label">Number of Wires</label>
-                    <input name="WireCount" type="number" min="1" class="pilot-input" placeholder="e.g., 3" />
+                    <input name="WireCount" type="number" min="1" max="99" class="pilot-input" placeholder="e.g., 3" />
                 </div>
             }
             else if (obstacleType.ToLower() == "mast") {
                 <div class="form-row">
                     <label class="pilot-label">Mast Name/ID <span style="color: red;">*</span></label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Communication Tower 1" required />
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Communication Tower 1" maxlength="50" required />
                     <span class="pilot-help">Enter the mast identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
@@ -325,8 +325,8 @@
                     <label class="pilot-label">Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 147.6" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 147.6" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -360,7 +360,7 @@
             else {
                 <div class="form-row">
                     <label class="pilot-label">Obstacle Name <span style="color: red;">*</span></label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Wind Turbine, Building, etc." required />
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Wind Turbine, Building, etc." maxlength="50" required />
                     <span class="pilot-help">Name or description of the obstacle</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
@@ -369,8 +369,8 @@
                     <label class="pilot-label">Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 82.0" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 82.0" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -402,10 +402,10 @@
                     }
                 </label>
                 @if (obstacleType.ToLower() == "other") {
-                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" 
+                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" maxlength="1000"
                               placeholder="Additional details, hazards, or important notes..." required></textarea>
                 } else {
-                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" 
+                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" maxlength="1000"
                               placeholder="Additional details, hazards, or important notes..."></textarea>
                 }
                 <span class="pilot-help">
@@ -482,7 +482,19 @@
 
             const inputValue = parseFloat(heightInputElement.value);
             if (!isNaN(inputValue) && inputValue > 0) {
+                const maxFeet = 3280;
+                if (inputValue > maxFeet) {
+                    conversionDisplayElement.textContent = 'Max 1000 m (≈ 3280 ft)';
+                    hiddenHeightElement.value = '';
+                    return;
+                }
+
                 const meters = inputValue * 0.3048;
+                if (meters > 1000) {
+                    conversionDisplayElement.textContent = 'Max 1000 m (≈ 3280 ft)';
+                    hiddenHeightElement.value = '';
+                    return;
+                }
                 conversionDisplayElement.textContent = `≈ ${meters.toFixed(1)} m`;
                 hiddenHeightElement.value = meters;
             } else {
