@@ -5,7 +5,11 @@
 
 <script>
     // Prevents the page from being stored in bfcache when you navigate away
-    window.addEventListener('unload', function() {});
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
 </script>
 
 <!-- Rest av ditt eksisterende innhold -->
