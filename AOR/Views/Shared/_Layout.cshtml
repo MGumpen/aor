@@ -3,13 +3,15 @@
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
-@{
-    var currentUser = await UserManager.GetUserAsync(User);
-}
+
 
 @{
-    // Read theme cookie and map to html class
-    var theme = (Context.Request.Cookies["theme"] ?? "light").ToLowerInvariant();
+   var isAuthed = User?.Identity?.IsAuthenticated == true;
+    var currentUser = isAuthed ? await UserManager.GetUserAsync(User) : null;
+
+    // Only use cookie if user is logged in — otherwise force light mode
+    var themeCookie = Context.Request.Cookies["theme"] ?? "light";
+    var theme = isAuthed ? themeCookie.ToLowerInvariant() : "light";
     var htmlThemeClass = theme == "dark" ? "theme-dark" : "theme-light";
 }
 

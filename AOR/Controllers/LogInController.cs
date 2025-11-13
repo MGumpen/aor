@@ -171,6 +171,8 @@ namespace AOR.Controllers
             await _signInManager.SignOutAsync();
             _logger.LogInformation("Bruker logget ut.");
             return RedirectToAction(nameof(Index));
+            Response.Cookies.Delete("theme");
+
         }
 
         // -------------------- FORGOT PASSWORD --------------------

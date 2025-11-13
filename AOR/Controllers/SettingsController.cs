@@ -1,8 +1,12 @@
+using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 
 namespace AOR.Controllers
 {
+    [Authorize]
     public class SettingsController : Controller
     {
         private const string ThemeCookieName = "theme"; // "light" | "dark"
@@ -12,7 +16,7 @@ namespace AOR.Controllers
         {
             var model = new SettingsModel();
 
-            // Les eksisterende tema fra cookie slik at select kan vise valgt verdi
+            // Read current theme from cookie for correct button text
             var themeFromCookie = Request.Cookies[ThemeCookieName];
             if (!string.IsNullOrWhiteSpace(themeFromCookie))
             {
@@ -24,36 +28,24 @@ namespace AOR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(SettingsModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // Oppdater tema-cookie når brukeren lagrer innstillinger
-                SetThemeCookie(model.Theme ?? "light");
-
-                TempData["Message"] = "Innstillinger lagret!";
-                return RedirectToAction("Index");
-            }
-            return View(model);
-        }
-
-        // NY: Toggle-knapp fra navbar / settings
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ToggleTheme(string? returnUrl = null)
         {
+            // If no cookie yet, default to "light"
             var current = Request.Cookies[ThemeCookieName] ?? "light";
             var next = current == "dark" ? "light" : "dark";
 
-            SetThemeCookie(next);
+            SetSessionThemeCookie(next);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
-            return RedirectToAction("Index", "LogIn"); // fallback
+            return RedirectToAction(nameof(Index));
         }
 
-        private void SetThemeCookie(string theme)
+        /// <summary>
+        /// Set a session cookie for theme (no Expires => cleared when browser closes).
+        /// </summary>
+        private void SetSessionThemeCookie(string theme)
         {
             var isDev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
                 ?.Equals("Development", StringComparison.OrdinalIgnoreCase) ?? false;
@@ -63,10 +55,10 @@ namespace AOR.Controllers
                 string.IsNullOrWhiteSpace(theme) ? "light" : theme,
                 new CookieOptions
                 {
-                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    // No Expires set => session cookie (dies when browser closes)
                     IsEssential = true,
-                    HttpOnly = false,       // må kunne leses i Razor
-                    Secure = !isDev,        // true i prod (https), false i dev (http)
+                    HttpOnly = false,       // readable in Razor for layout
+                    Secure = !isDev,        // true in prod (https), false in dev (http)
                     SameSite = SameSiteMode.Lax
                 });
         }
