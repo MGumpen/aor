@@ -6,6 +6,7 @@
     string obstacleType = ViewBag.ObstacleType ?? "other";
     string coordinatesJson = ViewBag.Coordinates ?? "[]";
     int pointCount = ViewBag.PointCount ?? 0;
+    string? draftKey = Context.Request.Query["draft"];
 }
 
 <style>
@@ -176,21 +177,92 @@
         font-weight: 500;
         border: 1px solid #e5e7eb;
     }
+    
+    .pilot-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        justify-content: flex-end;
+    }
+    
+    .pilot-primary, .pilot-secondary, .pilot-draft {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        min-width: 120px;
+    }
+    
+    .pilot-primary {
+        background: #4f46e5;
+        color: white;
+    }
+    
+    .pilot-primary:hover {
+        background: #4338ca;
+    }
+    
+    .pilot-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+    
+    .pilot-secondary:hover {
+        background: #e5e7eb;
+    }
+    
+    .pilot-draft {
+        background: #fbbf24;
+        color: #92400e;
+        border: 1px solid #f59e0b;
+    }
+    
+    .pilot-draft:hover {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .draft-saved-notification {
+        position: fixed;
+        top: 110px;
+        left: 50%;
+        background: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 1000;
+        opacity: 0;
+        transform: translate(-50%, -20px);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .draft-saved-notification.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
 </style>
 
 <section class="pilot-form-container">
     <div class="pilot-form-header">
         <h1>
-            @(obstacleType.ToUpper()) Registration
-            <span class="obstacle-type-badge badge-@obstacleType.ToLower()">@obstacleType</span>
+            <span id="summaryTypeHeading">@obstacleType.ToUpper()</span> Registration
+            <span id="summaryTypeBadge" class="obstacle-type-badge badge-@obstacleType.ToLower()">@obstacleType</span>
         </h1>
         <p>Complete the registration for your @obstacleType.ToLower() obstacle with @pointCount point(s)</p>
     </div>
-
     <div class="obstacle-info">
         <h3>Map Data Summary</h3>
-        <p><strong>Type:</strong> @obstacleType.ToUpper()</p>
-        <p><strong>Points:</strong> @pointCount coordinate(s)</p>
+    <p><strong>Type:</strong> <span id="summaryTypeText">@obstacleType.ToUpper()</span></p>
+    <p><strong>Points:</strong> <span id="summaryPointCount">@pointCount</span> coordinate(s)</p>
         
         @if (pointCount > 0) {
             <div class="coordinates-list">
@@ -202,26 +274,31 @@
 
     <form asp-controller="Obstacle" asp-action="DataForm" method="post">
         <!-- Hidden fields -->
-        <input type="hidden" name="ObstacleType" value="@obstacleType" />
-        <input type="hidden" name="Coordinates" value="@coordinatesJson" />
-        <input type="hidden" name="PointCount" value="@pointCount" />
+        @if (!string.IsNullOrWhiteSpace(draftKey))
+        {
+            <input type="hidden" name="draft" value="@draftKey" />
+        }
+        <input type="hidden" name="ObstacleType" id="hiddenObstacleType" value="@obstacleType" />
+        <input type="hidden" name="Coordinates" id="hiddenCoordinates" value="@coordinatesJson" />
+        <input type="hidden" name="PointCount" id="hiddenPointCount" value="@pointCount" />
+        <input type="hidden" id="currentDraftKey" value="" />
         <input type="hidden" name="heightUnit" value="feet" />
 
         <div class="form-grid">
             @if (obstacleType.ToLower() == "powerline") {
                 <div class="form-row">
-                    <label class="pilot-label">Power Line Name/ID</label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" required />
+                    <label class="pilot-label">Power Line Name/ID <span style="color: red;">*</span></label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" maxlength="50" required />
                     <span class="pilot-help">Enter the power line identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
                 
                 <div class="form-row">
-                    <label class="pilot-label">Wire Height</label>
+                    <label class="pilot-label">Wire Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 50.8" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 50.8" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -233,23 +310,23 @@
                 
                 <div class="form-row">
                     <label class="pilot-label">Number of Wires</label>
-                    <input name="WireCount" type="number" min="1" class="pilot-input" placeholder="e.g., 3" />
+                    <input name="WireCount" type="number" min="1" max="99" class="pilot-input" placeholder="e.g., 3" />
                 </div>
             }
             else if (obstacleType.ToLower() == "mast") {
                 <div class="form-row">
-                    <label class="pilot-label">Mast Name/ID</label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Communication Tower 1" required />
+                    <label class="pilot-label">Mast Name/ID <span style="color: red;">*</span></label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Communication Tower 1" maxlength="50" required />
                     <span class="pilot-help">Enter the mast identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
                 
                 <div class="form-row">
-                    <label class="pilot-label">Height</label>
+                    <label class="pilot-label">Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 147.6" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 147.6" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -282,18 +359,18 @@
             }
             else {
                 <div class="form-row">
-                    <label class="pilot-label">Obstacle Name</label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Wind Turbine, Building, etc." required />
+                    <label class="pilot-label">Obstacle Name <span style="color: red;">*</span></label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Wind Turbine, Building, etc." maxlength="50" required />
                     <span class="pilot-help">Name or description of the obstacle</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
                 
                 <div class="form-row">
-                    <label class="pilot-label">Height</label>
+                    <label class="pilot-label">Height <span style="color: red;">*</span></label>
                     <div class="height-input-container">
                         <div class="height-input-wrapper">
-                            <input type="number" step="0.1" min="0.1" class="pilot-input" 
-                                   id="heightInput" name="heightInput" placeholder="e.g., 82.0" required />
+                <input type="number" step="0.1" min="0.1" max="3280" class="pilot-input" 
+                    id="heightInput" name="heightInput" placeholder="e.g., 82.0" required />
                             <span class="unit-label">ft</span>
                         </div>
                         <div id="conversionDisplay" class="conversion-display">≈ 0.0 m</div>
@@ -325,10 +402,10 @@
                     }
                 </label>
                 @if (obstacleType.ToLower() == "other") {
-                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" 
+                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" maxlength="1000"
                               placeholder="Additional details, hazards, or important notes..." required></textarea>
                 } else {
-                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" 
+                    <textarea asp-for="ObstacleDescription" rows="4" class="pilot-textarea" maxlength="1000"
                               placeholder="Additional details, hazards, or important notes..."></textarea>
                 }
                 <span class="pilot-help">
@@ -343,71 +420,653 @@
         </div>
 
         <div class="pilot-actions">
-            <a href="/Crew" class="pilot-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Cancel</a>
-            <a href="/Obstacle/AllObstacles" class="pilot-secondary" style="text-decoration: none; display: inline-block; text-align: center;">Draft</a>
-            <button type="submit" class="pilot-primary">Register obstacle</button>
+            <a href="/Crew" class="pilot-secondary">Cancel</a>
+            <button type="button" class="pilot-draft" onclick="saveDraft()">Save as Draft</button>
+            <button type="submit" class="pilot-primary">Register Obstacle</button>
         </div>
     </form>
 </section>
+
+<!-- Draft saved notification -->
+<div id="draftNotification" class="draft-saved-notification">
+    Draft saved successfully!
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const heightInput = document.getElementById('heightInput');
-            const conversionDisplay = document.getElementById('conversionDisplay');
-            const hiddenHeight = document.getElementById('hiddenHeight');
-            
-            function updateConversion() {
-                const inputValue = parseFloat(heightInput.value);
-                let displayValue = '';
-                let heightInMeters = 0;
-                
-                if (!isNaN(inputValue) && inputValue > 0) {
-                    const meters = (inputValue * 0.3048).toFixed(1);
-                    displayValue = `≈ ${meters} m`;
-                    heightInMeters = inputValue * 0.3048;
-                    hiddenHeight.value = heightInMeters;
-                } else {
-                    displayValue = '≈ 0.0 m';
-                    hiddenHeight.value = '';
-                }
-                
-                conversionDisplay.textContent = displayValue;
+        const initialCoordinatesJson = '@Html.Raw(coordinatesJson)';
+        let heightInputElement;
+        let conversionDisplayElement;
+        let hiddenHeightElement;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            heightInputElement = document.getElementById('heightInput');
+            conversionDisplayElement = document.getElementById('conversionDisplay');
+            hiddenHeightElement = document.getElementById('hiddenHeight');
+
+            if (heightInputElement) {
+                heightInputElement.addEventListener('input', updateHeightConversion);
+                updateHeightConversion();
             }
-            
-            if (heightInput) {
-                heightInput.addEventListener('input', updateConversion);
-            }
-            
-            const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                updateConversion();
+
+            renderCoordinatesFromJson(initialCoordinatesJson);
+            updateMapSummaryFromData({
+                ObstacleType: document.getElementById('hiddenObstacleType')?.value,
+                PointCount: document.getElementById('hiddenPointCount')?.value,
+                Coordinates: initialCoordinatesJson
             });
+
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    updateHeightConversion();
+
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const draftKey = urlParams.get('draft');
+
+                    if (draftKey) {
+                        sessionStorage.setItem('deleteDraft', draftKey);
+                    }
+                });
+            }
+
+            loadDraft();
         });
 
-        // Coordinates display script
-        document.addEventListener('DOMContentLoaded', function() {
-            const coordinatesJson = '@Html.Raw(coordinatesJson)';
-            const coordinatesDisplay = document.getElementById('coordinates-display');
-            
-            if (coordinatesJson && coordinatesJson !== '[]') {
+        function updateHeightConversion() {
+            if (!heightInputElement || !conversionDisplayElement || !hiddenHeightElement) {
+                return;
+            }
+
+            const inputValue = parseFloat(heightInputElement.value);
+            if (!isNaN(inputValue) && inputValue > 0) {
+                const maxFeet = 3280;
+                if (inputValue > maxFeet) {
+                    conversionDisplayElement.textContent = 'Max 1000 m (≈ 3280 ft)';
+                    hiddenHeightElement.value = '';
+                    return;
+                }
+
+                const meters = inputValue * 0.3048;
+                if (meters > 1000) {
+                    conversionDisplayElement.textContent = 'Max 1000 m (≈ 3280 ft)';
+                    hiddenHeightElement.value = '';
+                    return;
+                }
+                conversionDisplayElement.textContent = `≈ ${meters.toFixed(1)} m`;
+                hiddenHeightElement.value = meters;
+            } else {
+                conversionDisplayElement.textContent = '≈ 0.0 m';
+                hiddenHeightElement.value = '';
+            }
+        }
+
+        function renderCoordinatesFromJson(json) {
+            const display = document.getElementById('coordinates-display');
+            if (!display) {
+                return;
+            }
+
+            if (!json || json === '[]') {
+                display.innerHTML = '<div class="coordinate-item">No coordinates registered yet.</div>';
+                return;
+            }
+
+            let parsed;
+            if (typeof json === 'string') {
                 try {
-                    const coordinates = JSON.parse(coordinatesJson);
-                    let html = '';
-                    
-                    coordinates.forEach((coord, index) => {
-                        html += `<div class="coordinate-item">
-                                   Point ${index + 1}: ${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}
-                                 </div>`;
-                    });
-                    
-                    coordinatesDisplay.innerHTML = html;
-                } catch (e) {
-                    coordinatesDisplay.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
+                    parsed = JSON.parse(json);
+                } catch (error) {
+                    console.warn('Unable to parse coordinates', error);
+                    display.innerHTML = '<div class="coordinate-item">Error parsing coordinates</div>';
+                    return;
+                }
+            } else {
+                parsed = json;
+            }
+
+            if (!Array.isArray(parsed) || !parsed.length) {
+                display.innerHTML = '<div class="coordinate-item">No coordinates registered yet.</div>';
+                return;
+            }
+
+            display.innerHTML = parsed.map((coord, index) => {
+                const lat = typeof coord.lat === 'number' ? coord.lat.toFixed(6) : 'N/A';
+                const lng = typeof coord.lng === 'number' ? coord.lng.toFixed(6) : 'N/A';
+                return `<div class="coordinate-item">Point ${index + 1}: ${lat}, ${lng}</div>`;
+            }).join('');
+        }
+
+        function derivePointCount(data) {
+            if (!data) {
+                return 0;
+            }
+
+            const countFromField = Number(data.PointCount);
+            if (!Number.isNaN(countFromField) && countFromField > 0) {
+                return countFromField;
+            }
+
+            if (data.Coordinates) {
+                try {
+                    const coordinates = typeof data.Coordinates === 'string'
+                        ? JSON.parse(data.Coordinates)
+                        : data.Coordinates;
+
+                    if (Array.isArray(coordinates)) {
+                        return coordinates.length;
+                    }
+                } catch (error) {
+                    console.warn('Unable to parse coordinate data for point count', error);
                 }
             }
-        });
+
+            return 0;
+        }
+
+        function setFieldValueByName(name, value) {
+            if (value === undefined || value === null) {
+                return;
+            }
+
+            const candidates = Array.from(document.getElementsByName(name));
+            const field = candidates.length > 0 ? candidates[0] : document.getElementById(name);
+
+            if (!field) {
+                return;
+            }
+
+            if (field.type === 'checkbox') {
+                const normalized = typeof value === 'string' ? value.trim().toLowerCase() : value;
+                field.checked = normalized === true || normalized === 'true' || normalized === '1';
+                return;
+            }
+
+            if (field.type === 'radio') {
+                const match = candidates.find(radio => radio.value === value.toString());
+                if (match) {
+                    match.checked = true;
+                }
+                return;
+            }
+
+            const normalizedValue = typeof value === 'string' ? value : value.toString();
+            field.value = normalizedValue;
+
+            if (field.type !== 'hidden') {
+                field.dispatchEvent(new Event('input', { bubbles: true }));
+                field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
+        function applyDraftToForm(data) {
+            setFieldValueByName('ObstacleName', data.ObstacleName);
+            setFieldValueByName('ObstacleDescription', data.ObstacleDescription);
+            setFieldValueByName('heightInput', data.heightInput);
+            setFieldValueByName('ObstacleHeight', data.ObstacleHeight);
+            setFieldValueByName('WireCount', data.WireCount);
+            setFieldValueByName('MastType', data.MastType);
+            if (data.HasLighting !== undefined) {
+                setFieldValueByName('HasLighting', data.HasLighting);
+            }
+            setFieldValueByName('Category', data.Category);
+
+            if (heightInputElement && typeof data.heightInput !== 'undefined') {
+                heightInputElement.value = data.heightInput;
+            }
+
+            if (hiddenHeightElement && typeof data.ObstacleHeight !== 'undefined') {
+                hiddenHeightElement.value = data.ObstacleHeight;
+            }
+
+            const hiddenCoordinatesField = document.getElementById('hiddenCoordinates');
+            if (hiddenCoordinatesField && typeof data.Coordinates !== 'undefined') {
+                hiddenCoordinatesField.value = typeof data.Coordinates === 'string'
+                    ? data.Coordinates
+                    : JSON.stringify(data.Coordinates ?? []);
+            }
+
+            const hiddenPointCountField = document.getElementById('hiddenPointCount');
+            if (hiddenPointCountField && typeof data.PointCount !== 'undefined') {
+                hiddenPointCountField.value = data.PointCount;
+            }
+
+            const hiddenTypeField = document.getElementById('hiddenObstacleType');
+            if (hiddenTypeField && typeof data.ObstacleType !== 'undefined') {
+                hiddenTypeField.value = data.ObstacleType.toString();
+            }
+
+            if (data.Coordinates) {
+                renderCoordinatesFromJson(data.Coordinates);
+            }
+
+            updateHeightConversion();
+            updateMapSummaryFromData(data);
+        }
+
+        function canonicalizeDraftData(source = {}) {
+            const data = { ...source };
+
+            const getFirstValue = (...keys) => {
+                for (const key of keys) {
+                    if (Object.prototype.hasOwnProperty.call(data, key)) {
+                        const value = data[key];
+                        if (value !== undefined && value !== null) {
+                            if (typeof value === 'string') {
+                                const trimmed = value.trim();
+                                if (trimmed !== '') {
+                                    return trimmed;
+                                }
+                            } else if (!(typeof value === 'number' && Number.isNaN(value))) {
+                                return value;
+                            }
+                        }
+                    }
+                }
+
+                return undefined;
+            };
+
+            const setCanonicalField = (canonicalKey, ...aliases) => {
+                const value = getFirstValue(canonicalKey, ...aliases);
+                if (value !== undefined) {
+                    data[canonicalKey] = value;
+                }
+            };
+
+            setCanonicalField('ObstacleName', 'obstacleName', 'name', 'ObstacleId', 'obstacleId', 'draftTitle', 'title', 'displayName', 'ObstacleData.ObstacleName', 'obstacle_data.obstacle_name');
+            setCanonicalField('ObstacleType', 'obstacleType', 'type', 'ObstacleData.ObstacleType', 'obstacle_data.obstacle_type', 'hiddenObstacleType');
+            setCanonicalField('ObstacleDescription', 'obstacleDescription', 'description', 'ObstacleData.ObstacleDescription', 'obstacle_data.obstacle_description');
+            setCanonicalField('ObstacleHeight', 'obstacleHeight', 'heightMeters', 'height', 'Height', 'ObstacleData.ObstacleHeight', 'obstacle_data.obstacle_height');
+            setCanonicalField('heightInput', 'heightFeet', 'HeightFeet', 'height_ft', 'feetHeight', 'ObstacleData.heightInput', 'obstacle_data.height_input');
+            setCanonicalField('WireCount', 'wireCount', 'wires', 'wire_count', 'numberOfWires', 'wireTotal', 'ObstacleData.WireCount', 'obstacle_data.wire_count');
+            setCanonicalField('MastType', 'mastType', 'towerType', 'mast_type', 'tower_type', 'ObstacleData.MastType', 'obstacle_data.mast_type');
+            setCanonicalField('HasLighting', 'hasLighting', 'lighting', 'Lighting', 'has_lighting', 'ObstacleData.HasLighting', 'obstacle_data.has_lighting');
+            setCanonicalField('Category', 'category', 'obstacleCategory', 'obstacle_category', 'ObstacleData.Category', 'obstacle_data.category');
+            setCanonicalField('Coordinates', 'coordinates', 'pointsJson', 'ObstacleData.Coordinates', 'obstacle_data.coordinates', 'coordinatesJson');
+            setCanonicalField('PointCount', 'pointCount', 'points', 'ObstacleData.PointCount', 'obstacle_data.point_count');
+            setCanonicalField('savedAt', 'SavedAt', 'saved_at', 'ObstacleData.SavedAt', 'obstacle_data.saved_at', 'timestamp');
+
+            if (data.ObstacleType) {
+                data.ObstacleType = data.ObstacleType.toString().trim();
+            }
+
+            if (typeof data.HasLighting === 'boolean') {
+                data.HasLighting = data.HasLighting ? 'true' : 'false';
+            } else if (typeof data.HasLighting === 'string') {
+                const trimmed = data.HasLighting.trim().toLowerCase();
+                if (trimmed === 'yes') {
+                    data.HasLighting = 'true';
+                } else if (trimmed === 'no') {
+                    data.HasLighting = 'false';
+                } else {
+                    data.HasLighting = data.HasLighting.trim();
+                }
+            }
+
+            if (data.Coordinates && typeof data.Coordinates !== 'string') {
+                try {
+                    data.Coordinates = JSON.stringify(data.Coordinates);
+                } catch (error) {
+                    console.warn('Unable to stringify coordinates during canonicalization', error);
+                    data.Coordinates = '[]';
+                }
+            }
+
+            const parsedHeight = Number(data.ObstacleHeight);
+            if (!Number.isNaN(parsedHeight) && parsedHeight > 0) {
+                data.ObstacleHeight = parsedHeight;
+            }
+
+            if ((!data.heightInput || data.heightInput === '') && parsedHeight > 0) {
+                const feet = parsedHeight / 0.3048;
+                data.heightInput = (Math.round(feet * 10) / 10).toString();
+            }
+
+            data.PointCount = derivePointCount(data);
+
+            ['ObstacleName', 'ObstacleDescription', 'MastType', 'Category', 'WireCount', 'heightInput', 'draftTitle', 'displayName'].forEach(key => {
+                if (typeof data[key] === 'string') {
+                    data[key] = data[key].trim();
+                }
+            });
+
+            if (!data.draftTitle && data.ObstacleName) {
+                data.draftTitle = data.ObstacleName;
+            }
+
+            if (!data.displayName && data.ObstacleName) {
+                data.displayName = data.ObstacleName;
+            }
+
+            return data;
+        }
+
+        function buildDraftData(options = {}) {
+            const form = document.querySelector('form');
+            if (!form) {
+                return null;
+            }
+
+            updateHeightConversion();
+
+            const formData = new FormData(form);
+            const draftData = {};
+
+            formData.forEach((value, key) => {
+                if (key === '__RequestVerificationToken') {
+                    return;
+                }
+                draftData[key] = value;
+            });
+
+            const canonicalDraft = canonicalizeDraftData(draftData);
+
+            const nameField = document.getElementById('ObstacleName');
+            if (!canonicalDraft.ObstacleName && nameField && nameField.value.trim() !== '') {
+                canonicalDraft.ObstacleName = nameField.value.trim();
+            }
+
+            if (canonicalDraft.ObstacleName) {
+                const trimmedName = canonicalDraft.ObstacleName.toString().trim();
+                canonicalDraft.ObstacleName = trimmedName;
+                if (!canonicalDraft.draftTitle) {
+                    canonicalDraft.draftTitle = trimmedName;
+                }
+                if (!canonicalDraft.displayName) {
+                    canonicalDraft.displayName = trimmedName;
+                }
+            }
+
+            if (!canonicalDraft.ObstacleDescription) {
+                const descriptionField = document.getElementById('ObstacleDescription');
+                if (descriptionField && descriptionField.value.trim() !== '') {
+                    canonicalDraft.ObstacleDescription = descriptionField.value.trim();
+                }
+            }
+
+            if (!canonicalDraft.ObstacleType) {
+                const typeField = document.getElementById('hiddenObstacleType');
+                if (typeField && typeField.value) {
+                    canonicalDraft.ObstacleType = typeField.value;
+                }
+            }
+
+            if (canonicalDraft.ObstacleType) {
+                canonicalDraft.ObstacleType = canonicalDraft.ObstacleType.toString().trim();
+            }
+
+            const coordinatesField = document.getElementById('hiddenCoordinates');
+            if (coordinatesField && coordinatesField.value) {
+                canonicalDraft.Coordinates = coordinatesField.value;
+            }
+
+            if (hiddenHeightElement && hiddenHeightElement.value) {
+                const meters = Number(hiddenHeightElement.value);
+                if (!Number.isNaN(meters) && meters > 0) {
+                    canonicalDraft.ObstacleHeight = meters;
+                }
+            }
+
+            if (heightInputElement) {
+                canonicalDraft.heightInput = heightInputElement.value || canonicalDraft.heightInput || '';
+            }
+
+            const mastTypeField = document.querySelector('[name="MastType"]');
+            if (!canonicalDraft.MastType && mastTypeField && mastTypeField.value) {
+                canonicalDraft.MastType = mastTypeField.value;
+            }
+
+            const lightingField = document.querySelector('[name="HasLighting"]');
+            if (!canonicalDraft.HasLighting && lightingField && lightingField.value !== '') {
+                canonicalDraft.HasLighting = lightingField.value;
+            }
+
+            const wireCountField = document.querySelector('[name="WireCount"]');
+            if (!canonicalDraft.WireCount && wireCountField && wireCountField.value) {
+                canonicalDraft.WireCount = wireCountField.value;
+            }
+
+            const categoryField = document.querySelector('[name="Category"]');
+            if (!canonicalDraft.Category && categoryField && categoryField.value) {
+                canonicalDraft.Category = categoryField.value;
+            }
+
+            canonicalDraft.PointCount = derivePointCount(canonicalDraft);
+            if (!Number.isFinite(canonicalDraft.PointCount)) {
+                canonicalDraft.PointCount = 0;
+            }
+
+            canonicalDraft.savedAt = new Date().toISOString();
+            canonicalDraft.isDraft = true;
+            canonicalDraft.autoSaved = Boolean(options.autoSave);
+
+            const existingKey = document.getElementById('currentDraftKey')?.value;
+            const typeSegment = (canonicalDraft.ObstacleType || 'obstacle')
+                .toString()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'obstacle';
+            const draftKey = existingKey || `draft_${typeSegment}_${Date.now()}`;
+            canonicalDraft.draftKey = draftKey;
+
+            return canonicalDraft;
+        }
+
+        function saveDraft() {
+            const draftData = buildDraftData();
+            if (!draftData) {
+                return;
+            }
+
+            localStorage.setItem(draftData.draftKey, JSON.stringify(draftData));
+
+            const currentDraftKeyField = document.getElementById('currentDraftKey');
+            if (currentDraftKeyField) {
+                currentDraftKeyField.value = draftData.draftKey;
+            }
+
+            showDraftNotification('Draft saved successfully!');
+
+            setTimeout(() => {
+                window.location.href = '/Crew';
+            }, 1000);
+        }
+
+        function showDraftNotification(message) {
+            const notification = document.getElementById('draftNotification');
+            if (!notification) {
+                return;
+            }
+
+            if (typeof message === 'string' && message.trim()) {
+                notification.textContent = message;
+            }
+
+            if (notification.hideTimeout) {
+                clearTimeout(notification.hideTimeout);
+            }
+
+            notification.classList.add('show');
+
+            notification.hideTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+                notification.hideTimeout = undefined;
+            }, 3000);
+        }
+        
+        // Load draft data if available
+        function loadDraft() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const draftKey = urlParams.get('draft');
+            
+            if (draftKey) {
+                const draftData = localStorage.getItem(draftKey);
+                if (draftData) {
+                    try {
+                        const data = canonicalizeDraftData(JSON.parse(draftData));
+                        if (data.ObstacleName) {
+                            data.ObstacleName = data.ObstacleName.toString().trim();
+                        }
+
+                        if (!data.ObstacleName && data.obstacleName) {
+                            data.ObstacleName = data.obstacleName.toString().trim();
+                        }
+                        data.draftKey = draftKey;
+
+                        const pageType = document.getElementById('hiddenObstacleType')?.value || '';
+                        const draftType = typeof data.ObstacleType === 'string' ? data.ObstacleType : '';
+                        const normalizedPageType = pageType.toLowerCase();
+                        const normalizedDraftType = draftType.toLowerCase();
+
+                        if (normalizedDraftType && normalizedPageType && normalizedDraftType !== normalizedPageType) {
+                            const params = new URLSearchParams(window.location.search);
+                            params.set('draft', draftKey);
+                            params.set('type', normalizedDraftType);
+
+                            if (data.Coordinates) {
+                                params.set('coordinates', data.Coordinates);
+                            }
+
+                            const pointCount = derivePointCount(data);
+                            if (!Number.isNaN(pointCount) && pointCount >= 0) {
+                                params.set('count', pointCount.toString());
+                            }
+
+                            const newUrl = `${window.location.pathname}?${params.toString()}`;
+                            if (newUrl !== window.location.href) {
+                                window.location.replace(newUrl);
+                                return;
+                            }
+                        }
+
+                        applyDraftToForm(data);
+
+                        const currentDraftKeyField = document.getElementById('currentDraftKey');
+                        if (currentDraftKeyField) {
+                            currentDraftKeyField.value = draftKey;
+                        }
+
+                        showDraftNotification('Draft loaded successfully!');
+                        
+                    } catch (e) {
+                        console.error('Error loading draft:', e);
+                    }
+                }
+            }
+        }
+        
+        function updateMapSummaryFromData(data = {}) {
+            const typeRaw = (data.ObstacleType || '').toString();
+            const typeLower = typeRaw ? typeRaw.toLowerCase() : 'unknown';
+            const formattedType = formatObstacleTypeLabel(typeRaw);
+            const typeUpper = formattedType.toUpperCase();
+
+            const heading = document.getElementById('summaryTypeHeading');
+            if (heading) {
+                heading.textContent = typeUpper;
+            }
+
+            const typeText = document.getElementById('summaryTypeText');
+            if (typeText) {
+                typeText.textContent = typeUpper;
+            }
+
+            const typeBadge = document.getElementById('summaryTypeBadge');
+            if (typeBadge) {
+                const badgeType = ['mast', 'powerline', 'other'].includes(typeLower) ? typeLower : 'other';
+                typeBadge.textContent = formattedType;
+                typeBadge.className = `obstacle-type-badge badge-${badgeType}`;
+            }
+
+            const coordinatesValue = typeof data.Coordinates === 'string'
+                ? data.Coordinates
+                : JSON.stringify(data.Coordinates ?? []);
+
+            const hiddenCoordinatesField = document.getElementById('hiddenCoordinates');
+            if (hiddenCoordinatesField) {
+                hiddenCoordinatesField.value = coordinatesValue || '[]';
+            }
+
+            renderCoordinatesFromJson(coordinatesValue);
+
+            const pointCount = derivePointCount({
+                PointCount: data.PointCount,
+                Coordinates: coordinatesValue
+            });
+
+            const pointCountSpan = document.getElementById('summaryPointCount');
+            if (pointCountSpan) {
+                pointCountSpan.textContent = pointCount;
+            }
+
+            const hiddenPointCountField = document.getElementById('hiddenPointCount');
+            if (hiddenPointCountField) {
+                hiddenPointCountField.value = pointCount;
+            }
+
+            const hiddenTypeField = document.getElementById('hiddenObstacleType');
+            if (hiddenTypeField) {
+                hiddenTypeField.value = typeRaw;
+            }
+        }
+
+        function formatObstacleTypeLabel(value) {
+            if (!value) {
+                return 'Draft';
+            }
+
+            const lower = value.toLowerCase();
+            switch (lower) {
+                case 'mast':
+                    return 'Mast';
+                case 'powerline':
+                    return 'Power Line';
+                case 'other':
+                    return 'Other';
+                default:
+                    return value.charAt(0).toUpperCase() + value.slice(1);
+            }
+        }
+
+        setInterval(() => {
+            const form = document.querySelector('form');
+            if (!form) {
+                return;
+            }
+
+            const formData = new FormData(form);
+            let hasContent = false;
+
+            for (let value of formData.values()) {
+                if (value && value.toString().trim() !== '') {
+                    hasContent = true;
+                    break;
+                }
+            }
+
+            if (hasContent) {
+                saveDraftSilently();
+            }
+        }, 30000);
+
+        function saveDraftSilently() {
+            const draftData = buildDraftData({ autoSave: true });
+            if (!draftData) {
+                return;
+            }
+
+            const typeSegment = (draftData.ObstacleType || 'obstacle').toLowerCase().replace(/\s+/g, '-');
+            const draftKey = `autosave_${typeSegment}_${Date.now()}`;
+            localStorage.setItem(draftKey, JSON.stringify(draftData));
+
+            const autoSaves = Object.keys(localStorage).filter(key => key.startsWith('autosave_'));
+            if (autoSaves.length > 3) {
+                autoSaves.sort();
+                localStorage.removeItem(autoSaves[0]);
+            }
+        }
     </script>
 }

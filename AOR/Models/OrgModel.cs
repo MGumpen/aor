@@ -1,18 +1,18 @@
 // OrganizationModel.cs
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AOR.Data;
 
 namespace AOR.Models;
 
 public class OrgModel
 {
-    [Key, Required, MaxLength(9)] 
+    [Key, Required] 
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public int OrgNr { get; set; }
     
     [Required, MaxLength(128)] 
     public string OrgName { get; set; } = string.Empty;
 
-    // Bytt til Identity User for relasjon
-    public ICollection<AOR.Data.User> Users { get; set; } = new List<AOR.Data.User>();
+    public ICollection<User> Users { get; set; } = new List<User>();
 }

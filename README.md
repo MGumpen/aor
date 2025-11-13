@@ -8,17 +8,17 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
 - Forskjellige testingscenarier finner du i Testing.md
 
-# Brukere i Web Applikasjonen: #
-- Crew: crew@test.no Passord: Test123$
-- Crew 2: crew2@test.no Passord: Test123$
-- Admin: admin@test.no Passord: Test123$
-- Registerfører: reg@test.no Passord: Test123$
+## Testbrukere i Web Applikasjonen (blir seedet til databasen ved oppstart):
+- Crew: crew@test.no Passord: Test123$ Roller: Crew
+- Crew 2: crew2@test.no Passord: Test123$ Roller: Crew, Admin
+- Admin: admin@test.no Passord: Test123$ Roller: Admin
+- Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registerfører
 
-### Forutsetninger for å starte hele applikasjonen:
+### Forutsetninger for å starte applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) (for lokal utvikling)
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) 
 
-### Start hele applikasjonen
+### Start applikasjonen
 
 ```bash
 # For å opprette docker containerne og starte alle services:
@@ -33,19 +33,6 @@ docker compose up -d
 
 # Stopp alle services
 docker compose down
-```
-
-### Lokal utvikling uten databasetilkobling
-
-```bash
-# 1. Start .NET applikasjonen lokalt
-cd AOR
-dotnet run
-
-# 2. Åpne http://localhost:5001
-
-#3. Stoppe .NET applikasjonen
-    Trykk: Ctrl+C
 ```
 
 ## 🛠️ Database

@@ -1,0 +1,105 @@
+@model AOR.Models.EditUserViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit user";
+    var isAdmin = User.IsInRole("Admin");
+   
+}
+
+<section class="container align-content-center">
+    <div class="site-header text-center mb-3">
+        <h1 class="mb-0">Edit user</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form asp-action="AdminEditUser" method="post" novalidate>
+                @Html.AntiForgeryToken()
+
+                <input asp-for="UserName" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                @if (isAdmin)
+                {
+                    
+                <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label">First name</label>
+                    <input asp-for="FirstName" class="form-control" />
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LastName" class="form-label">Last name</label>
+                    <input asp-for="LastName" class="form-control" />
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label">Phone number</label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                
+                
+                    <hr />
+                    
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="OrgNr" class="form-label">Organization</label>
+                        @if (Model.Organizations != null)
+                        {
+                            <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
+                                <option value="">-- Choose organization --</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <select asp-for="OrgNr" class="form-select">
+                                <option value="">No organizations available</option>
+                            </select>
+                        }
+                        <span asp-validation-for="OrgNr" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        @if (Model.Roles != null)
+                        {
+                            <div class="role-checkboxes">
+                                @foreach (var r in Model.Roles)
+                                {
+                                    var isChecked = Model.RoleIds != null && Model.RoleIds.Contains(r.Value);
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="RoleIds" value="@r.Value" id="role_@r.Value" @(isChecked ? "checked" : "") />
+                                        <label class="form-check-label" for="role_@r.Value">@r.Text</label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-text">No roles available</div>
+                        }
+                        <span asp-validation-for="RoleIds" class="text-danger"></span>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between mt-4">
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-secondary ms-2">Cancel</a>
+                       
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

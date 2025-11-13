@@ -5,7 +5,7 @@ using AOR.Models;
 
 namespace AOR.Controllers;
 
-[Authorize(Roles = "Crew")]
+[Authorize(Policy = "AsCrew")]
 public class CrewController : Controller
 {
     private readonly ILogger<CrewController> _logger;

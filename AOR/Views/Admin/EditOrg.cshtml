@@ -1,0 +1,59 @@
+@model AOR.Models.OrgModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit organization";
+    var isAdmin = User.IsInRole("Admin");
+    
+}
+
+<section class="container align-content-center">
+    <div class="site-header text-center mb-3">
+        <h1 class="mb-0">Edit organization</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+<form asp-action="EditOrg" method="post" novalidate>
+@Html.AntiForgeryToken()
+<input type="hidden" name="OldOrgNr" value="@ViewBag.OldOrgNr" />
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+@if (isAdmin)
+{
+
+    <div class="mb-3">
+        <label asp-for="OrgNr" class="form-label">Org Nr</label>
+        <input asp-for="OrgNr" class="form-control" />
+        <span asp-validation-for="OrgNr" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="OrgName" class="form-label">Org Name</label>
+        <input asp-for="OrgName" class="form-control"/>
+        <span asp-validation-for="OrgName" class="text-danger"></span>
+    </div>
+}
+
+
+<div class="d-flex justify-content-between mt-4">
+<div>
+    <button type="submit" class="btn btn-primary">Save changes</button>
+    <a asp-controller="Admin" asp-action="Orgs" class="btn btn-secondary">Cancel</a>
+</div>
+</div>
+
+</form>
+
+    <div>
+        <form method="post" asp-action="DeleteOrg" asp-route-id="@ViewBag.OldOrgNr" onsubmit="return confirm('Are you sure you want to delete this organization?')" style="display: inline;">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger mt-5">Delete</button>
+        </form>
+    </div>
+</div>
+
+        </div>
+</section>

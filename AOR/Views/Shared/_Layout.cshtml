@@ -78,6 +78,12 @@
             }
             <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
             <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
+            @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
+            {
+                <button id="last30DaysBtn" class="btn btn-outline-primary ms-3" onclick="toggleLast30Days()" style="display: none;">
+                    <i class="fa fa-calendar-days me-2"></i>Last 30 Days
+                </button>
+            }
         </div>
             <div class="d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav ms-auto fs-5">
@@ -90,22 +96,35 @@
                                     @($"{currentUser?.FirstName} {currentUser?.LastName}")
                                 </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                        <li><a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
-                                        </li>
+                                       
                                         @if (User.IsInRole("Crew"))
                                         {
                                             <li>
                                                 <a class="dropdown-item" asp-controller="Report" asp-action="MyReports">My
-                                                    reports</a></li>
+                                                    reports</a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="Obstacle" asp-action="AllObstacles">All
+                                                    obstacles</a>
+                                            </li>
                                             <li>
                                                 <hr class="dropdown-divider"/>
                                             </li>
                                         }
                                         <li>
+                                            <a asp-controller="Account" asp-action="EditUser" class="dropdown-item">Edit user</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider"/>
+                                        </li>
+                                        <li>
                                             <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
-                                                    <i class="fa fa-sign-out-alt me-2"></i> Logg ut
+                                                    <i class="fa fa-sign-out-alt me-2"></i> Log out
                                                 </button>
                                             </form>
                                         </li>

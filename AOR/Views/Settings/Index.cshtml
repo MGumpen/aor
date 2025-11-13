@@ -9,22 +9,12 @@
 
 <form asp-action="Index" method="post">
     <div class="mb-3">
-        <label asp-for="Language" class="form-label">Språk</label>
-        <select asp-for="Language" class="form-select">
-            <option value="en">Engelsk</option>
-            <option value="no">Norsk</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
         <label asp-for="Theme" class="form-label">Tema</label>
         <select asp-for="Theme" class="form-select">
-            <option value="light">Lyst</option>
-            <option value="dark">Mørkt</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
         </select>
     </div>
-
-    <h3>Funksjoner er under utvikling</h3>
 
     <button type="submit" class="btn btn-primary">Lagre</button>
 </form>
@@ -35,4 +25,3 @@
         @TempData["Message"]
     </div>
 }
-

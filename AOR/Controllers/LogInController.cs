@@ -4,13 +4,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+
 
 namespace AOR.Controllers
 {
-    [AllowAnonymous]
     public class LogInController : Controller
     {
         private readonly SignInManager<User> _signInManager;
@@ -27,6 +32,40 @@ namespace AOR.Controllers
             _logger = logger;
         }
 
+        private async Task SignInWithActiveRole(User user, string chosenRole, bool rememberMe)
+        {
+            // Sørg for at cookien gjenspeiler valgt rolle ved å bygge principal og signere eksplisitt
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            
+            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            var id = (ClaimsIdentity)principal.Identity!;
+            var existing = id.FindFirst("ActiveRole");
+            if (existing != null) id.RemoveClaim(existing);
+            id.AddClaim(new Claim("ActiveRole", chosenRole));
+            
+            await HttpContext.SignInAsync(
+                IdentityConstants.ApplicationScheme,
+                principal,
+                new AuthenticationProperties { IsPersistent = rememberMe }
+            );
+        }
+
+        // Deterministisk landingsside basert på ActiveRole-claim
+        [Authorize]
+        [HttpGet]
+        public IActionResult RoleHome()
+        {
+            var active = User.FindFirst("ActiveRole")?.Value;
+            return active switch
+            {
+                "Admin"     => RedirectToAction("Index", "Admin"),
+                "Crew"      => RedirectToAction("Index", "Crew"),
+                "Registrar" => RedirectToAction("Index", "Registrar"),
+                _           => RedirectToAction(nameof(Index))
+            };
+        }
+        
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Index(string? returnUrl = null)
         {
@@ -51,7 +90,7 @@ namespace AOR.Controllers
                     return View(model);
                 }
 
-                // Use username overload to ensure sign-in works reliably
+                // Bruk username-overload for stabilitet
                 if (string.IsNullOrEmpty(user.UserName))
                 {
                     _logger.LogWarning("User {Email} has no UserName set", user.Email);
@@ -67,19 +106,32 @@ namespace AOR.Controllers
                     _logger.LogInformation("Bruker {Email} logget inn.", user.Email);
 
                     var roles = await _userManager.GetRolesAsync(user);
-                    _logger.LogDebug("User roles: {Roles}", string.Join(",", roles));
+                    _logger.LogInformation("LOGIN OK: {Email}, ReturnUrl={ReturnUrl}, Roles=[{Roles}], Count={Count}",
+                        user.Email, model.ReturnUrl, string.Join(",", roles), roles?.Count ?? -1);
 
-                    if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                        return LocalRedirect(model.ReturnUrl);
+                    // 1) Har brukeren 2+ roller? → vis login-siden igjen med popup (modal)
+                    if (roles.Count > 1)
+                    {
+                        model.ShowRolePicker = true;
+                        model.AvailableRoles = roles.ToList(); // behold øvrige felter på modellen
+                        // Sørg for at ReturnUrl overlever runden i picker
+                        // (Index.cshtml bør poste med hidden ReturnUrl til ChooseRole)
+                        return View("Index", model);
+                    }
 
-                    if (roles.Contains("Admin"))
-                        return RedirectToAction("Index", "Admin");
-                    if (roles.Contains("Crew"))
-                        return RedirectToAction("Index", "Crew");
-                    if (roles.Contains("Registrar"))
-                        return RedirectToAction("Index", "Registrar");
+                    // 2) Kun én rolle → sett aktiv rolle og ruter deterministisk
+                    if (roles.Count == 1)
+                    {
+                        var only = roles[0];
+                        await SignInWithActiveRole(user, only, model.RememberMe);
 
-                    // Fallback: gå til en landingsside
+                        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                            return LocalRedirect(model.ReturnUrl);
+
+                        return RedirectToAction(nameof(RoleHome));
+                    }
+
+                    // 3) Ingen rolle → hjem
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -96,10 +148,45 @@ namespace AOR.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception during login for user {User}", model?.Username);
-                // In dev the DeveloperExceptionPage will show details; return a friendly view in prod
+                // I dev viser DeveloperExceptionPage detaljer; i prod returnerer vi en vennlig feilmelding
                 return StatusCode(500, "Internal server error. Check logs for details.");
             }
         }
+
+        
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChooseRole(string selectedRole, string? returnUrl = null)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction(nameof(Index));
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Valider at valgt rolle faktisk tilhører brukeren
+            if (string.IsNullOrWhiteSpace(selectedRole) || !roles.Contains(selectedRole))
+            {
+                return View("Index", new LogInViewModel
+                {
+                    ShowRolePicker = true,
+                    AvailableRoles = roles.ToList(),
+                    ReturnUrl = returnUrl
+                });
+            }
+
+            // Persistér valgt rolle i auth-cookie
+            await SignInWithActiveRole(user, selectedRole, rememberMe: false);
+
+            // (Valgfritt) La ReturnUrl vinne etter valg
+            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return LocalRedirect(returnUrl);
+
+            // Deterministisk redirect basert på rolle
+            return RedirectToAction(nameof(RoleHome));
+        }
+
+        // -------------------- LOGOUT --------------------
 
         [Authorize]
         [HttpPost]
@@ -110,17 +197,17 @@ namespace AOR.Controllers
             _logger.LogInformation("Bruker logget ut.");
             return RedirectToAction(nameof(Index));
         }
-        
+
+        // -------------------- FORGOT PASSWORD --------------------
+
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
-            // Simply returns the ForgotPassword view (Views/LogIn/ForgotPassword.cshtml)
+            // Returnerer ForgotPassword view (Views/LogIn/ForgotPassword.cshtml)
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(AOR.Models.ForgotPasswordModel model)
         {
@@ -154,11 +241,12 @@ namespace AOR.Controllers
             return View(new AOR.Models.ForgotPasswordModel());
         }
 
+        // -------------------- ACCESS DENIED --------------------
+
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
-            return View();       
+            return View();
         }
     }
 }
