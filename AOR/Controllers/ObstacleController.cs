@@ -274,19 +274,20 @@ public async Task<IActionResult> MyReports()
     public async Task<IActionResult> Last30Days()
     {
         var cutoffDate = DateTime.UtcNow.AddDays(-30);
-        var obstacles = await _db.Obstacles
+        var reports = await _db.Reports
             .AsNoTracking()
-            .Where(o => o.CreatedAt >= cutoffDate)
-            .Select(o => new {
-                o.ObstacleId,
-                o.ObstacleName,
-                o.ObstacleType,
-                o.Coordinates,
-                o.CreatedAt
+            .Include(r => r.Obstacle)
+            .Where(r => r.CreatedAt >= cutoffDate)
+            .Select(r => new {
+                r.ReportId,
+                r.Obstacle.ObstacleName,
+                r.Obstacle.ObstacleType,
+                r.Obstacle.Coordinates,
+                r.CreatedAt
             })
             .ToListAsync();
         
-        return Json(obstacles);
+        return Json(reports);
     }
     
     
