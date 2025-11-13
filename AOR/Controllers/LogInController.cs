@@ -67,11 +67,10 @@ namespace AOR.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Index(string? returnUrl = null)
         {
-            // Hvis brukeren er innlogget og kommer til login-siden, logg dem ut automatisk
+            // Hvis brukeren er innlogget og kommer til login-siden, send dem til sin rolle-hjemmeside
             if (User.Identity?.IsAuthenticated == true)
             {
-                await _signInManager.SignOutAsync();
-                _logger.LogInformation("Bruker ble automatisk logget ut ved tilgang til login-siden.");
+                return RedirectToAction(nameof(RoleHome));
             }
 
             return View(new LogInViewModel
