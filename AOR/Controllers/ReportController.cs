@@ -58,11 +58,7 @@ public class ReportController : Controller
             .Include(r => r.User)
             .AsQueryable();
 
-        // If the user is Crew, restrict to their own reports.
-        if (User.IsInRole("Crew"))
-        {
-            query = query.Where(r => r.UserId == userId);
-        }
+       
 
         // Registrar (and other roles) can see any report by id.
         var report = await query.FirstOrDefaultAsync(r => r.ReportId == id);

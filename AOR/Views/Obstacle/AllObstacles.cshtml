@@ -1,4 +1,4 @@
-@model IEnumerable<AOR.Models.ObstacleData>
+@model IEnumerable<AOR.Models.ReportModel>
 
 @{
     ViewData["Title"] = "All Registered Obstacles";
@@ -62,6 +62,7 @@
     .badge-powerline { background: #fee2e2; color: #dc2626; }
     .badge-mast { background: #dbeafe; color: #2563eb; }
     .badge-other { background: #d1fae5; color: #059669; }
+    .badge-unknown { background: #f3f4f6; color: #6b7280; }
     
     .obstacle-details {
         display: grid;
@@ -178,10 +179,10 @@
     <div class="actions-bar">
         <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
-            <div><strong>Total:</strong> @Model.Count() obstacles</div>
-            <div><strong>Power Lines:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "powerline")</div>
-            <div><strong>Masts:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "mast")</div>
-            <div><strong>Other:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "other")</div>
+            <div><strong>Total:</strong> @Model.Count() reports</div>
+            <div><strong>Power Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "powerline")</div>
+            <div><strong>Masts:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "mast")</div>
+            <div><strong>Other:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "other")</div>
         </div>
 
     </div>
@@ -189,55 +190,55 @@
     @if (Model.Any())
     {
         <div class="obstacles-grid">
-            @foreach (var obstacle in Model.OrderByDescending(x => x.CreatedAt))
+            @foreach (var report in Model.OrderByDescending(x => x.CreatedAt))
             {
                 <div class="obstacle-card">
                     <div class="obstacle-header">
-                        <h3 class="obstacle-name">@obstacle.ObstacleName</h3>
-                        <span class="obstacle-type-badge badge-@obstacle.ObstacleType.ToLower()">
-                            @obstacle.ObstacleType
+                        <h3 class="obstacle-name">@(report.Obstacle?.ObstacleName ?? "Unnamed")</h3>
+                        <span class="obstacle-type-badge badge-@(report.Obstacle?.ObstacleType?.ToLower() ?? "unknown")">
+                            @(report.Obstacle?.ObstacleType ?? "Unknown")
                         </span>
                     </div>
                     
                     <div class="obstacle-details">
-                        @if (obstacle.ObstacleHeight.HasValue)
+                        @if (report.Obstacle?.ObstacleHeight.HasValue == true)
                         {
                             <div class="detail-item">
                                 <div class="detail-label">Height:</div>
-                                <div class="detail-value">@obstacle.ObstacleHeight.Value m</div>
+                                <div class="detail-value">@report.Obstacle.ObstacleHeight.Value.ToString("F1") m</div>
                             </div>
                         }
                         
                         <div class="detail-item">
                             <div class="detail-label">Points:</div>
-                            <div class="detail-value">@obstacle.PointCount</div>
+                            <div class="detail-value">@(report.Obstacle?.PointCount ?? 0)</div>
                         </div>
                         
                         <div class="detail-item">
                             <div class="detail-label">Registered:</div>
-                            <div class="detail-value">@obstacle.CreatedAt.ToString("dd.MM.yyyy")</div>
+                            <div class="detail-value">@report.CreatedAt.ToString("dd.MM.yyyy")</div>
                         </div>
                         
-                        @if (obstacle.ObstacleType.ToLower() == "mast" && !string.IsNullOrEmpty(obstacle.MastType))
+                        @if (report.Obstacle?.ObstacleType?.ToLower() == "mast" && !string.IsNullOrEmpty(report.Obstacle.MastType))
                         {
                             <div class="detail-item">
                                 <div class="detail-label">Type:</div>
-                                <div class="detail-value">@obstacle.MastType</div>
+                                <div class="detail-value">@report.Obstacle.MastType</div>
                             </div>
                         }
                     </div>
                     
-                    @if (!string.IsNullOrEmpty(obstacle.ObstacleDescription))
+                    @if (!string.IsNullOrEmpty(report.Obstacle?.ObstacleDescription))
                     {
                         <div class="obstacle-description">
-                            @(obstacle.ObstacleDescription.Length > 100 ? 
-                              obstacle.ObstacleDescription.Substring(0, 100) + "..." : 
-                              obstacle.ObstacleDescription)
+                            @(report.Obstacle.ObstacleDescription.Length > 100 ? 
+                              report.Obstacle.ObstacleDescription.Substring(0, 100) + "..." : 
+                              report.Obstacle.ObstacleDescription)
                         </div>
                     }
                     
                     <div class="obstacle-actions">
-                        <a href="/Obstacle/Details/@obstacle.ObstacleId" class="btn-small btn-details">View Details</a>
+                        <a asp-controller="Report" asp-action="ReportDetails" asp-route-id="@report.ReportId" class="btn-small btn-details">View Details</a>
                     </div>
                 </div>
             }

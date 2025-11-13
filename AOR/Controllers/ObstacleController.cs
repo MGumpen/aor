@@ -245,11 +245,22 @@ public async Task<IActionResult> MyReports()
     [HttpGet]
     public async Task<IActionResult> AllObstacles()
     {
-        var obstacles = await _db.Obstacles
-            .AsNoTracking()
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
-        return View(obstacles);
+        try
+        {
+            _logger.LogInformation("AllObstacles GET startet");
+            var reports = await _db.Reports
+                .AsNoTracking()
+                .Include(r => r.Obstacle)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+            _logger.LogInformation("Hentet {Count} reports", reports.Count);
+            return View(reports);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Feil i AllObstacles");
+            throw; // Re-throw for å få 500
+        }
     }
 
     public async Task<IActionResult> Details(int id)
