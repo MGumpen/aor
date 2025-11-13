@@ -122,7 +122,7 @@ public static class AorDbSeeder
         {
             new { Email = "crew@test.no", Password = "Test123$", Roles = new[] { "Crew" }, FirstName = "Kari", LastName = "Crew", PhoneNumber = "12345678", OrgName = "Norsk Luftambulanse" },
             new { Email = "crew2@test.no", Password = "Test123$", Roles = new[] { "Crew", "Admin" }, FirstName = "Petter", LastName = "Pilot", PhoneNumber = "23456789", OrgName = "Luftforsvaret" },
-            new { Email = "admin@test.no", Password = "Test123$", Roles = new[] { "Admin", "Registrar" }, FirstName = "Ola", LastName = "Admin", PhoneNumber = "87654321", OrgName = "Luftforsvaret" },
+            new { Email = "admin@test.no", Password = "Test123$", Roles = new[] { "Admin" }, FirstName = "Ola", LastName = "Admin", PhoneNumber = "87654321", OrgName = "Luftforsvaret" },
             new { Email = "reg@test.no", Password = "Test123$", Roles = new[] { "Registrar" }, FirstName = "Per", LastName = "Registerfører", PhoneNumber = "98765432", OrgName = "Kartverket" }
         };
 
