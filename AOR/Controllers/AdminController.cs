@@ -183,4 +183,33 @@ public class AdminController : Controller
 
         return RedirectToAction(nameof(Orgs));
     }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteOrg(int id)
+    {
+        _logger.LogInformation("DeleteOrg called with id: {Id}", id);
+        var org = await _context.Organizations.FindAsync(id);
+        if (org == null)
+        {
+            _logger.LogWarning("Organization not found: {Id}", id);
+            return NotFound();
+        }
+
+        _logger.LogInformation("Deleting organization: {OrgName} ({OrgNr})", org.OrgName, org.OrgNr);
+
+        // Sett users' OrgNr til null
+        var users = await _context.Users.Where(u => u.OrgNr == id).ToListAsync();
+        _logger.LogInformation("Found {Count} users to update", users.Count);
+        foreach (var user in users)
+        {
+            user.OrgNr = null;
+        }
+
+        _context.Organizations.Remove(org);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Organization deleted successfully");
+        return RedirectToAction(nameof(Orgs));
+    }
 }
