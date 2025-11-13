@@ -1,16 +1,20 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using AOR.Data
-@inject SignInManager<User> SignInManager
+﻿@using AOR.Data
 @using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
 }
 
-<!DOCTYPE html>
-<html lang="en">
+@{
+    // Read theme cookie and map to html class
+    var theme = (Context.Request.Cookies["theme"] ?? "light").ToLowerInvariant();
+    var htmlThemeClass = theme == "dark" ? "theme-dark" : "theme-light";
+}
 
+<!DOCTYPE html>
+<html lang="en" class="@htmlThemeClass">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -24,27 +28,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-    .navbar .dropdown-menu,
-    .navbar .dropdown-menu.show,
-    .dropdown-item {
-        z-index: 20000 !important;
-        min-width: 300px;        
-        font-size: 1.5rem;        
-    }
-
-    .navbar .dropdown-item {
-        padding: 0.75rem 1.25rem; 
-    }
-
-    .navbar {
-        position: relative;
-        z-index: 20000;
-    }
-
-    .navbar-collapse {
-        overflow: visible !important;
-    }
-</style>
+        .navbar .dropdown-menu,
+        .navbar .dropdown-menu.show,
+        .dropdown-item {
+            z-index: 20000 !important;
+            min-width: 300px;
+            font-size: 1.5rem;
+        }
+        .navbar .dropdown-item { padding: 0.75rem 1.25rem; }
+        .navbar { position: relative; z-index: 20000; }
+        .navbar-collapse { overflow: visible !important; }
+    </style>
 
     @RenderSection("Styles", required: false)
 </head>
@@ -79,65 +73,58 @@
             <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
             <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
         </div>
-            <div class="d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav ms-auto fs-5">
-                    @if (User?.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                       data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-user-circle"></i>
-                                    @($"{currentUser?.FirstName} {currentUser?.LastName}")
-                                </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                       
-                                        @if (User.IsInRole("Crew"))
-                                        {
-                                                 <li>
-                                                    <a class="dropdown-item" asp-controller="Report" asp-action="MyReports">My
-                                                    reports</a>
-                                                </li>
-                                            <li>
-                                                <hr class="dropdown-divider"/>
-                                            </li>
-                                        }
-                                        <li>
-                                            <a asp-controller="Account" asp-action="EditUser" class="dropdown-item">Edit user</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider"/>
-                                        </li>
-                                        <li>
-                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
-                                                    <i class="fa fa-sign-out-alt me-2"></i> Log out
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
+        <div class="d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav ms-auto fs-5">
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-user-circle"></i>
+                            @($"{currentUser?.FirstName} {currentUser?.LastName}")
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            @if (User.IsInRole("Crew"))
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Report" asp-action="MyReports">My reports</a>
                                 </li>
+                                <li><hr class="dropdown-divider"/></li>
                             }
-                </ul>
+                            <li>
+                                <a asp-controller="Account" asp-action="EditUser" class="dropdown-item">Edit user</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
+                            </li>
+                            <li><hr class="dropdown-divider"/></li>
+                            <li>
+                                <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
+                                        <i class="fa fa-sign-out-alt me-2"></i> Log out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                @TempData["Message"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @if (TempData["Message"] != null)
-            {
-                <div class="alert alert-info alert-dismissible fade show" role="alert">
-                    @TempData["Message"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @RenderBody()
-        </main>
-    </div>
-
+        }
+        @RenderBody()
+    </main>
+</div>
 
 <footer class="border-top footer fixed-bottom text-muted navbar-light bg-white box-shadow height: 16px">
     <div class="footer" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 10px;">
