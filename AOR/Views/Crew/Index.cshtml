@@ -1052,7 +1052,7 @@
                         <strong>${obstacle.obstacleName}</strong><br/>
                         <em>${obstacle.obstacleType}</em><br/>
                         Registered: ${new Date(obstacle.createdAt).toLocaleDateString()}<br/>
-                        <a href="/Obstacle/Details/${obstacle.obstacleId}">View Details</a>
+                        <a href="/Report/ReportDetails/${obstacle.reportId}">View Details</a>
                     `);
                     
                     marker.addTo(last30DaysLayer);
@@ -1070,7 +1070,7 @@
                         <em>${obstacle.obstacleType}</em><br/>
                         Points: ${coords.length}<br/>
                         Registered: ${new Date(obstacle.createdAt).toLocaleDateString()}<br/>
-                        <a href="/Obstacle/Details/${obstacle.obstacleId}">View Details</a>
+                        <a href="/Report/ReportDetails/${obstacle.reportId}">View Details</a>
                     `);
                     
                     polyline.addTo(last30DaysLayer);

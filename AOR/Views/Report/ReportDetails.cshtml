@@ -189,10 +189,22 @@
 
     <div class="details-grid">
         
-        <div class="detail-card">
-            <div class="detail-label">User</div>
-            <div class="detail-value">@Model.User.UserName</div>
-        </div>
+        @{
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var isOwner = currentUserId == Model.UserId;
+            var isAdminOrRegistrar = User.IsInRole("Admin") || User.IsInRole("Registrar");
+            var canViewUser = isOwner || isAdminOrRegistrar;
+        }
+        
+        @if (canViewUser)
+        {
+            <div class="detail-card">
+                <div class="detail-label">User</div>
+                <div class="detail-value">@Model.User.UserName</div>
+            </div>
+        }
+        
+        
         
         <div class="detail-card">
             <div class="detail-label">Registered</div>

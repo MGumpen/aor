@@ -99,10 +99,14 @@
                                        
                                         @if (User.IsInRole("Crew"))
                                         {
-                                                 <li>
-                                                    <a class="dropdown-item" asp-controller="Report" asp-action="MyReports">My
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="Report" asp-action="MyReports">My
                                                     reports</a>
-                                                </li>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-controller="Obstacle" asp-action="AllObstacles">All
+                                                    obstacles</a>
+                                            </li>
                                             <li>
                                                 <hr class="dropdown-divider"/>
                                             </li>
