@@ -8,7 +8,8 @@
     <h1 class="display-4" style="margin-top: 50px;">Welcome to</h1>
     <h1 class="display-4">Aviation Obstacle Registration</h1>
     
-    <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
+    <form asp-action="Index" method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
+        @Html.AntiForgeryToken()
         
         <div class="mb-4">
             <label asp-for="Username" class="form-label fs-4">Username</label>
@@ -28,15 +29,15 @@
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
         
-        <button type="submit" class="btn btn-primary btn-lg " style="padding: 24px 100px; font-size: 30px; margin-top: 20px">Login</button>
+        <button type="submit" class="btn btn-primary btn-lg" style="padding: 24px 100px; font-size: 30px; margin-top: 20px">
+            Login
+        </button>
         
         <div class="text-center" style="margin-top: 30px;">
             <a asp-controller="LogIn" asp-action="ForgotPassword" class="link-primary">Forgot your password?</a>
         </div>
     </form>
 </div>
-}
-
 
 @* ---------------------------------------------------------------
    ROLLEVALG – popup med knapper for hver rolle (fast størrelse)
@@ -50,40 +51,40 @@
          role="dialog"
          style="display:block;">
         <div class="modal-dialog modal-dialog-centered" style="width:30vw; min-width:320px; max-width:480px;">
-        <div class="modal-content shadow-sm border-0">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="rolePickerLabel">Velg rolle</h5>
-                <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
-            </div>
+            <div class="modal-content shadow-sm border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" id="rolePickerLabel">Velg rolle</h5>
+                    <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
+                </div>
 
-            <div class="modal-body text-center">
-                <p class="text-muted mb-4">Du har flere roller. Velg hvilken du vil bruke nå.</p>
+                <div class="modal-body text-center">
+                    <p class="text-muted mb-4">Du har flere roller. Velg hvilken du vil bruke nå.</p>
 
-                <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
+                    <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
 
-                    @foreach (var r in Model.AvailableRoles)
-                    {
-                        <button type="submit"
-                                name="selectedRole"
-                                value="@r"
-                                class="btn btn-primary role-btn">
-                            Fortsett som @r
-                        </button>
-                    }
-                </form>
-            </div>
+                        @foreach (var r in Model.AvailableRoles)
+                        {
+                            <button type="submit"
+                                    name="selectedRole"
+                                    value="@r"
+                                    class="btn btn-primary role-btn">
+                                Fortsett som @r
+                            </button>
+                        }
+                    </form>
+                </div>
 
-            <div class="modal-footer border-0 justify-content-center">
-                <a class="btn btn-outline-secondary btn-sm"
-                   asp-controller="LogIn"
-                   asp-action="Index">
-                    Avbryt
-                </a>
+                <div class="modal-footer border-0 justify-content-center">
+                    <a class="btn btn-outline-secondary btn-sm"
+                       asp-controller="LogIn"
+                       asp-action="Index">
+                        Avbryt
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Backdrop -->
@@ -106,3 +107,15 @@
     </style>
 }
 
+@section Scripts {
+    <script>
+        // Håndter tilfelle der siden hentes fra back/forward-cache (tilbake-knapp)
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

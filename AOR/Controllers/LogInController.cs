@@ -51,7 +51,6 @@ namespace AOR.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(LogInViewModel model)
         {
             if (!ModelState.IsValid)

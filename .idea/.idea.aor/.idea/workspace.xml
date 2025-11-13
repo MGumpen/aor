@@ -14,7 +14,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="" />
+    <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
