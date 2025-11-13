@@ -176,13 +176,14 @@
     </div>
     
     <div class="actions-bar">
+        <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @Model.Count() obstacles</div>
             <div><strong>Power Lines:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "powerline")</div>
             <div><strong>Masts:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "mast")</div>
             <div><strong>Other:</strong> @Model.Count(x => x.ObstacleType.ToLower() == "other")</div>
         </div>
-        <a href="/Crew" class="btn btn-primary">Add New Obstacle</a>
+
     </div>
     
     @if (Model.Any())
