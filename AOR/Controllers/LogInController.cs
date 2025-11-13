@@ -322,8 +322,8 @@ namespace AOR.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult AccessDenied()
         {
-            // I stedet for å vise en feilsiden, send brukeren tilbake til login
-            return RedirectToAction("Index", "LogIn");
+            // Vis AccessDenied view for bedre brukeropplevelse
+            return View();
         }
     }
 }
