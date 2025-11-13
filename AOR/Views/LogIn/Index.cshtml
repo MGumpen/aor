@@ -7,38 +7,49 @@
 <div class="text-center">
     <h1 class="display-4" style="margin-top: 50px;">Welcome to</h1>
     <h1 class="display-4">Aviation Obstacle Registration</h1>
-    
-    <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
-        
-        <div class="mb-4">
-            <label asp-for="Username" class="form-label fs-4">Username</label>
-            <input asp-for="Username"
-                   class="form-control form-control-lg"
-                   style="font-size: 1.2rem; padding: 15px;"
-                   placeholder="Username" />
-            <span asp-validation-for="Username" class="text-danger"></span>
-        </div>
-
-        <div class="mb-4">
-            <label asp-for="Password" class="form-label fs-4" style="margin-top: 20px;">Password</label>
-            <input asp-for="Password" type="password"
-                   class="form-control form-control-lg"
-                   style="font-size: 1.2rem; padding: 15px;"
-                   placeholder="Enter your password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-        
-        <button type="submit" class="btn btn-primary btn-lg " style="padding: 24px 100px; font-size: 30px; margin-top: 20px">Login</button>
-        
-        <div class="text-center" style="margin-top: 30px;">
-            <a asp-controller="LogIn" asp-action="ForgotPassword" class="link-primary">Forgot your password?</a>
-        </div>
-    </form>
 </div>
 
+@* Viser KUN login-skjema når vi IKKE er i rollevalg-modus *@
+@if (!(Model?.ShowRolePicker ?? false))
+{
+    <div class="text-center">
+        <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
+        
+            <div class="mb-4">
+                <label asp-for="Username" class="form-label fs-4">Username</label>
+                <input asp-for="Username"
+                       class="form-control form-control-lg"
+                       style="font-size: 1.2rem; padding: 15px;"
+                       placeholder="Username"
+                       autocomplete="off" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
 
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label fs-4" style="margin-top: 20px;">Password</label>
+                <input asp-for="Password" type="password"
+                       class="form-control form-control-lg"
+                       style="font-size: 1.2rem; padding: 15px;"
+                       placeholder="Enter your password"
+                       autocomplete="off" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        
+            <button type="submit" class="btn btn-primary btn-lg"
+                    style="padding: 24px 100px; font-size: 30px; margin-top: 20px">
+                Login
+            </button>
+        
+            <div class="text-center" style="margin-top: 30px;">
+                <a asp-controller="LogIn" asp-action="ForgotPassword" class="link-primary">
+                    Forgot your password?
+                </a>
+            </div>
+        </form>
+    </div>
+}
 
-
+@* Viser KUN rolle-popup når ShowRolePicker == true *@
 @if (Model?.ShowRolePicker == true && Model?.AvailableRoles != null && Model.AvailableRoles.Count > 0)
 {
     <div class="modal fade show" id="rolePickerModal"
@@ -48,59 +59,57 @@
          role="dialog"
          style="display:block;">
         <div class="modal-dialog modal-dialog-centered" style="width:30vw; min-width:320px; max-width:480px;">
-        <div class="modal-content shadow-sm border-0">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="rolePickerLabel">Choose role</h5>
-                <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
-            </div>
+            <div class="modal-content shadow-sm border-0">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title" id="rolePickerLabel">Choose role</h5>
+                    <a class="btn-close" asp-controller="LogIn" asp-action="Index" aria-label="Lukk"></a>
+                </div>
 
-            <div class="modal-body text-center">
-                <p class="text-muted mb-4">Choose your user role.</p>
+                <div class="modal-body text-center">
+                    <p class="text-muted mb-4">Choose your user role.</p>
 
-                <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
+                    <form asp-action="ChooseRole" method="post" class="d-flex flex-column align-items-center gap-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@Model.ReturnUrl"/>
 
-                    @foreach (var r in Model.AvailableRoles)
-                    {
-                        <button type="submit"
-                                name="selectedRole"
-                                value="@r"
-                                class="btn btn-primary role-btn">
-                            Continue as @r
-                        </button>
-                    }
-                </form>
-            </div>
+                        @foreach (var r in Model.AvailableRoles)
+                        {
+                            <button type="submit"
+                                    name="selectedRole"
+                                    value="@r"
+                                    class="btn btn-primary role-btn">
+                                Continue as @r
+                            </button>
+                        }
+                    </form>
+                </div>
 
-            <div class="modal-footer border-0 justify-content-center">
-                <a class="btn btn-outline-secondary btn-sm"
-                   asp-controller="LogIn"
-                   asp-action="Index">
-                    Cancel
-                </a>
+                <div class="modal-footer border-0 justify-content-center">
+                    <a class="btn btn-outline-secondary btn-sm"
+                       asp-controller="LogIn"
+                       asp-action="Index">
+                        Cancel
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Backdrop -->
     <div class="modal-backdrop fade show"></div>
 
-    <!-- Stil for å holde knappene like store -->
     <style>
         .role-btn {
-            width: 240px;          /* fast bredde */
-            min-height: 42px;      /* litt høyde for konsistent look */
+            width: 240px;
+            min-height: 42px;
             font-size: 1rem;
             font-weight: 500;
         }
 
         @@media (max-width: 500px) {
             .role-btn {
-                width: 100%;       /* full bredde på små skjermer */
+                width: 100%;
             }
         }
     </style>
 }
-
