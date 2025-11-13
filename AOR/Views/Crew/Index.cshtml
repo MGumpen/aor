@@ -1080,10 +1080,7 @@
             }
         });
         
-        // Fit map to show all obstacles
-        if (last30DaysLayer.getLayers().length > 0) {
-            const group = new L.featureGroup(last30DaysLayer.getLayers());
-            map.fitBounds(group.getBounds().pad(0.1));
-        }
+        // Don't zoom - keep current map view
+        // Obstacles will be displayed at current zoom level
     }
 </script>
