@@ -1,14 +1,15 @@
 using AOR.Data;
+using AOR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using AOR.Models;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.WebUtilities;
+using System.Threading.Tasks;
 
 namespace AOR.Controllers
 {
@@ -33,6 +34,7 @@ namespace AOR.Controllers
         // -------------------- LOGIN --------------------
 
         [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Index(string? returnUrl = null)
         {
             // Hvis brukeren er innlogget og kommer til login-siden, logg dem ut automatisk
@@ -42,15 +44,14 @@ namespace AOR.Controllers
                 _logger.LogInformation("Bruker ble automatisk logget ut ved tilgang til login-siden.");
             }
 
-            // Sett cache-headers for å unngå at login-siden caches
-            Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0";
-            Response.Headers["Pragma"] = "no-cache";
-            Response.Headers["Expires"] = "0";
-
-            return View(new LogInViewModel { ReturnUrl = returnUrl });
+            return View(new LogInViewModel
+            {
+                ReturnUrl = returnUrl
+            });
         }
 
         [HttpPost]
+        // Bevisst uten [ValidateAntiForgeryToken] for å unngå krøll med tilbake/fram + stale tokens
         public async Task<IActionResult> Index(LogInViewModel model)
         {
             if (!ModelState.IsValid)
@@ -58,11 +59,14 @@ namespace AOR.Controllers
 
             try
             {
-                var user = await _userManager.FindByEmailAsync(model.Username)
-                           ?? await _userManager.FindByNameAsync(model.Username);
+                var username = model.Username?.Trim();
+
+                var user = await _userManager.FindByEmailAsync(username)
+                           ?? await _userManager.FindByNameAsync(username);
 
                 if (user == null)
                 {
+                    _logger.LogWarning("Login failed: user not found for {Username}", username);
                     ModelState.AddModelError(string.Empty, "Ugyldig brukernavn eller passord");
                     return View(model);
                 }
@@ -76,22 +80,29 @@ namespace AOR.Controllers
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(
-                    user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
+                    user.UserName,
+                    model.Password,
+                    isPersistent: false,
+                    lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("Bruker {Email} logget inn.", user.Email);
 
                     var roles = await _userManager.GetRolesAsync(user);
-                    _logger.LogInformation("LOGIN OK: {Email}, ReturnUrl={ReturnUrl}, Roles=[{Roles}], Count={Count}",
-                        user.Email, model.ReturnUrl, string.Join(",", roles), roles?.Count ?? -1);
+                    _logger.LogInformation(
+                        "LOGIN OK: {Email}, ReturnUrl={ReturnUrl}, Roles=[{Roles}], Count={Count}",
+                        user.Email,
+                        model.ReturnUrl,
+                        string.Join(",", roles),
+                        roles?.Count ?? -1);
 
-                    // 1) Har brukeren 2+ roller? → vis login-siden igjen med popup (modal)
+                    // 1) Har brukeren 2+ roller? → Redirect til egen GET-side (PRG-mønster)
                     if (roles.Count > 1)
                     {
-                        model.ShowRolePicker = true;
-                        model.AvailableRoles = roles.ToList(); // behold øvrige felter på modellen
-                        return View("Index", model);
+                        // Engangstillatelse til å vise RolePicker rett etter login
+                        TempData["RolePickerAllowed"] = true;
+                        return RedirectToAction("RolePicker", new { returnUrl = model.ReturnUrl });
                     }
 
                     // 2) ReturnUrl (gjelder nå kun 0/1 rolle)
@@ -121,6 +132,7 @@ namespace AOR.Controllers
                     return View(model);
                 }
 
+                _logger.LogWarning("Login failed: invalid credentials for {Username}", username);
                 ModelState.AddModelError(string.Empty, "Ugyldig brukernavn eller passord");
                 return View(model);
             }
@@ -132,6 +144,42 @@ namespace AOR.Controllers
             }
         }
 
+        // -------------------- ROLE PICKER (GET) --------------------
+        // Vises etter vellykket innlogging for brukere med flere roller.
+        // Kun lov rett etter login – ellers redirect til login.
+
+        [Authorize]
+        [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> RolePicker(string? returnUrl = null)
+        {
+            // Må ha engangsflagget satt fra Index(POST)
+            if (TempData["RolePickerAllowed"] is not bool allowed || !allowed)
+            {
+                // Treffer du RolePicker via tilbake-knapp uten nytt login → havner her
+                return RedirectToAction(nameof(Index));
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                _logger.LogWarning("RolePicker: user not found in context.");
+                return RedirectToAction(nameof(Index));
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var model = new LogInViewModel
+            {
+                ShowRolePicker = true,
+                AvailableRoles = roles.ToList(),
+                ReturnUrl = returnUrl
+            };
+
+            // Bruker samme view som login (Index.cshtml), men med popup synlig
+            return View("Index", model);
+        }
+
         // -------------------- ROLLEVALG FRA POPUP --------------------
 
         // Denne kjører etter innlogging → må være Authorize
@@ -141,13 +189,19 @@ namespace AOR.Controllers
         public async Task<IActionResult> ChooseRole(string selectedRole, string? returnUrl = null)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction(nameof(Index));
+            if (user == null)
+            {
+                _logger.LogWarning("ChooseRole: user not found in context.");
+                return RedirectToAction(nameof(Index));
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
 
             // Valider at valgt rolle faktisk tilhører brukeren
             if (string.IsNullOrWhiteSpace(selectedRole) || !roles.Contains(selectedRole))
             {
+                _logger.LogWarning("ChooseRole: invalid role {Role} for user {User}", selectedRole, user.Email);
+
                 return View("Index", new LogInViewModel
                 {
                     ShowRolePicker = true,
@@ -169,6 +223,7 @@ namespace AOR.Controllers
                 return RedirectToAction("Index", "Registrar");
 
             // Ukjent rolle → hjem
+            _logger.LogWarning("ChooseRole: unknown role {Role} for user {User}", selectedRole, user.Email);
             return RedirectToAction("Index", "Home");
         }
 
@@ -187,6 +242,7 @@ namespace AOR.Controllers
         // -------------------- FORGOT PASSWORD --------------------
 
         [HttpGet]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult ForgotPassword()
         {
             // Returnerer ForgotPassword view (Views/LogIn/ForgotPassword.cshtml)
@@ -195,7 +251,7 @@ namespace AOR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(AOR.Models.ForgotPasswordModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -205,13 +261,14 @@ namespace AOR.Controllers
             // Ikke avslør om brukeren finnes eller er bekreftet
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
+                _logger.LogInformation("ForgotPassword: user not found or email not confirmed for {Email}", model.Email);
                 TempData["ForgotPassword_Info"] = "Hvis e-postadressen finnes og er bekreftet, er en lenke sendt.";
                 ModelState.Clear();
-                return View(new AOR.Models.ForgotPasswordModel());
+                return View(new ForgotPasswordModel());
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var encodedToken = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
             var callbackUrl = Url.Action(
                 action: "ResetPassword",
@@ -223,16 +280,21 @@ namespace AOR.Controllers
             TempData["ForgotPassword_Info"] = "Tilbakestillingslenke (dev):";
             TempData["ResetLink"] = callbackUrl;
 
+            _logger.LogInformation("ForgotPassword: reset link generated for {Email}", model.Email);
+
             ModelState.Clear();
-            return View(new AOR.Models.ForgotPasswordModel());
+            return View(new ForgotPasswordModel());
         }
 
         // -------------------- ACCESS DENIED --------------------
 
         [HttpGet]
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult AccessDenied()
         {
-            return View();
+            // I stedet for å vise en feilsiden, send brukeren tilbake til login
+            return RedirectToAction("Index", "LogIn");
         }
     }
 }
