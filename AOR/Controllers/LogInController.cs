@@ -80,7 +80,7 @@ namespace AOR.Controllers
         }
 
         [HttpPost]
-        // Bevisst uten [ValidateAntiForgeryToken] for å unngå krøll med tilbake/fram + stale tokens
+        [ValidateAntiForgeryToken] // CSRF protection is required; handle stale tokens via cache prevention and page reloads
         public async Task<IActionResult> Index(LogInViewModel model)
         {
             if (!ModelState.IsValid)
