@@ -116,4 +116,71 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Orgs));
     }
     
+    [HttpGet]
+    public async Task<IActionResult> EditOrg(int id)
+    {
+        var org = await _context.Organizations.FindAsync(id);
+        if (org == null)
+        {
+            return NotFound();
+        }
+        ViewBag.OldOrgNr = org.OrgNr;
+        return View(org);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditOrg(OrgModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.OldOrgNr = Request.Form["OldOrgNr"];
+            return View(model);
+        }
+
+        var oldOrgNr = int.Parse(Request.Form["OldOrgNr"]!);
+        var org = await _context.Organizations.FindAsync(oldOrgNr);
+        if (org == null)
+        {
+            return NotFound();
+        }
+
+        if (model.OrgNr != oldOrgNr)
+        {
+            var exists = await _context.Organizations.AnyAsync(o => o.OrgNr == model.OrgNr);
+            if (exists)
+            {
+                ModelState.AddModelError(nameof(model.OrgNr), "En organisasjon med dette organisasjonsnummeret finnes allerede.");
+                ViewBag.OldOrgNr = oldOrgNr;
+                return View(model);
+            }
+
+            // Oppdater users først
+            var users = await _context.Users.Where(u => u.OrgNr == oldOrgNr).ToListAsync();
+            foreach (var user in users)
+            {
+                user.OrgNr = model.OrgNr;
+            }
+
+            // Slett gammel org
+            _context.Organizations.Remove(org);
+
+            // Lag ny org
+            var newOrg = new OrgModel
+            {
+                OrgNr = model.OrgNr,
+                OrgName = model.OrgName
+            };
+            _context.Organizations.Add(newOrg);
+
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            org.OrgName = model.OrgName;
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Orgs));
+    }
 }
