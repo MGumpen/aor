@@ -245,11 +245,22 @@ public async Task<IActionResult> MyReports()
     [HttpGet]
     public async Task<IActionResult> AllObstacles()
     {
-        var obstacles = await _db.Obstacles
-            .AsNoTracking()
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
-        return View(obstacles);
+        try
+        {
+            _logger.LogInformation("AllObstacles GET startet");
+            var reports = await _db.Reports
+                .AsNoTracking()
+                .Include(r => r.Obstacle)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+            _logger.LogInformation("Hentet {Count} reports", reports.Count);
+            return View(reports);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Feil i AllObstacles");
+            throw; // Re-throw for å få 500
+        }
     }
 
     public async Task<IActionResult> Details(int id)
@@ -257,6 +268,26 @@ public async Task<IActionResult> MyReports()
         var obstacle = await _db.Obstacles.FindAsync(id);
         if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
+    }
+
+    [HttpGet("/Obstacle/Last30Days")]
+    public async Task<IActionResult> Last30Days()
+    {
+        var cutoffDate = DateTime.UtcNow.AddDays(-30);
+        var reports = await _db.Reports
+            .AsNoTracking()
+            .Include(r => r.Obstacle)
+            .Where(r => r.CreatedAt >= cutoffDate)
+            .Select(r => new {
+                r.ReportId,
+                r.Obstacle.ObstacleName,
+                r.Obstacle.ObstacleType,
+                r.Obstacle.Coordinates,
+                r.CreatedAt
+            })
+            .ToListAsync();
+        
+        return Json(reports);
     }
     
     

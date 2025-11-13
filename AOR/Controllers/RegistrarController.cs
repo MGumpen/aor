@@ -7,7 +7,9 @@ using AOR.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace AOR.Controllers;
-[Authorize(Roles = "Registrar")]
+
+
+[Authorize(Policy = "AsRegistrar")]
 public class RegistrarController : Controller
 {
     private readonly AorDbContext _db;

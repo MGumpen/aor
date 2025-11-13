@@ -17,5 +17,7 @@ namespace AOR.Models
         public List<string>? AvailableRoles { get; set; }
         
         public string? SelectedRole { get; set; }
+        
+        public bool RememberMe { get; set; }
     }
 }

@@ -13,8 +13,6 @@ using System.Threading.Tasks;
 
 namespace AOR.Controllers
 {
-    // Klassen er AllowAnonymous; vi overstyrer enkelt-actions med [Authorize] der det trengs
-    [AllowAnonymous]
     public class LogInController : Controller
     {
         private readonly SignInManager<User> _signInManager;
@@ -31,8 +29,40 @@ namespace AOR.Controllers
             _logger = logger;
         }
 
-        // -------------------- LOGIN --------------------
+        private async Task SignInWithActiveRole(User user, string chosenRole, bool rememberMe)
+        {
+            // Sørg for at cookien gjenspeiler valgt rolle ved å bygge principal og signere eksplisitt
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            
+            var principal = await _signInManager.CreateUserPrincipalAsync(user);
+            var id = (ClaimsIdentity)principal.Identity!;
+            var existing = id.FindFirst("ActiveRole");
+            if (existing != null) id.RemoveClaim(existing);
+            id.AddClaim(new Claim("ActiveRole", chosenRole));
+            
+            await HttpContext.SignInAsync(
+                IdentityConstants.ApplicationScheme,
+                principal,
+                new AuthenticationProperties { IsPersistent = rememberMe }
+            );
+        }
 
+        // Deterministisk landingsside basert på ActiveRole-claim
+        [Authorize]
+        [HttpGet]
+        public IActionResult RoleHome()
+        {
+            var active = User.FindFirst("ActiveRole")?.Value;
+            return active switch
+            {
+                "Admin"     => RedirectToAction("Index", "Admin"),
+                "Crew"      => RedirectToAction("Index", "Crew"),
+                "Registrar" => RedirectToAction("Index", "Registrar"),
+                _           => RedirectToAction(nameof(Index))
+            };
+        }
+        
+        [AllowAnonymous]
         [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> Index(string? returnUrl = null)
@@ -105,23 +135,19 @@ namespace AOR.Controllers
                         return RedirectToAction("RolePicker", new { returnUrl = model.ReturnUrl });
                     }
 
-                    // 2) ReturnUrl (gjelder nå kun 0/1 rolle)
-                    if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
-                        return LocalRedirect(model.ReturnUrl);
-
-                    // 3) Kun én rolle → gå direkte
+                    // 2) Kun én rolle → sett aktiv rolle og ruter deterministisk
                     if (roles.Count == 1)
                     {
                         var only = roles[0];
-                        if (only.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-                            return RedirectToAction("Index", "Admin");
-                        if (only.Equals("Crew", StringComparison.OrdinalIgnoreCase))
-                            return RedirectToAction("Index", "Crew");
-                        if (only.Equals("Registrar", StringComparison.OrdinalIgnoreCase))
-                            return RedirectToAction("Index", "Registrar");
+                        await SignInWithActiveRole(user, only, model.RememberMe);
+
+                        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                            return LocalRedirect(model.ReturnUrl);
+
+                        return RedirectToAction(nameof(RoleHome));
                     }
 
-                    // 4) Ingen rolle → hjem
+                    // 3) Ingen rolle → hjem
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -209,6 +235,9 @@ namespace AOR.Controllers
                     ReturnUrl = returnUrl
                 });
             }
+
+            // Persistér valgt rolle i auth-cookie
+            await SignInWithActiveRole(user, selectedRole, rememberMe: false);
 
             // (Valgfritt) La ReturnUrl vinne etter valg
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))

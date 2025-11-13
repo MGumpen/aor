@@ -1,5 +1,4 @@
-
-@model AOR.ViewModels.NewUserViewModel
+@model AOR.Models.NewUserViewModel
 
 @{
     Layout = "_Layout";
@@ -40,7 +39,7 @@
         <h1 class="mb-0">Register new user</h1>
     </div>
 
-    <form asp-action="NewUser" asp-controller="Admin" method="post" class="mt-4">
+    <form asp-action="NewUser" asp-controller="Account" method="post" class="mt-4">
         @Html.AntiForgeryToken()
 
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -140,7 +139,7 @@
 
         <div class="d-flex justify-content-end mt-4">
             <button type="submit" class="btn btn-success me-2">Save user</button>
-            <a asp-controller="Admin" asp-action="AppUsers" class="btn btn-outline-secondary">Cancel</a>
+            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>
 </section>
