@@ -265,6 +265,7 @@
     </div>
     
     <div class="actions-bar">
+        <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @(Model == null ? 0 : Model.Count()) reports</div>
             <div><strong>Power Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "powerline"))</div>
@@ -272,7 +273,6 @@
             <div><strong>Other:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "other"))</div>
             <div id="draftsStats" style="display:none;"><strong>Drafts:</strong> <span id="draftsNumber">0</span></div>
         </div>
-        <a href="/Crew" class="btn btn-primary">Add New Obstacle</a>
     </div>
     
     <div class="obstacles-grid" id="draftsContainer" style="display: none; margin-bottom: 24px;"></div>
