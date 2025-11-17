@@ -196,12 +196,18 @@
             var canViewUser = isOwner || isAdminOrRegistrar;
         }
         
-        @if (canViewUser)
+        @if (canViewUser && Model.User != null)
         {
             <div class="detail-card">
                 <div class="detail-label">User</div>
                 <div class="detail-value">@Model.User.UserName</div>
             </div>
+            
+            <div class="detail-card">
+                <div class="detail-label">Organization</div>
+                <div class="detail-value">@(Model.User.Organization.OrgName)</div>
+            </div>
+            
         }
         
         

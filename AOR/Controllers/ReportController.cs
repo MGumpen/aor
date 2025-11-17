@@ -56,6 +56,7 @@ public class ReportController : Controller
             .Include(r => r.Obstacle)
             .Include(r => r.Status)
             .Include(r => r.User)
+            .ThenInclude(u => u.Organization)
             .AsQueryable();
 
        
@@ -75,4 +76,3 @@ public class ReportController : Controller
     
     
 }
-
