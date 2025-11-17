@@ -7,20 +7,23 @@ namespace AOR.Models
         [Key]
         public int ObstacleId { get; set; }
         
-        [Required(ErrorMessage = "Obstacle name is required")]
-        [MaxLength(200)]
+    [Required(ErrorMessage = "Obstacle name is required")]
+    [StringLength(50, ErrorMessage = "Obstacle name can be at most 50 characters")]
         public string ObstacleName { get; set; } = string.Empty;
         
-        [MaxLength(1500)]
+    [StringLength(1000, ErrorMessage = "Description can be at most 1000 characters")]
         public string? ObstacleDescription { get; set; }
         
-        public double? ObstacleHeight { get; set; }
+    [Required(ErrorMessage = "Height is required")]
+    [Range(0.1, 1000, ErrorMessage = "Height must be between 0.1 and 1000 meters")]
+    public double? ObstacleHeight { get; set; }
         
         [Required(ErrorMessage = "Obstacle type is required")]
         public string ObstacleType { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "Coordinates are required")]
-        public string? Coordinates { get; set; }
+    [StringLength(4000, ErrorMessage = "Coordinates payload is too large")]
+    public string? Coordinates { get; set; }
         
         public int PointCount { get; set; }
         
@@ -28,10 +31,12 @@ namespace AOR.Models
         public int? WireCount { get; set; }
         
    
-        public string? MastType { get; set; }
+    [StringLength(50)]
+    public string? MastType { get; set; }
         public bool? HasLighting { get; set; }
         
-        public string? Category { get; set; }
+    [StringLength(50)]
+    public string? Category { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -43,10 +48,10 @@ namespace AOR.Models
             var results = new List<ValidationResult>();
 
             // Høyde er påkrevd for alle typer
-            if (!ObstacleHeight.HasValue || ObstacleHeight <= 0)
+        if (!ObstacleHeight.HasValue || ObstacleHeight <= 0 || ObstacleHeight > 1000)
             {
                 results.Add(new ValidationResult(
-                    "Height is required and must be greater than 0", 
+            "Height must be between 0.1 and 1000 meters", 
                     new[] { nameof(ObstacleHeight) }));
             }
 

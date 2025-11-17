@@ -12,16 +12,12 @@ namespace AOR.Data;
 
 public static class AorDbSeeder
 {
-    /// <summary>
-    /// Seed roles and test users into the Identity store.
-    /// Call this during application startup after DbContext has been registered.
-    /// </summary>
+   
     public static async Task SeedAsync(IServiceProvider serviceProvider, ILogger logger)
     {
         using var scope = serviceProvider.CreateScope();
         var scoped = scope.ServiceProvider;
 
-        // Try to log DB provider if available
         try
         {
             var db = scoped.GetService<AorDbContext>();
@@ -45,7 +41,7 @@ public static class AorDbSeeder
             return;
         }
 
-        // Roles to ensure (ikke opprett 'Registerforer' her)
+        // Ensure roles exist
         var roles = new[] { "Crew", "Admin", "Registrar" };
         foreach (var role in roles)
         {
@@ -67,7 +63,6 @@ public static class AorDbSeeder
             }
         }
 
-        // Organisations - opprett noen standardorganisasjoner hvis de ikke finnes
         try
         {
             var db = scoped.GetRequiredService<AorDbContext>();
@@ -105,14 +100,16 @@ public static class AorDbSeeder
             logger.LogError(ex, "Exception while seeding organisations");
         }
 
-        // Map organisasjoner for enkel tilgang
+        // Build a map of orgName -> OrgNr for quick lookup
         var orgMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         try
         {
             var db = scoped.GetRequiredService<AorDbContext>();
-            foreach (var o in await db.Organizations.ToListAsync())
+            var allOrgs = await db.Organizations.ToListAsync();
+            foreach (var o in allOrgs)
             {
-                orgMap[o.OrgName] = o.OrgNr;
+                // Avoid duplicates
+                if (!orgMap.ContainsKey(o.OrgName)) orgMap[o.OrgName] = o.OrgNr;
             }
         }
         catch (Exception ex)
@@ -120,13 +117,13 @@ public static class AorDbSeeder
             logger.LogWarning(ex, "Kunne ikke hente organisasjoner etter seeding");
         }
 
-        // Test users - opprett brukere OG knytt dem til organisasjon via OrgNr
+        // Test users - create users and link them to organisations via OrgNr
         var testUsers = new[]
         {
-            new { Email = "crew@test.no", Password = "Test123$", Role = "Crew", FirstName = "Kari", LastName = "Crew", OrgName = "Norsk Luftambulanse" },
-            new { Email = "crew2@test.no", Password = "Test123$", Role = "Crew", FirstName = "Petter", LastName = "Pilot", OrgName = "Luftforsvaret" },
-            new { Email = "admin@test.no", Password = "Test123$", Role = "Admin", FirstName = "Ola", LastName = "Admin", OrgName = "Luftforsvaret" },
-            new { Email = "reg@test.no", Password = "Test123$", Role = "Registrar", FirstName = "Per", LastName = "Registerfører", OrgName = "Kartverket" }
+            new { Email = "crew@test.no", Password = "Test123$", Roles = new[] { "Crew" }, FirstName = "Kari", LastName = "Crew", PhoneNumber = "12345678", OrgName = "Norsk Luftambulanse" },
+            new { Email = "crew2@test.no", Password = "Test123$", Roles = new[] { "Crew", "Admin" }, FirstName = "Petter", LastName = "Pilot", PhoneNumber = "23456789", OrgName = "Luftforsvaret" },
+            new { Email = "admin@test.no", Password = "Test123$", Roles = new[] { "Admin" }, FirstName = "Ola", LastName = "Admin", PhoneNumber = "87654321", OrgName = "Luftforsvaret" },
+            new { Email = "reg@test.no", Password = "Test123$", Roles = new[] { "Registrar" }, FirstName = "Per", LastName = "Registerfører", PhoneNumber = "98765432", OrgName = "Kartverket" }
         };
 
         foreach (var tu in testUsers)
@@ -142,10 +139,12 @@ public static class AorDbSeeder
                         Email = tu.Email,
                         EmailConfirmed = true,
                         FirstName = tu.FirstName,
-                        LastName = tu.LastName
+                        LastName = tu.LastName,
+                        PhoneNumber = tu.PhoneNumber,
+                        PhoneNumberConfirmed = true,
                     };
 
-                    // Sett OrgNr hvis vi har en mapping
+                    // Set OrgNr if mapping exists
                     if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr))
                     {
                         user.OrgNr = orgNr;
@@ -158,33 +157,44 @@ public static class AorDbSeeder
                         continue;
                     }
 
-                    var addRoleRes = await userManager.AddToRoleAsync(user, tu.Role);
-                    if (!addRoleRes.Succeeded)
+                    // Add multiple roles at once
+                    var addRolesRes = await userManager.AddToRolesAsync(user, tu.Roles);
+                    if (!addRolesRes.Succeeded)
                     {
-                        logger.LogWarning("Failed to add role {Role} to user {Email}: {Errors}", tu.Role, tu.Email, string.Join("; ", addRoleRes.Errors.Select(e => e.Description)));
+                        logger.LogWarning("Failed to add roles {Roles} to user {Email}: {Errors}", string.Join(", ", tu.Roles), tu.Email, string.Join("; ", addRolesRes.Errors.Select(e => e.Description)));
                     }
                     else
                     {
-                        logger.LogInformation("Created user {Email} with role {Role} and OrgNr {OrgNr}", tu.Email, tu.Role, user.OrgNr);
+                        logger.LogInformation("Created user {Email} with roles {Roles} and OrgNr {OrgNr}", tu.Email, string.Join(", ", tu.Roles), user.OrgNr);
                     }
                 }
                 else
                 {
-                    // Ensure role is assigned and OrgNr set
-                    var rolesForUser = await userManager.GetRolesAsync(existing);
-                    if (!rolesForUser.Contains(tu.Role))
+                    // Ensure username equals email
+                    if (existing.UserName != existing.Email)
                     {
-                        var addRoleRes = await userManager.AddToRoleAsync(existing, tu.Role);
-                        if (!addRoleRes.Succeeded)
+                        existing.UserName = existing.Email;
+                        await userManager.UpdateAsync(existing);
+                        logger.LogInformation("Updated UserName to Email for existing user {Email}", tu.Email);
+                    }
+
+                    // Ensure roles are assigned
+                    var rolesForUser = await userManager.GetRolesAsync(existing);
+                    var missingRoles = tu.Roles.Except(rolesForUser).ToArray();
+                    if (missingRoles.Any())
+                    {
+                        var addMissingRes = await userManager.AddToRolesAsync(existing, missingRoles);
+                        if (!addMissingRes.Succeeded)
                         {
-                            logger.LogWarning("Failed to add missing role {Role} to existing user {Email}: {Errors}", tu.Role, tu.Email, string.Join("; ", addRoleRes.Errors.Select(e => e.Description)));
+                            logger.LogWarning("Failed to add missing roles {Roles} to existing user {Email}: {Errors}", string.Join(", ", missingRoles), tu.Email, string.Join("; ", addMissingRes.Errors.Select(e => e.Description)));
                         }
                         else
                         {
-                            logger.LogInformation("Added missing role {Role} to existing user {Email}", tu.Role, tu.Email);
+                            logger.LogInformation("Added missing roles {Roles} to existing user {Email}", string.Join(", ", missingRoles), tu.Email);
                         }
                     }
 
+                    // Ensure OrgNr is set/updated
                     if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr) && existing.OrgNr != orgNr)
                     {
                         existing.OrgNr = orgNr;
@@ -193,7 +203,7 @@ public static class AorDbSeeder
                     }
                     else
                     {
-                        logger.LogInformation("User {Email} already exists and has role {Role}", tu.Email, tu.Role);
+                        logger.LogInformation("User {Email} already exists and has roles {Roles}", tu.Email, string.Join(", ", rolesForUser));
                     }
                 }
             }

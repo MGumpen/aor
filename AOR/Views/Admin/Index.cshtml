@@ -1,21 +1,102 @@
+@using AOR.Data
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+@{
     Layout = "_Layout";
+    ViewData["Title"] = "Admin - Dashboard";
 }
 
-<section class="container mt-4">
-    <h1 class="mb-2">Welcome, Admin</h1>
-    <p class="text-muted">This is the admin front page (public for now).</p>
+<style>
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .admin-wrapper {
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    gap: 2rem;
+    }
 
-    <div class="row g-3 mt-3">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Incoming Reports</h5>
-                    <p class="card-text">See new obstacle reports and take action.</p>
-                    <a class="btn btn-primary disabled">Inbox (coming soon)</a>
-                </div>
-            </div>
-        </div>
+    .admin-wrapper h2 {
+        margin-bottom: 2rem;
+    }
+    
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .admin-tile {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    background: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+    transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+    text-align: center;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    }
+    
+    .admin-tile:hover,
+    .admin-tile:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
+    border-color: #2563eb;
+    background: #f8fafc;
+    outline: none;
+    }
+    
+    .admin-tile h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    }
+    
+    .admin-tile p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0.9;
+    }
+
+</style>
+
+<section class="container align-content-center">
+
+<div class="admin-wrapper">
+    <h2>Welcome, @($"{currentUser?.FirstName} {currentUser?.LastName}")!</h2>
+
+    <div class="admin-grid">
+        <a class="admin-tile" asp-controller="Account" asp-action="AppUsers">Users</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Orgs">Organizations</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Stats">Statistics</a>
+        <a class="admin-tile" asp-controller="Admin" asp-action="Reports">Reports</a>
     </div>
+</div>
+
 </section>
+    
+
+

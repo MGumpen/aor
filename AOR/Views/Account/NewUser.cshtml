@@ -1,0 +1,187 @@
+@model AOR.Models.NewUserViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Users";
+}
+
+<style>
+    .container {
+        width: 90%;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .site-header {
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #10b981;
+    }
+
+    .role-dropdown .role-dropdown-menu {
+        min-width: 100%;
+        margin-top: 0;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .role-dropdown .form-check {
+        margin-bottom: 0.25rem;
+    }
+</style>
+
+<section class="container align-content-center">
+
+    <div class="site-header text-center mb-3">
+        <h1 class="mb-0">Register new user</h1>
+    </div>
+
+    <form asp-action="NewUser" asp-controller="Account" method="post" class="mt-4">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="OrgNr" class="form-label"></label>
+                <select asp-for="OrgNr" asp-items="Model.Organizations" class="form-select">
+                    <option value="">Choose organization...</option>
+                </select>
+                <span asp-validation-for="OrgNr" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label asp-for="RoleIds" class="form-label"></label>
+
+                <div class="dropdown role-dropdown">
+                    <button
+                        class="form-select text-start"
+                        type="button"
+                        id="roleDropdownButton"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span id="roleDropdownText">Choose role(s)...</span>
+                    </button>
+
+                    <div class="dropdown-menu role-dropdown-menu" aria-labelledby="roleDropdownButton">
+                        @if (Model.Roles != null)
+                        {
+                            foreach (var role in Model.Roles)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input role-checkbox"
+                                           type="checkbox"
+                                           value="@role.Value"
+                                           id="role_@role.Value"
+                                           @(Model.RoleIds != null && Model.RoleIds.Contains(role.Value) ? "checked" : "") />
+                                    <label class="form-check-label" for="role_@role.Value">@role.Text</label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div id="roleHiddenInputs">
+                    @if (Model.RoleIds != null)
+                    {
+                        foreach (var roleId in Model.RoleIds)
+                        {
+                            <input type="hidden" name="RoleIds" value="@roleId" />
+                        }
+                    }
+                </div>
+
+                <span asp-validation-for="RoleIds" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-success me-2">Save user</button>
+            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('.role-checkbox');
+            const hiddenContainer = document.getElementById('roleHiddenInputs');
+            const textSpan = document.getElementById('roleDropdownText');
+
+            function updateHiddenInputs() {
+                hiddenContainer.innerHTML = '';
+                const selectedNames = [];
+
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        const label = cb.closest('.form-check').querySelector('.form-check-label');
+                        if (label) {
+                            selectedNames.push(label.textContent.trim());
+                        }
+
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = 'RoleIds';
+                        hidden.value = cb.value;
+                        hiddenContainer.appendChild(hidden);
+                    }
+                });
+
+                if (selectedNames.length === 0) {
+                    textSpan.textContent = 'Velg rolle(r)...';
+                } else {
+                    textSpan.textContent = selectedNames.join(', ');
+                }
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', updateHiddenInputs));
+
+            // Initial sync when page loads (for validation errors etc.)
+            updateHiddenInputs();
+        });
+    </script>
+}
