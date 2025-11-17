@@ -72,6 +72,7 @@ public async Task<IActionResult> MyReports()
 
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DataForm(ObstacleData obstacleData, string? draft)
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");

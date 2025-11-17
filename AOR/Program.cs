@@ -105,7 +105,9 @@ app.UseRouting();
 
 // Disable caching so user cannot go back after logout
 app.Use(async (context, next) =>
-{
+{   
+    context.Response.Headers.Append("Cache-Control", "xss-protection=1; mode=block");
+    
     context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     context.Response.Headers["Pragma"] = "no-cache";
     context.Response.Headers["Expires"] = "0";

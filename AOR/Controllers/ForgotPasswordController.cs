@@ -20,6 +20,8 @@ namespace AOR.Controllers
 
         // POST: /ForgotPassword
         [HttpPost]
+        [ValidateAntiForgeryToken]
+
         public IActionResult Index(ForgotPasswordModel model)
         {
             if (ModelState.IsValid)

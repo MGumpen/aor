@@ -14,7 +14,8 @@
 {
     <div class="text-center">
         <form method="post" class="mx-auto" style="max-width: 500px; margin-top: 40px;">
-        
+            @Html.AntiForgeryToken()
+
             <div class="mb-4">
                 <label asp-for="Username" class="form-label fs-4">Username</label>
                 <input asp-for="Username"

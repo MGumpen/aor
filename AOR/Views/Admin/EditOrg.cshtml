@@ -17,6 +17,7 @@
 
 <form asp-action="EditOrg" method="post" novalidate>
 @Html.AntiForgeryToken()
+
 <input type="hidden" name="OldOrgNr" value="@ViewBag.OldOrgNr" />
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
