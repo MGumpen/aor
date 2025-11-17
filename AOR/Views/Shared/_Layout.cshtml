@@ -52,28 +52,22 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
+            
+            
             @{
                 string homeController = "LogIn";
                 string homeAction = "Index";
 
                 if (User?.Identity?.IsAuthenticated == true)
                 {
-                    if (User.IsInRole("Registrar"))
+                    var activeRole = User.FindFirst("ActiveRole")?.Value;
+                    homeController = activeRole switch
                     {
-                        homeController = "Registrar";
-                    }
-                    else if (User.IsInRole("Crew"))
-                    {
-                        homeController = "Crew";
-                    }
-                    else if (User.IsInRole("Admin"))
-                    {
-                        homeController = "Admin";
-                    }
-                    else
-                    {
-                        homeController = "LogIn";
-                    }
+                        "Admin" => "Admin",
+                        "Crew" => "Crew",
+                        "Registrar" => "Registrar",
+                        _ => "LogIn"
+                    };
                 }
             }
             <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
