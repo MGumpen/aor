@@ -273,7 +273,8 @@
     </div>
 
     <form asp-controller="Obstacle" asp-action="DataForm" method="post">
-        <!-- Hidden fields -->
+        @Html.AntiForgeryToken()
+        
         @if (!string.IsNullOrWhiteSpace(draftKey))
         {
             <input type="hidden" name="draft" value="@draftKey" />

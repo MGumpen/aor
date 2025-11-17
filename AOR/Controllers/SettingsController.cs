@@ -13,6 +13,7 @@ namespace AOR.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Index(SettingsModel model)
         {
             if (ModelState.IsValid)

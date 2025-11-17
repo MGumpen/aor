@@ -30,6 +30,11 @@
         left: 0;
     }
     
+    .details-header .right-button {
+        position: absolute;
+        right: 0;
+    }
+
     .status-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -183,6 +188,11 @@
             <a href="/Registrar" class="btn btn-primary back-button">Back to Overview</a>
             //    <a href="/Registrar/Reports" class="btn btn-secondary">All Reports</a>
         }
+        @if (activeRole == "Crew")
+        {
+            <a href="/Crew" class="btn btn-primary back-button">Back to Map</a>
+            <a href="/Report/MyReports" class="btn btn-secondary right-button">Your reports</a>
+        }
         <h1>Report details</h1>
     </div>
     
@@ -196,12 +206,18 @@
             var canViewUser = isOwner || isAdminOrRegistrar;
         }
         
-        @if (canViewUser)
+        @if (canViewUser && Model.User != null)
         {
             <div class="detail-card">
                 <div class="detail-label">User</div>
                 <div class="detail-value">@Model.User.UserName</div>
             </div>
+            
+            <div class="detail-card">
+                <div class="detail-label">Organization</div>
+                <div class="detail-value">@(Model.User.Organization.OrgName)</div>
+            </div>
+            
         }
         
         
@@ -311,12 +327,6 @@
             <div id="report-map" style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
         </div>
     </div>
-    
-    @if (activeRole == "Crew")
-    {
-        <a href="/Crew" class="btn btn-primary mb-4">Back to Map</a>
-        <a href="/Report/MyReports" class="btn btn-secondary mb-4">Your reports</a>
-    }
     
 </section>
 
