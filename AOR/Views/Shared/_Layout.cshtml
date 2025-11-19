@@ -44,6 +44,62 @@
     .navbar-collapse {
         overflow: visible !important;
     }
+    
+    /* Dark Mode Styles */
+    body.dark-mode {
+        background-color: #1a1a1a !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .navbar {
+        background-color: #2d2d2d !important;
+        border-bottom-color: #444 !important;
+    }
+    
+    body.dark-mode .navbar-light .navbar-brand,
+    body.dark-mode .nav-link,
+    body.dark-mode .dropdown-toggle {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .dropdown-menu {
+        background-color: #2d2d2d !important;
+        border-color: #444 !important;
+    }
+    
+    body.dark-mode .dropdown-item {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .dropdown-item:hover {
+        background-color: #3d3d3d !important;
+    }
+    
+    body.dark-mode .footer {
+        background-color: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border-top-color: #444 !important;
+    }
+    
+    body.dark-mode .container,
+    body.dark-mode .card {
+        background-color: #1a1a1a !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .alert-info {
+        background-color: #2c5282 !important;
+        color: #e0e0e0 !important;
+        border-color: #3c6292 !important;
+    }
+    
+    body.dark-mode a {
+        color: #63b3ed !important;
+    }
+    
+    body.dark-mode a:hover {
+        color: #4299e1 !important;
+    }
 </style>
 
     @RenderSection("Styles", required: false)
@@ -72,14 +128,20 @@
             }
             <a class="navbar-brand d-none d-md-inline" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR - Aviation Obstacle Registration</a>
             <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
-            @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
-            {
-                <button id="last30DaysBtn" class="btn btn-outline-primary ms-3" onclick="toggleLast30Days()" style="display: none;">
-                    <i class="fa fa-calendar-days me-2"></i>Last 30 Days
-                </button>
-            }
         </div>
             <div class="d-sm-inline-flex justify-content-between">
+                @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
+                {
+                    <button id="last30DaysBtn" class="btn btn-outline-primary me-3" onclick="toggleLast30Days()" style="display: none; white-space: nowrap;">
+                        <i class="fa fa-calendar-days me-2"></i>Last 30 Days
+                    </button>
+                }
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fa fa-moon" id="themeIcon"></i>
+                    </button>
+                }
                 <ul class="navbar-nav ms-auto fs-5">
                     @if (User?.Identity?.IsAuthenticated == true)
                         {
@@ -155,6 +217,58 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+
+<script>
+    // Theme toggle functionality
+    function toggleTheme() {
+        const body = document.body;
+        const icon = document.getElementById('themeIcon');
+        
+        if (body.classList.contains('dark-mode')) {
+            body.classList.remove('dark-mode');
+            icon.classList.remove('fa-sun');
+            icon.classList.add('fa-moon');
+            localStorage.setItem('theme', 'light');
+            
+            // Switch map tiles if map exists
+            if (typeof map !== 'undefined' && map.lightTiles && map.darkTiles) {
+                map.removeLayer(map.darkTiles);
+                map.addLayer(map.lightTiles);
+            }
+        } else {
+            body.classList.add('dark-mode');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+            localStorage.setItem('theme', 'dark');
+            
+            // Switch map tiles if map exists
+            if (typeof map !== 'undefined' && map.lightTiles && map.darkTiles) {
+                map.removeLayer(map.lightTiles);
+                map.addLayer(map.darkTiles);
+            }
+        }
+    }
+    
+    // Load saved theme on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme');
+        const icon = document.getElementById('themeIcon');
+        const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
+        
+        // Only apply dark mode if user is authenticated
+        if (isAuthenticated && savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            if (icon) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        } else if (!isAuthenticated) {
+            // Force light mode for non-authenticated users (login page)
+            document.body.classList.remove('dark-mode');
+        }
+    });
+</script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
