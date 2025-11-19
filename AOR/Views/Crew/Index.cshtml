@@ -616,10 +616,30 @@
             tapTolerance: 20
         });
         
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Default light theme tile layer
+        const lightTiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+            attribution: '© OpenStreetMap',
+            id: 'light-tiles'
+        });
+        
+        // Dark theme tile layer
+        const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap © CartoDB',
+            id: 'dark-tiles'
+        });
+        
+        // Add appropriate tiles based on current theme
+        if (document.body.classList.contains('dark-mode')) {
+            darkTiles.addTo(map);
+        } else {
+            lightTiles.addTo(map);
+        }
+        
+        // Store tile layers for switching
+        map.lightTiles = lightTiles;
+        map.darkTiles = darkTiles;
         
         map.zoomControl.setPosition('topright');
         
