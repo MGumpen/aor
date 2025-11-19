@@ -229,23 +229,11 @@
             icon.classList.remove('fa-sun');
             icon.classList.add('fa-moon');
             localStorage.setItem('theme', 'light');
-            
-            // Switch map tiles if map exists
-            if (typeof map !== 'undefined' && map.lightTiles && map.darkTiles) {
-                map.removeLayer(map.darkTiles);
-                map.addLayer(map.lightTiles);
-            }
         } else {
             body.classList.add('dark-mode');
             icon.classList.remove('fa-moon');
             icon.classList.add('fa-sun');
             localStorage.setItem('theme', 'dark');
-            
-            // Switch map tiles if map exists
-            if (typeof map !== 'undefined' && map.lightTiles && map.darkTiles) {
-                map.removeLayer(map.lightTiles);
-                map.addLayer(map.darkTiles);
-            }
         }
     }
     
