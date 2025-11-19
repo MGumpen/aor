@@ -232,11 +232,11 @@
         <input type="hidden" name="heightUnit" value="feet" />
 
         <div class="form-grid">
-            @if (obstacleType.ToLower() == "powerline") {
+            @if (obstacleType.ToLower() == "line") {
                 <div class="form-row">
-                    <label class="pilot-label">Power Line Name/ID <span style="color: red;">*</span></label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" maxlength="50" required />
-                    <span class="pilot-help">Enter the power line identification</span>
+                    <label class="pilot-label">Line Name/ID <span style="color: red;">*</span></label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Line A" maxlength="50" required />
+                    <span class="pilot-help">Enter the line identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
                 
@@ -923,7 +923,7 @@
 
             const typeBadge = document.getElementById('summaryTypeBadge');
             if (typeBadge) {
-                const badgeType = ['mast', 'powerline', 'other'].includes(typeLower) ? typeLower : 'other';
+                const badgeType = ['mast', 'line', 'other'].includes(typeLower) ? typeLower : 'other';
                 typeBadge.textContent = formattedType;
                 typeBadge.className = `obstacle-type-badge badge-${badgeType}`;
             }
@@ -969,8 +969,8 @@
             switch (lower) {
                 case 'mast':
                     return 'Mast';
-                case 'powerline':
-                    return 'Power Line';
+                case 'line':
+                    return 'Line';
                 case 'other':
                     return 'Other';
                 default:
