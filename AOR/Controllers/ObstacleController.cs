@@ -223,8 +223,7 @@ public class ObstacleController : Controller
             }
         }
         
-        // Handle powerline-specific fields
-        else if (obstacleData.ObstacleType?.ToLower() == "powerline")
+        else if (obstacleData.ObstacleType?.ToLower() == "line")
         {
             var wireCount = Request.Form["WireCount"].FirstOrDefault();
             
