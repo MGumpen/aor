@@ -165,6 +165,11 @@
         border-color: #0dcaf0 !important;
         color: #000 !important;
     }
+    #themeToggleBtn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+    }
 </style>
 
     @RenderSection("Styles", required: false)
@@ -201,10 +206,10 @@
                         <i class="fa fa-calendar-days me-2"></i>Last 30 Days
                     </button>
                 }
-                @if (User?.Identity?.IsAuthenticated == true)
+                @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
                 {
                     <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
-                        <i class="fa fa-moon" id="themeIcon"></i>
+                        <i class="fa fa-moon" id="themeIcon"></i> Dark Mode
                     </button>
                 }
                 <ul class="navbar-nav ms-auto fs-5">
@@ -287,12 +292,12 @@
     // Theme toggle functionality
     function toggleTheme() {
         const body = document.body;
+        const btn = document.getElementById('themeToggleBtn');
         const icon = document.getElementById('themeIcon');
         
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
-            icon.classList.remove('fa-sun');
-            icon.classList.add('fa-moon');
+            btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i> Dark Mode';
             localStorage.setItem('theme', 'light');
             
             // Switch map tiles if map exists
@@ -302,8 +307,7 @@
             }
         } else {
             body.classList.add('dark-mode');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
+            btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i> Light Mode';
             localStorage.setItem('theme', 'dark');
             
             // Switch map tiles if map exists
@@ -317,19 +321,22 @@
     // Load saved theme on page load
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('theme');
+        const btn = document.getElementById('themeToggleBtn');
         const icon = document.getElementById('themeIcon');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
         // Only apply dark mode if user is authenticated
         if (isAuthenticated && savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
-            if (icon) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
+            if (btn) {
+                btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i>Light Mode';
             }
         } else if (!isAuthenticated) {
             // Force light mode for non-authenticated users (login page)
             document.body.classList.remove('dark-mode');
+            if (btn) {
+                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i>Dark Mode';
+            }
         }
     });
 </script>
