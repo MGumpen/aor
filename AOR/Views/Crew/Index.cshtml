@@ -154,11 +154,11 @@
         letter-spacing: 0.5px; 
     }
 
-    .btn-powerline {
+    .btn-line {
         background: #E74C3C;
     }
 
-    .btn-powerline:hover, .btn-powerline:active {
+    .btn-line:hover, .btn-line:active {
         background: #C0392B;
     }
 
@@ -398,7 +398,7 @@
         cursor: grabbing;
     }
 
-    .marker-powerline {
+    .marker-line {
         background: #E74C3C;
     }
 
@@ -541,8 +541,8 @@
     
     <!-- Action buttons -->
     <div class="action-buttons">
-        <button class="main-action-btn btn-powerline" onclick="startDrawing('powerline')">
-            Power Line
+        <button class="main-action-btn btn-line" onclick="startDrawing('line')">
+            Line
         </button>
         <button class="main-action-btn btn-mast" onclick="startDrawing('mast')">
             Mast
@@ -666,7 +666,7 @@
         drawingMode = type;
 
         const titles = {
-            'powerline': 'Power Line',
+            'line': 'Line',
             'mast': 'Masts', 
             'other': 'Obstacles'
         };
@@ -695,7 +695,7 @@
         const pointId = `point-${pointCounter}`;
         
         const colors = {
-            'powerline': '#E74C3C',
+            'line': '#E74C3C',
             'mast': '#0C5AA6',
             'other': '#00A651'
         };
@@ -772,7 +772,7 @@
                     
                     updateCurrentDrawing();
                     updatePointInList(pointId, newLatLng);
-                    if (drawingMode === 'powerline') {
+                    if (drawingMode === 'line') {
                         updatePolyline();
                     }
                 }
@@ -800,7 +800,7 @@
 
         addPointToList(pointId, latlng, pointCounter);
 
-        if (drawingMode === 'powerline') {
+        if (drawingMode === 'line') {
             updatePolyline();
         }
     }
@@ -814,9 +814,8 @@
         const lat = latlng.lat.toFixed(5);
         const lng = latlng.lng.toFixed(5);
         
-        // Only show action buttons for 'powerline', none for 'mast' or 'other'
     let actionsHtml = '';
-    if (drawingMode === 'powerline') {
+    if (drawingMode === 'line') {
         actionsHtml = `<button class="point-btn remove" onclick="removePoint('${pointId}')" title="Remove">✕</button>`;
     }
 
@@ -870,7 +869,7 @@
         }
         
         updateCurrentDrawing();
-        if (drawingMode === 'powerline') {
+        if (drawingMode === 'line') {
             updatePolyline();
         }
     }
@@ -906,10 +905,10 @@
     }
 
     function confirmDrawing() {
-        if ((drawingMode === 'powerline' && currentDrawing.length < 2) ||
+        if ((drawingMode === 'line' && currentDrawing.length < 2) ||
         ((drawingMode === 'mast' || drawingMode === 'other') && currentDrawing.length < 1)) {
         alert(
-            drawingMode === 'powerline' ? 'Please add at least two points for a Power Line.'
+            drawingMode === 'line' ? 'Please add at least two points for a Line.'
                                         : 'Please add a point.'
         );
         return;
@@ -1037,7 +1036,7 @@
         }
         
         const colors = {
-            'powerline': '#E74C3C',
+            'line': '#E74C3C',
             'mast': '#0C5AA6',
             'other': '#00A651'
         };
