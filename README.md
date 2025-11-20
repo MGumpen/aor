@@ -9,9 +9,9 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 - Forskjellige testingscenarier finner du i Testing.md
 
 ## Testbrukere i Web Applikasjonen (blir seedet til databasen ved oppstart):
-- Crew: crew@test.no Passord: Test123$ Roller: Crew
-- Crew 2: crew2@test.no Passord: Test123$ Roller: Crew, Admin
-- Admin: admin@test.no Passord: Test123$ Roller: Admin
+- Crew: crew@test.no Passord: Test123$ Rolle(r): Crew
+- Crew 2: crew2@test.no Passord: Test123$ Rolle(r): Crew, Admin
+- Admin: admin@test.no Passord: Test123$ Rolle(r): Admin
 - Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registerfører
 
 ### Forutsetninger for å starte applikasjonen:
@@ -21,6 +21,12 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 ### Start applikasjonen
 
 ```bash
+#Last ned docker desktop. https://www.docker.com/products/docker-desktop/
+
+#Clone repo til din pc lokalt.
+
+#Naviger i terminalen til der applikasjonsfilene er plassert.
+
 # For å opprette docker containerne og starte alle services:
 docker compose up -d --build
 
