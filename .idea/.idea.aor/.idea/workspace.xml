@@ -15,8 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ReportController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ReportController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AccountController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,16 +42,15 @@
     &quot;assignee&quot;: &quot;MGumpen&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/MGumpen/aor.git&quot;,
-    &quot;accountId&quot;: &quot;868d185d-3199-4df5-80d0-9c9dd6d0785b&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/MGumpen/aor.git",
+    "accountId": "8fd1febe-46b8-40a8-9dc9-e9ac1b9f35e0"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/erfansarwari/Documents/Semester 3/IS-202-1/aor/AOR/Controllers/ObstacleController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
@@ -61,9 +60,13 @@
     <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IObstacleRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Repositories/IOrganizationRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IReportRepositories.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Repositories/IUserRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/ObstacleRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Repositories/OrganizationRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/ReportRepository.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Repositories/UserRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/EditUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
@@ -78,30 +81,35 @@
   &quot;associatedIndex&quot;: 7
 }</component>
   <component name="ProjectId" id="32m8vO7K5avBh8DCUolwcF1GLEE" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.AOR: http.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.AOR: https.executor&quot;: &quot;Run&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Docker.AOR/Dockerfile.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Erfan/RepositoryDesignPattern&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.AOR: http.executor": "Run",
+    ".NET Launch Settings Profile.AOR: https.executor": "Run",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Docker.AOR/Dockerfile.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Erfan/RepositoryDesignPattern",
+    "junie.onboarding.icon.badge.shown": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.AOR: http">
     <configuration name="AOR: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/AOR/AOR.csproj" />
@@ -177,6 +185,7 @@
       <workItem from="1758100014838" duration="8185000" />
       <workItem from="1761748620570" duration="661000" />
       <workItem from="1762780121531" duration="1988000" />
+      <workItem from="1763640749137" duration="3401000" />
     </task>
     <task id="LOCAL−00001" summary="Refactor: Replace direct DbContext usage with repository pattern in ObstacleController&#10;&#10;- Added IObstacleRepository and ObstacleRepository&#10;- Added IReportRepository and ReportRepository&#10;- Updated ObstacleController to use repositories instead of AorDbContext&#10;- Moved report and obstacle data access behind abstraction&#10;- Constructor updated to use DI for repositories&#10;- Cleaned up unused DbContext references">
       <option name="closed" value="true" />
@@ -192,7 +201,21 @@
       <option name="presentableId" value="LOCAL−00002" />
       <updated>1763639670810</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL−00003" summary="Refactor: Replace direct DbContext usage with repository pattern in ReportController&#10;&#10;- Updated ReportController to use IReportRepository&#10;- Removed direct dependency on AorDbContext&#10;- Replaced EF Core queries with repository calls (GetByUserAsync, GetByIdWithIncludesAsync)&#10;- Improved separation of concerns and consistency with repository architecture">
+      <option name="closed" value="true" />
+      <created>1763640980035</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1763640980035</updated>
+    </task>
+    <task id="LOCAL−00004" summary="Refactor: Migrate AdminController to repository pattern&#10;&#10;- Replaced direct AorDbContext usage with IOrganizationRepository and IUserRepository&#10;- Updated CRUD operations for organizations to use repository abstraction&#10;- Updated user organization relationship handling via UserRepository&#10;- Removed remaining EF Core calls from the controller layer&#10;- Improved architecture consistency and separation of concerns">
+      <option name="closed" value="true" />
+      <created>1763642544396</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1763642544396</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,7 +238,9 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Refactor: Replace direct DbContext usage with repository pattern in ObstacleController&#10;&#10;- Added IObstacleRepository and ObstacleRepository&#10;- Added IReportRepository and ReportRepository&#10;- Updated ObstacleController to use repositories instead of AorDbContext&#10;- Moved report and obstacle data access behind abstraction&#10;- Constructor updated to use DI for repositories&#10;- Cleaned up unused DbContext references" />
     <MESSAGE value="Glemte semikolon" />
-    <option name="LAST_COMMIT_MESSAGE" value="Glemte semikolon" />
+    <MESSAGE value="Refactor: Replace direct DbContext usage with repository pattern in ReportController&#10;&#10;- Updated ReportController to use IReportRepository&#10;- Removed direct dependency on AorDbContext&#10;- Replaced EF Core queries with repository calls (GetByUserAsync, GetByIdWithIncludesAsync)&#10;- Improved separation of concerns and consistency with repository architecture" />
+    <MESSAGE value="Refactor: Migrate AdminController to repository pattern&#10;&#10;- Replaced direct AorDbContext usage with IOrganizationRepository and IUserRepository&#10;- Updated CRUD operations for organizations to use repository abstraction&#10;- Updated user organization relationship handling via UserRepository&#10;- Removed remaining EF Core calls from the controller layer&#10;- Improved architecture consistency and separation of concerns" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor: Migrate AdminController to repository pattern&#10;&#10;- Replaced direct AorDbContext usage with IOrganizationRepository and IUserRepository&#10;- Updated CRUD operations for organizations to use repository abstraction&#10;- Updated user organization relationship handling via UserRepository&#10;- Removed remaining EF Core calls from the controller layer&#10;- Improved architecture consistency and separation of concerns" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

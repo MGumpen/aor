@@ -3,8 +3,8 @@ using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using AOR.Repositories;
 
 namespace AOR.Controllers;
 
@@ -14,25 +14,26 @@ public class AccountController : Controller
     private readonly ILogger<AccountController> _logger;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly AorDbContext _context;
+    private readonly IOrganizationRepository _organizationRepository;
+    private readonly IUserRepository _userRepository;
 
     public AccountController(
         ILogger<AccountController> logger,
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
-        AorDbContext context)
+        IOrganizationRepository organizationRepository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context;
+        _organizationRepository = organizationRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<IActionResult> AppUsers()
     {
-        var users = await _context.Users
-            .Include(u => u.Organization)
-            .ToListAsync();
+        var users = await _userRepository.GetAllWithOrganizationAsync();
 
         var userRoles = new Dictionary<string, string>();
 
@@ -48,11 +49,13 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult NewUser()
+    public async Task<IActionResult> NewUser()
     {
+        var orgs = await _organizationRepository.GetAllAsync();
+
         var vm = new NewUserViewModel
         {
-            Organizations = _context.Organizations
+            Organizations = orgs
                 .Select(o => new SelectListItem
                 {
                     Value = o.OrgNr.ToString(),
@@ -84,13 +87,15 @@ public class AccountController : Controller
                 _logger.LogWarning("Valideringsfeil i NewUser: {Error}", error.ErrorMessage);
             }
 
-            model.Organizations = _context.Organizations
+            var orgs = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgs
                 .Select(o => new SelectListItem
                 {
                     Value = o.OrgNr.ToString(),
                     Text = o.OrgName
                 })
                 .ToList();
+
             model.Roles = _roleManager.Roles
                 .Select(r => new SelectListItem
                 {
@@ -98,14 +103,33 @@ public class AccountController : Controller
                     Text = r.Name
                 })
                 .ToList();
+
             return View(model);
         }
 
-        var org = await _context.Organizations.FirstOrDefaultAsync(o => o.OrgNr == model.OrgNr);
+        var org = await _organizationRepository.GetByOrgNrAsync(model.OrgNr);
 
         if (org == null)
         {
             ModelState.AddModelError("", "Organisasjonen finnes ikke i databasen.");
+
+            var orgs = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgs
+                .Select(o => new SelectListItem
+                {
+                    Value = o.OrgNr.ToString(),
+                    Text = o.OrgName
+                })
+                .ToList();
+
+            model.Roles = _roleManager.Roles
+                .Select(r => new SelectListItem
+                {
+                    Value = r.Id,
+                    Text = r.Name
+                })
+                .ToList();
+
             return View(model);
         }
 
@@ -131,13 +155,15 @@ public class AccountController : Controller
                 ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            model.Organizations = _context.Organizations
+            var orgs = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgs
                 .Select(o => new SelectListItem
                 {
                     Value = o.OrgNr.ToString(),
                     Text = o.OrgName
                 })
                 .ToList();
+
             model.Roles = _roleManager.Roles
                 .Select(r => new SelectListItem
                 {
@@ -170,8 +196,6 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> EditUser(string id)
     {
-        // Hvis id er satt, prøv å hente bruker (admin redigerer en annen bruker)
-        // Hvis id er null eller tom, bruk aktuell innlogget bruker
         User? user;
         if (!string.IsNullOrEmpty(id))
         {
@@ -187,6 +211,8 @@ public class AccountController : Controller
             return NotFound();
         }
 
+        var orgs = await _organizationRepository.GetAllAsync();
+
         var vm = new NewUserViewModel
         {
             UserName = user.UserName,
@@ -195,7 +221,7 @@ public class AccountController : Controller
             LastName = user.LastName,
             PhoneNumber = user.PhoneNumber,
             OrgNr = user.OrgNr ?? 0,
-            Organizations = _context.Organizations
+            Organizations = orgs
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList(),
             Roles = _roleManager.Roles
@@ -203,11 +229,9 @@ public class AccountController : Controller
                 .ToList()
         };
 
-        // Fyll inn valgte roller
         var userRoles = await _userManager.GetRolesAsync(user);
         if (userRoles.Any())
         {
-            // Konverter rollenames til role Ids
             var roleIds = _roleManager.Roles
                 .Where(r => r.Name != null && userRoles.Contains(r.Name))
                 .Select(r => r.Id)
@@ -223,10 +247,8 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditUser(NewUserViewModel model, string? returnUrl = null)
     {
-        // Bestem om aktuell bruker er admin før validering
         var isAdmin = User.IsInRole("Admin");
 
-        // Hvis ikke admin, fjerner vi ModelState-feil relatert til admin-felter som ikke er synlige
         if (!isAdmin)
         {
             ModelState.Remove(nameof(model.OrgNr));
@@ -234,11 +256,9 @@ public class AccountController : Controller
             ModelState.Remove(nameof(model.Email));
         }
 
-        // Passord er valgfritt ved redigering - fjern eventuelle valideringsfeil som kommer fra [Required] i ViewModel
         ModelState.Remove(nameof(model.Password));
         ModelState.Remove(nameof(model.ConfirmPassword));
 
-        // Hvis passord er satt, validerer vi manuelt at ConfirmPassword matcher
         if (!string.IsNullOrWhiteSpace(model.Password))
         {
             if (string.IsNullOrWhiteSpace(model.ConfirmPassword) || model.Password != model.ConfirmPassword)
@@ -249,9 +269,11 @@ public class AccountController : Controller
 
         if (!ModelState.IsValid)
         {
-            model.Organizations = _context.Organizations
+            var orgsInvalid = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgsInvalid
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList();
+
             model.Roles = _roleManager.Roles
                 .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                 .ToList();
@@ -265,28 +287,27 @@ public class AccountController : Controller
             return NotFound();
         }
 
-        // Oppdater grunnleggende felter
         user.FirstName = model.FirstName;
         user.LastName = model.LastName;
         user.PhoneNumber = model.PhoneNumber;
 
-        
-
-        // Håndtere passordendring: kun hvis IKKE admin og passord er satt
         if (!isAdmin && !string.IsNullOrWhiteSpace(model.Password))
         {
-            // Hvis brukeren allerede har et passord, krev gammelt passord og bruk ChangePasswordAsync
             if (await _userManager.HasPasswordAsync(user))
             {
                 if (string.IsNullOrWhiteSpace(model.OldPassword))
                 {
                     ModelState.AddModelError("OldPassword", "Du må oppgi ditt nåværende passord for å endre passord.");
-                    model.Organizations = _context.Organizations
+
+                    var orgsInvalid = await _organizationRepository.GetAllAsync();
+                    model.Organizations = orgsInvalid
                         .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                         .ToList();
+
                     model.Roles = _roleManager.Roles
                         .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                         .ToList();
+
                     return View(model);
                 }
 
@@ -298,18 +319,20 @@ public class AccountController : Controller
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
 
-                    model.Organizations = _context.Organizations
+                    var orgsInvalid = await _organizationRepository.GetAllAsync();
+                    model.Organizations = orgsInvalid
                         .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                         .ToList();
+
                     model.Roles = _roleManager.Roles
                         .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                         .ToList();
+
                     return View(model);
                 }
             }
             else
             {
-                // Brukeren har ikke passord (f.eks. ekstern login) - legg til et nytt passord uten gammelt
                 var addResult = await _userManager.AddPasswordAsync(user, model.Password);
                 if (!addResult.Succeeded)
                 {
@@ -318,18 +341,20 @@ public class AccountController : Controller
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
 
-                    model.Organizations = _context.Organizations
+                    var orgsInvalid = await _organizationRepository.GetAllAsync();
+                    model.Organizations = orgsInvalid
                         .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                         .ToList();
+
                     model.Roles = _roleManager.Roles
                         .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                         .ToList();
+
                     return View(model);
                 }
             }
         }
 
-        // Ensure username always equals email before saving (bruk UserManager for normalisering)
         if (!string.IsNullOrWhiteSpace(user.Email))
         {
             var setUserNameResult = await _userManager.SetUserNameAsync(user, user.Email);
@@ -339,12 +364,16 @@ public class AccountController : Controller
                 {
                     ModelState.AddModelError(string.Empty, err.Description);
                 }
-                model.Organizations = _context.Organizations
+
+                var orgsInvalid = await _organizationRepository.GetAllAsync();
+                model.Organizations = orgsInvalid
                     .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                     .ToList();
+
                 model.Roles = _roleManager.Roles
                     .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                     .ToList();
+
                 return View(model);
             }
         }
@@ -357,21 +386,23 @@ public class AccountController : Controller
                 ModelState.AddModelError(string.Empty, err.Description);
             }
 
-            model.Organizations = _context.Organizations
+            var orgsInvalid = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgsInvalid
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList();
+
             model.Roles = _roleManager.Roles
                 .Select(r => new SelectListItem { Value = r.Id, Text = r.Name })
                 .ToList();
+
             return View(model);
         }
 
-        // Prioriter ReturnUrl hvis satt og lokal
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
             return LocalRedirect(returnUrl);
         }
-        // Ellers rute til Index for aktiv rolle
+
         var active = User.FindFirst("ActiveRole")?.Value;
         return active switch
         {
@@ -387,7 +418,6 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> AdminEditUser(string id)
     {
-        
         User? user;
         if (!string.IsNullOrEmpty(id))
         {
@@ -403,6 +433,8 @@ public class AccountController : Controller
             return NotFound();
         }
 
+        var orgs = await _organizationRepository.GetAllAsync();
+
         var vm = new EditUserViewModel
         {
             UserName = user.UserName,
@@ -411,7 +443,7 @@ public class AccountController : Controller
             LastName = user.LastName,
             PhoneNumber = user.PhoneNumber,
             OrgNr = user.OrgNr ?? 0,
-            Organizations = _context.Organizations
+            Organizations = orgs
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList(),
             Roles = _roleManager.Roles
@@ -419,11 +451,9 @@ public class AccountController : Controller
                 .ToList()
         };
 
-        // Fyll inn valgte roller
         var userRoles = await _userManager.GetRolesAsync(user);
         if (userRoles.Any())
         {
-            // Konverter rollenames til role Ids
             var roleIds = _roleManager.Roles
                 .Where(r => r.Name != null && userRoles.Contains(r.Name))
                 .Select(r => r.Id)
@@ -441,10 +471,10 @@ public class AccountController : Controller
     {
         var isAdmin = User.IsInRole("Admin");
 
-
         if (!ModelState.IsValid)
         {
-            model.Organizations = _context.Organizations
+            var orgsInvalid = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgsInvalid
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList();
             model.Roles = _roleManager.Roles
@@ -473,7 +503,9 @@ public class AccountController : Controller
                 {
                     ModelState.AddModelError(string.Empty, err.Description);
                 }
-                model.Organizations = _context.Organizations
+
+                var orgsInvalid = await _organizationRepository.GetAllAsync();
+                model.Organizations = orgsInvalid
                     .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                     .ToList();
                 model.Roles = _roleManager.Roles
@@ -481,13 +513,16 @@ public class AccountController : Controller
                     .ToList();
                 return View(model);
             }
+
             if (model.OrgNr != 0)
             {
-                var org = await _context.Organizations.FirstOrDefaultAsync(o => o.OrgNr == model.OrgNr);
+                var org = await _organizationRepository.GetByOrgNrAsync(model.OrgNr);
                 if (org == null)
                 {
                     ModelState.AddModelError(nameof(model.OrgNr), "Organisasjonen finnes ikke.");
-                    model.Organizations = _context.Organizations
+
+                    var orgsInvalid = await _organizationRepository.GetAllAsync();
+                    model.Organizations = orgsInvalid
                         .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                         .ToList();
                     model.Roles = _roleManager.Roles
@@ -499,12 +534,10 @@ public class AccountController : Controller
                 user.OrgNr = model.OrgNr;
             }
 
-            // Oppdater roller
             var currentRoles = await _userManager.GetRolesAsync(user);
 
             var newRoleIds = model.RoleIds ?? new List<string>();
 
-            // Finn rollenames fra roleIds
             var newRoleNames = _roleManager.Roles
                 .Where(r => newRoleIds.Contains(r.Id) && r.Name != null)
                 .Select(r => r.Name!)
@@ -524,7 +557,6 @@ public class AccountController : Controller
             }
         }
 
-
         if (!string.IsNullOrWhiteSpace(user.Email))
         {
             var setUserNameResult = await _userManager.SetUserNameAsync(user, user.Email);
@@ -534,7 +566,9 @@ public class AccountController : Controller
                 {
                     ModelState.AddModelError(string.Empty, err.Description);
                 }
-                model.Organizations = _context.Organizations
+
+                var orgsInvalid = await _organizationRepository.GetAllAsync();
+                model.Organizations = orgsInvalid
                     .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                     .ToList();
                 model.Roles = _roleManager.Roles
@@ -552,7 +586,8 @@ public class AccountController : Controller
                 ModelState.AddModelError(string.Empty, err.Description);
             }
 
-            model.Organizations = _context.Organizations
+            var orgsInvalid = await _organizationRepository.GetAllAsync();
+            model.Organizations = orgsInvalid
                 .Select(o => new SelectListItem { Value = o.OrgNr.ToString(), Text = o.OrgName })
                 .ToList();
             model.Roles = _roleManager.Roles
@@ -561,12 +596,11 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // Prioriter ReturnUrl hvis satt og lokal
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
             return LocalRedirect(returnUrl);
         }
-        // Ellers rute til Index for aktiv rolle
+
         var active = User.FindFirst("ActiveRole")?.Value;
         return active switch
         {
@@ -576,6 +610,4 @@ public class AccountController : Controller
             _           => RedirectToAction("Index", "LogIn")
         };
     }
-    
-    
 }
