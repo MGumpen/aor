@@ -129,7 +129,7 @@
                                             <hr class="dropdown-divider"/>
                                         </li>
                                         <li>
-                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
+                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
                                                     <i class="fa fa-sign-out-alt me-2"></i> Log out
