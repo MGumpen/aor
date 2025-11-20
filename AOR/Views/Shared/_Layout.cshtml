@@ -83,7 +83,7 @@
     
     body.dark-mode .container,
     body.dark-mode .card {
-        background-color: #1c1c1c !important;
+        background-color: #1a1a1a !important;
         color: #e0e0e0 !important;
     }
     
@@ -131,9 +131,11 @@
     }
     
     body.dark-mode h2 {
-        color: #2a2a2a !important;
+        color: #f0f0f0 !important;
         font-weight: 600 !important;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        background-color: #2a2a2a !important;
+        padding: 12px 16px;
+        border-radius: 8px;
     }
     
     body.dark-mode h3,
@@ -164,6 +166,103 @@
         background-color: #0dcaf0 !important;
         border-color: #0dcaf0 !important;
         color: #000 !important;
+    }
+    
+    /* Dark Mode for MyReports page */
+    body.dark-mode .obstacle-card {
+        background: #2d2d2d !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode #draftsContainer .obstacle-card {
+        background: #3a3a1a !important;
+        border-color: #5a5a3a !important;
+    }
+    
+    body.dark-mode #draftsContainer .obstacle-card::before {
+        background: #5a5a3a;
+        color: #fcd34d;
+    }
+    
+    body.dark-mode .obstacle-name {
+        color: #f0f0f0 !important;
+    }
+    
+    body.dark-mode .obstacle-type-badge {
+        background: #3d3d3d !important;
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .badge-powerline {
+        background: #4a2020 !important;
+        color: #fca5a5 !important;
+    }
+    
+    body.dark-mode .badge-mast {
+        background: #1e3a5f !important;
+        color: #93c5fd !important;
+    }
+    
+    body.dark-mode .badge-other {
+        background: #1e4d3a !important;
+        color: #86efac !important;
+    }
+    
+    body.dark-mode .detail-label {
+        color: #a0a0a0 !important;
+    }
+    
+    body.dark-mode .detail-value {
+        color: #e0e0e0 !important;
+    }
+    
+    body.dark-mode .obstacle-description {
+        background: #252525 !important;
+        color: #b0b0b0 !important;
+    }
+    
+    body.dark-mode .actions-bar {
+        background: #2d2d2d !important;
+        border: 1px solid #444;
+    }
+    
+    body.dark-mode .stats {
+        color: #a0a0a0 !important;
+    }
+    
+    body.dark-mode .btn-details {
+        background: #3d3d3d !important;
+        color: #e0e0e0 !important;
+        border-color: #555 !important;
+    }
+    
+    body.dark-mode .btn-details:hover {
+        background: #4a4a4a !important;
+        color: #f0f0f0 !important;
+    }
+    
+    body.dark-mode .status-badge-pending {
+        background: #4a3810 !important;
+        color: #fcd34d !important;
+    }
+    
+    body.dark-mode .status-badge-approved {
+        background: #1e4d3a !important;
+        color: #86efac !important;
+    }
+    
+    body.dark-mode .status-badge-rejected {
+        background: #4a2020 !important;
+        color: #fca5a5 !important;
+    }
+    
+    body.dark-mode .header p {
+        color: #a0a0a0 !important;
+    }
+    
+    body.dark-mode .empty-state {
+        color: #a0a0a0 !important;
     }
 </style>
 
