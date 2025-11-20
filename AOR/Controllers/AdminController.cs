@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AOR.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AOR.Controllers;
 

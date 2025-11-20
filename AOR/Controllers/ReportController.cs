@@ -1,20 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using AOR.Data;
-using AOR.Models;
+using AOR.Repositories;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AOR.Controllers;
-[Authorize]
-public class ReportController : Controller
-{
-    private readonly AorDbContext _db;
+    [Authorize]
+    public class ReportController : Controller
+    {
+    private readonly IReportRepository _reportRepository;
     private readonly UserManager<User> _userManager;
 
-    public ReportController(AorDbContext db, UserManager<User> userManager)
+    public ReportController(IReportRepository reportRepository, UserManager<User> userManager)
     {
-        _db = db;
+        _reportRepository = reportRepository;
         _userManager = userManager;
     }
     
@@ -28,16 +27,11 @@ public class ReportController : Controller
             return RedirectToAction("Index", "LogIn");
         }
 
-        var reports = await _db.Reports
-            .AsNoTracking()
-            .Where(r => r.UserId == userId)
-            .Include(r => r.Obstacle)
-            .Include(r => r.Status)
-            .ToListAsync();
+        var reports = await _reportRepository.GetByUserAsync(userId);
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
-        return View(reports);
+        return View(reports); // fortsatt Views/Report/MyReports.cshtml
     }
     
     [Authorize(Roles = "Crew, Registrar")]
@@ -50,23 +44,17 @@ public class ReportController : Controller
             return RedirectToAction("Index", "LogIn");
         }
 
-        // Base query with includes
-        var query = _db.Reports
-            .AsNoTracking()
-            .Include(r => r.Obstacle)
-            .Include(r => r.Status)
-            .Include(r => r.User)
-            .ThenInclude(u => u.Organization)
-            .AsQueryable();
-
-       
-
-        // Registrar (and other roles) can see any report by id.
-        var report = await query.FirstOrDefaultAsync(r => r.ReportId == id);
+        var report = await _reportRepository.GetByIdWithIncludesAsync(id);
 
         if (report == null)
         {
             return NotFound();
+        }
+
+        // Ekstra: Crew uten Registrar-rolle får bare se egne rapporter
+        if (User.IsInRole("Crew") && !User.IsInRole("Registrar") && report.UserId != userId)
+        {
+            return Forbid();
         }
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
