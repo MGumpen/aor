@@ -44,6 +44,20 @@
     .navbar-collapse {
         overflow: visible !important;
     }
+
+    #last30DaysBtn {
+        background: #0d6efd;
+        color: white;
+        border: 2px solid #0d6efd;
+    }
+
+    #last30DaysBtn.active {
+        background: #6c757d;
+        color: white;
+        border: 2px solid #6c757d;
+    }
+    
+
 </style>
 
     @RenderSection("Styles", required: false)
@@ -74,7 +88,7 @@
             <a class="navbar-brand d-md-none" asp-area="" asp-controller="@homeController" asp-action="@homeAction">AOR</a>
             @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
             {
-                <button id="last30DaysBtn" class="btn btn-outline-primary ms-3" onclick="toggleLast30Days()" style="display: none;">
+                <button id="last30DaysBtn" class="btn ms-3" onclick="toggleLast30Days()" style="display: none;">
                     <i class="fa fa-calendar-days me-2"></i>Last 30 Days
                 </button>
             }
