@@ -10,79 +10,63 @@
 }
 
 <style>
+    /* Form container - fills viewport with proper spacing */
     .pilot-form-container {
-        max-width: 800px;
-        margin: 0 auto;
+        position: relative;
+        width: 100%;
+        min-height: calc(100vh - 160px);
+        margin: 20px auto;
+        max-width: 1200px;
         background: #ffffff;
         border-radius: 24px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         padding: 24px;
         border: 1px solid #e5e7eb;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        transition: min-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
     }
+
+    /* Ensure form content stretches */
+    .pilot-form-container form {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 100%;
+    }
+
+    .pilot-form-header {
+        flex-shrink: 0;
+        margin-bottom: 20px;
+    }
+
     .pilot-form-header h1 {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 6px;
     }
+
     .pilot-form-header p {
         color: #6b7280;
         margin: 0;
     }
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-    }
-    .form-row {
-        grid-column: span 1;
-    }
-    .form-row.wide {
-        grid-column: span 2;
-    }
-    .pilot-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 6px;
-    }
-    .pilot-input, .pilot-textarea, .pilot-select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
-        box-sizing: border-box;
-    }
-    .pilot-input:focus, .pilot-textarea:focus, .pilot-select:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
-    }
-    .pilot-validation {
-        color: #dc2626;
-        font-size: 0.875rem;
-        margin-top: 4px;
-        display: block;
-    }
-    .pilot-help {
-        display: block;
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-top: 6px;
-    }
+
     .obstacle-info {
-        background-color: #f0f9ff;
-        border: 1px solid #0ea5e9;
-        border-radius: 12px;
-        padding: 16px;
+        flex-shrink: 0;
         margin-bottom: 20px;
+        background: #f0f9ff;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #bfdbfe;
     }
+
     .obstacle-info h3 {
         color: #0c4a6e;
         margin: 0 0 8px 0;
         font-size: 1.1rem;
     }
+
     .coordinates-list {
         background-color: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -93,6 +77,7 @@
         max-height: 200px;
         overflow-y: auto;
     }
+
     .coordinate-item {
         margin-bottom: 4px;
         padding: 4px 8px;
@@ -100,30 +85,77 @@
         border-radius: 4px;
         border-left: 3px solid #3b82f6;
     }
-    .pilot-actions {
+
+    /* Form grid - consumes remaining vertical space */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        flex: 1 1 auto;
+        align-content: start;
+        margin-bottom: 20px;
+    }
+
+    .form-row {
         display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 20px;
-        justify-content: flex-start;
+        flex-direction: column;
+        min-height: fit-content;
+        grid-column: span 1;
     }
-    .pilot-primary {
-        background-color: #4338ca;
-        color: #fff;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
+
+    .form-row.wide {
+        grid-column: span 2;
+    }
+
+    .form-row label {
+        margin-bottom: 6px;
         font-weight: 500;
-    }
-    .pilot-secondary {
-        background: #f3f4f6;
-        border: 1px solid #9ca3af;
+        font-size: 14px;
         color: #374151;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
     }
+
+    .pilot-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .pilot-input, .pilot-textarea, .pilot-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .pilot-input:focus, .pilot-textarea:focus, .pilot-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+
+    .pilot-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .pilot-validation {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .pilot-help {
+        display: block;
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+
     .obstacle-type-badge {
         display: inline-block;
         padding: 4px 12px;
@@ -133,7 +165,7 @@
         text-transform: uppercase;
         margin-left: 10px;
     }
-    
+
     .badge-powerline { background: #fee2e2; color: #dc2626; }
     .badge-mast { background: #dbeafe; color: #2563eb; }
     .badge-other { background: #d1fae5; color: #059669; }
@@ -144,15 +176,15 @@
         gap: 10px;
         align-items: center;
     }
-    
+
     .height-input-wrapper {
         flex: 1;
         position: relative;
     }
-    
+
     .height-input-wrapper input {
-            padding-right: 35px !important; /* Override default padding */
-        }
+        padding-right: 35px !important;
+    }
 
     .unit-label {
         position: absolute;
@@ -163,9 +195,9 @@
         font-size: 0.875rem;
         pointer-events: none;
         font-weight: 500;
-         z-index: 1;
+        z-index: 1;
     }
-    
+
     .conversion-display {
         padding: 8px 12px;
         background: #f9fafb;
@@ -177,14 +209,22 @@
         font-weight: 500;
         border: 1px solid #e5e7eb;
     }
-    
+
+    /* Actions section - sticks to bottom space */
     .pilot-actions {
         display: flex;
         gap: 12px;
-        margin-top: 24px;
         justify-content: flex-end;
+        margin-top: auto;
+        padding-top: 20px;
+        padding-bottom: 10px;
+        border-top: 1px solid #e5e7eb;
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        background: linear-gradient(to top, #ffffff 85%, transparent);
     }
-    
+
     .pilot-primary, .pilot-secondary, .pilot-draft {
         padding: 12px 24px;
         border-radius: 8px;
@@ -198,37 +238,37 @@
         border: none;
         min-width: 120px;
     }
-    
+
     .pilot-primary {
         background: #4f46e5;
         color: white;
     }
-    
+
     .pilot-primary:hover {
         background: #4338ca;
     }
-    
+
     .pilot-secondary {
         background: #f3f4f6;
         color: #374151;
         border: 1px solid #d1d5db;
     }
-    
+
     .pilot-secondary:hover {
         background: #e5e7eb;
     }
-    
+
     .pilot-draft {
         background: #fbbf24;
         color: #92400e;
         border: 1px solid #f59e0b;
     }
-    
+
     .pilot-draft:hover {
         background: #f59e0b;
         color: white;
     }
-    
+
     .draft-saved-notification {
         position: fixed;
         top: 110px;
@@ -244,10 +284,107 @@
         transition: all 0.3s ease;
         text-align: center;
     }
-    
+
     .draft-saved-notification.show {
         opacity: 1;
         transform: translate(-50%, 0);
+    }
+
+    /* Tablet responsiveness */
+    @@media (max-width: 900px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 140px);
+            margin: 15px;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .form-grid {
+            gap: 16px;
+        }
+    }
+
+    /* Mobile responsiveness */
+    @@media (max-width: 768px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 120px);
+            margin: 15px;
+            padding: 16px;
+            border-radius: 16px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .form-row.wide {
+            grid-column: span 1;
+        }
+
+        .pilot-actions {
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .pilot-primary, .pilot-secondary, .pilot-draft {
+            width: 100%;
+        }
+
+        .obstacle-info {
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .coordinates-list {
+            max-height: 120px;
+            font-size: 11px;
+        }
+    }
+
+    /* Very small mobile */
+    @@media (max-width: 480px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 110px);
+            margin: 5px;
+            padding: 14px;
+            border-radius: 12px;
+        }
+
+        .form-grid {
+            gap: 12px;
+        }
+
+        .pilot-form-header h1 {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Compact height adjustments */
+    @@media (max-height: 600px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 100px);
+            margin: 10px auto;
+        }
+
+        .pilot-form-header {
+            margin-bottom: 12px;
+        }
+
+        .obstacle-info {
+            margin-bottom: 12px;
+            padding: 12px;
+        }
+
+        .form-grid {
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .pilot-actions {
+            padding-top: 12px;
+        }
     }
 </style>
 
@@ -441,6 +578,7 @@
         let heightInputElement;
         let conversionDisplayElement;
         let hiddenHeightElement;
+        let containerResizeTimeout;
 
         document.addEventListener('DOMContentLoaded', function () {
             heightInputElement = document.getElementById('heightInput');
@@ -1069,5 +1207,20 @@
                 localStorage.removeItem(autoSaves[0]);
             }
         }
+
+        window.addEventListener('resize', () => {
+            const container = document.querySelector('.pilot-form-container');
+            if (!container) {
+                return;
+            }
+
+            clearTimeout(containerResizeTimeout);
+            containerResizeTimeout = setTimeout(() => {
+                const previousDisplay = container.style.display;
+                container.style.display = 'none';
+                container.offsetHeight;
+                container.style.display = previousDisplay || '';
+            }, 100);
+        });
     </script>
 }
