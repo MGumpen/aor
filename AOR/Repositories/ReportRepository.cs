@@ -51,14 +51,14 @@ namespace AOR.Repositories
         }
 
         // Hente én spesifikk rapport med relasjoner (til detaljer-view)
-        public async Task<ReportModel?> GetByIdWithIncludesAsync(int reportId)
+        public async Task<ReportModel?> GetByIdWithIncludesAsync(int id)
         {
             return await _context.Reports
-                .AsNoTracking()
                 .Include(r => r.Obstacle)
                 .Include(r => r.User)
+                .ThenInclude(u => u.Organization)
                 .Include(r => r.Status)
-                .FirstOrDefaultAsync(r => r.ReportId == reportId);
+                .FirstOrDefaultAsync(r => r.ReportId == id);
         }
 
         // Opprette ny rapport
@@ -71,7 +71,7 @@ namespace AOR.Repositories
         // Oppdatere en rapport
         public async Task UpdateAsync(ReportModel report)
         {
-            _context.Reports.Update(report);
+            _context.Entry(report).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
