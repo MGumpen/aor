@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using AOR.Data
+using AOR.Data;
 using AOR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
