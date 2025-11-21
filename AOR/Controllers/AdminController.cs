@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using AOR.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using AOR.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using AOR.Repositories;
 
 namespace AOR.Controllers;
 
@@ -16,18 +15,21 @@ public class AdminController : Controller
     private readonly ILogger<AdminController> _logger;
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
-    private readonly AorDbContext _context;
+    private readonly IOrganizationRepository _organizationRepository;
+    private readonly IUserRepository _userRepository;
 
     public AdminController(
         ILogger<AdminController> logger,
         UserManager<User> userManager,
         RoleManager<IdentityRole> roleManager,
-        AorDbContext context)
+        IOrganizationRepository organizationRepository,
+        IUserRepository userRepository)
     {
         _logger = logger;
         _userManager = userManager;
         _roleManager = roleManager;
-        _context = context;
+        _organizationRepository = organizationRepository;
+        _userRepository = userRepository;
     }
     
     
@@ -73,9 +75,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> Orgs()
     {
-        var orgs = await _context.Organizations
-            .OrderBy(o => o.OrgNr)
-            .ToListAsync();
+        var orgs = await _organizationRepository.GetAllAsync();
 
         return View(orgs);
     }
@@ -97,7 +97,7 @@ public class AdminController : Controller
             return View(model);
         }
 
-        var exists = await _context.Organizations.AnyAsync(o => o.OrgNr == model.OrgNr);
+        var exists = await _organizationRepository.ExistsAsync(model.OrgNr);
         if (exists)
         {
             ModelState.AddModelError(nameof(model.OrgNr),
@@ -111,8 +111,7 @@ public class AdminController : Controller
             OrgName = model.OrgName
         };
 
-        _context.Organizations.Add(org);
-        await _context.SaveChangesAsync();
+        await _organizationRepository.AddAsync(org);
 
         return RedirectToAction(nameof(Orgs));
     }
@@ -120,7 +119,7 @@ public class AdminController : Controller
     [HttpGet]
     public async Task<IActionResult> EditOrg(int id)
     {
-        var org = await _context.Organizations.FindAsync(id);
+        var org = await _organizationRepository.GetByOrgNrAsync(id);
         if (org == null)
         {
             return NotFound();
@@ -140,7 +139,7 @@ public class AdminController : Controller
         }
 
         var oldOrgNr = int.Parse(Request.Form["OldOrgNr"]!);
-        var org = await _context.Organizations.FindAsync(oldOrgNr);
+        var org = await _organizationRepository.GetByOrgNrAsync(oldOrgNr);
         if (org == null)
         {
             return NotFound();
@@ -148,7 +147,7 @@ public class AdminController : Controller
 
         if (model.OrgNr != oldOrgNr)
         {
-            var exists = await _context.Organizations.AnyAsync(o => o.OrgNr == model.OrgNr);
+            var exists = await _organizationRepository.ExistsAsync(model.OrgNr);
             if (exists)
             {
                 ModelState.AddModelError(nameof(model.OrgNr), "En organisasjon med dette organisasjonsnummeret finnes allerede.");
@@ -157,14 +156,15 @@ public class AdminController : Controller
             }
 
             // Oppdater users først
-            var users = await _context.Users.Where(u => u.OrgNr == oldOrgNr).ToListAsync();
+            var users = await _userRepository.GetByOrganizationAsync(oldOrgNr);
             foreach (var user in users)
             {
                 user.OrgNr = model.OrgNr;
+                await _userRepository.UpdateAsync(user);
             }
 
             // Slett gammel org
-            _context.Organizations.Remove(org);
+            await _organizationRepository.DeleteAsync(oldOrgNr);
 
             // Lag ny org
             var newOrg = new OrgModel
@@ -172,14 +172,12 @@ public class AdminController : Controller
                 OrgNr = model.OrgNr,
                 OrgName = model.OrgName
             };
-            _context.Organizations.Add(newOrg);
-
-            await _context.SaveChangesAsync();
+            await _organizationRepository.AddAsync(newOrg);
         }
         else
         {
             org.OrgName = model.OrgName;
-            await _context.SaveChangesAsync();
+            await _organizationRepository.UpdateAsync(org);
         }
 
         return RedirectToAction(nameof(Orgs));
@@ -190,7 +188,7 @@ public class AdminController : Controller
     public async Task<IActionResult> DeleteOrg(int id)
     {
         _logger.LogInformation("DeleteOrg called with id: {Id}", id);
-        var org = await _context.Organizations.FindAsync(id);
+        var org = await _organizationRepository.GetByOrgNrAsync(id);
         if (org == null)
         {
             _logger.LogWarning("Organization not found: {Id}", id);
@@ -199,16 +197,17 @@ public class AdminController : Controller
 
         _logger.LogInformation("Deleting organization: {OrgName} ({OrgNr})", org.OrgName, org.OrgNr);
 
-        // Sett users' OrgNr til null
-        var users = await _context.Users.Where(u => u.OrgNr == id).ToListAsync();
+// Sett users' OrgNr til null
+        var users = await _userRepository.GetByOrganizationAsync(id);
         _logger.LogInformation("Found {Count} users to update", users.Count);
         foreach (var user in users)
         {
             user.OrgNr = null;
+            await _userRepository.UpdateAsync(user);
         }
 
-        _context.Organizations.Remove(org);
-        await _context.SaveChangesAsync();
+// Slett org
+        await _organizationRepository.DeleteAsync(id);
 
         _logger.LogInformation("Organization deleted successfully");
         return RedirectToAction(nameof(Orgs));
