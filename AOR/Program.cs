@@ -105,7 +105,22 @@ app.UseRouting();
 
 // Disable caching so user cannot go back after logout
 app.Use(async (context, next) =>
-{
+{   
+    context.Response.Headers.Append("Cache-Control", "xss-protection=1; mode=block");
+    context.Response.Headers.Append("Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com https://kit.fontawesome.com https://ajax.googleapis.com 'unsafe-inline';  " + // Unsafe-inline only for dev. Remove for production. Use either hash or nonce.
+        "style-src 'self' https://cdnjs.cloudflare.com https://unpkg.com https://fonts.googleapis.com 'unsafe-inline'; " + // Unsafe-inline only for dev. Remove for production. Use either hash or nonce.
+        "font-src 'self' https://fonts.gstatic.com https://unpkg.com https://ka-f.fontawesome.com https://kit.fontawesome.com https://cdnjs.cloudflare.com data:; " + 
+        "img-src 'self' data: https:; " +
+        "connect-src 'self' https://api.kartverket.no https://ka-f.fontawesome.com https://nominatim.openstreetmap.org/; " + 
+        "object-src 'none';");
+    
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+    
     context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
     context.Response.Headers["Pragma"] = "no-cache";
     context.Response.Headers["Expires"] = "0";

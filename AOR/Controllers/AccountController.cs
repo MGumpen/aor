@@ -73,6 +73,7 @@ public class AccountController : Controller
 
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> NewUser(NewUserViewModel model)
     {
         _logger.LogInformation("===> POST NewUser kalt");

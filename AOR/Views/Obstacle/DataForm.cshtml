@@ -107,23 +107,7 @@
         margin-top: 20px;
         justify-content: flex-start;
     }
-    .pilot-primary {
-        background-color: #4338ca;
-        color: #fff;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-    }
-    .pilot-secondary {
-        background: #f3f4f6;
-        border: 1px solid #9ca3af;
-        color: #374151;
-        padding: 12px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-    }
+    
     .obstacle-type-badge {
         display: inline-block;
         padding: 4px 12px;
@@ -134,11 +118,6 @@
         margin-left: 10px;
     }
     
-    .badge-powerline { background: #fee2e2; color: #dc2626; }
-    .badge-mast { background: #dbeafe; color: #2563eb; }
-    .badge-other { background: #d1fae5; color: #059669; }
-
-    /* Height input specific styles */
     .height-input-container {
         display: flex;
         gap: 10px;
@@ -185,46 +164,13 @@
         justify-content: flex-end;
     }
     
-    .pilot-primary, .pilot-secondary, .pilot-draft {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-        min-width: 120px;
-    }
-    
-    .pilot-primary {
-        background: #4f46e5;
-        color: white;
-    }
-    
-    .pilot-primary:hover {
-        background: #4338ca;
-    }
-    
-    .pilot-secondary {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-    
-    .pilot-secondary:hover {
-        background: #e5e7eb;
-    }
-    
-    .pilot-draft {
+    .btn-draft {
         background: #fbbf24;
         color: #92400e;
         border: 1px solid #f59e0b;
     }
     
-    .pilot-draft:hover {
+    .btn-draft:hover {
         background: #f59e0b;
         color: white;
     }
@@ -273,7 +219,8 @@
     </div>
 
     <form asp-controller="Obstacle" asp-action="DataForm" method="post">
-        <!-- Hidden fields -->
+        @Html.AntiForgeryToken()
+        
         @if (!string.IsNullOrWhiteSpace(draftKey))
         {
             <input type="hidden" name="draft" value="@draftKey" />
@@ -285,11 +232,11 @@
         <input type="hidden" name="heightUnit" value="feet" />
 
         <div class="form-grid">
-            @if (obstacleType.ToLower() == "powerline") {
+            @if (obstacleType.ToLower() == "line") {
                 <div class="form-row">
-                    <label class="pilot-label">Power Line Name/ID <span style="color: red;">*</span></label>
-                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Power Line A" maxlength="50" required />
-                    <span class="pilot-help">Enter the power line identification</span>
+                    <label class="pilot-label">Line Name/ID <span style="color: red;">*</span></label>
+                    <input asp-for="ObstacleName" class="pilot-input" placeholder="e.g., Main Line A" maxlength="50" required />
+                    <span class="pilot-help">Enter the line identification</span>
                     <span asp-validation-for="ObstacleName" class="pilot-validation"></span>
                 </div>
                 
@@ -420,9 +367,9 @@
         </div>
 
         <div class="pilot-actions">
-            <a href="/Crew" class="pilot-secondary">Cancel</a>
-            <button type="button" class="pilot-draft" onclick="saveDraft()">Save as Draft</button>
-            <button type="submit" class="pilot-primary">Register Obstacle</button>
+            <a href="/Crew" class="btn btn-cancel">Cancel</a>
+            <button type="button" class="btn btn-draft" onclick="saveDraft()">Save as Draft</button>
+            <button type="submit" class="btn btn-primary">Register Obstacle</button>
         </div>
     </form>
 </section>
@@ -976,7 +923,7 @@
 
             const typeBadge = document.getElementById('summaryTypeBadge');
             if (typeBadge) {
-                const badgeType = ['mast', 'powerline', 'other'].includes(typeLower) ? typeLower : 'other';
+                const badgeType = ['mast', 'line', 'other'].includes(typeLower) ? typeLower : 'other';
                 typeBadge.textContent = formattedType;
                 typeBadge.className = `obstacle-type-badge badge-${badgeType}`;
             }
@@ -1022,8 +969,8 @@
             switch (lower) {
                 case 'mast':
                     return 'Mast';
-                case 'powerline':
-                    return 'Power Line';
+                case 'line':
+                    return 'Line';
                 case 'other':
                     return 'Other';
                 default:

@@ -12,6 +12,42 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+.btn-primary{
+    background: #0d6efd;
+    color: white;
+    border: 2px solid #0d6efd;
+}
+
+.btn-primary:hover {
+    background: white;
+    color: #0d6efd;
+    border: 2px solid #0d6efd;
+}
+
+.btn-secondary{
+    background: white;
+    color: #0d6efd ;
+    border: 2px solid #0d6efd ;
+}
+
+.btn-secondary:hover {
+    background: #0b5ed7 ;
+    border-color: #0a58ca;
+    color: white;
+}
+
+.btn-cancel {
+    background: #5c636a;
+    border-color: #565e64;
+    color: white;
+}
+
+.btn-cancel:hover{
+    background: white;
+    color: #565e64;
+    border: solid #6c757d;
+}
+
 html {
   position: relative;
   min-height: 100%;

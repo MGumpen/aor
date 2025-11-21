@@ -39,7 +39,7 @@
         <h1 class="mb-0">Register new user</h1>
     </div>
 
-    <form asp-action="NewUser" asp-controller="Account" method="post" class="mt-4">
+    <form asp-action="NewUser" asp-controller="Account" method="post" class="mt-4" autocomplete="off">
         @Html.AntiForgeryToken()
 
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -73,7 +73,7 @@
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="col-md-6 mb-3">
@@ -138,8 +138,8 @@
         </div>
 
         <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-success me-2">Save user</button>
-            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary me-2">Save user</button>
+            <a asp-controller="Account" asp-action="AppUsers" class="btn btn-cancel">Cancel</a>
         </div>
     </form>
 </section>
@@ -172,7 +172,7 @@
                 });
 
                 if (selectedNames.length === 0) {
-                    textSpan.textContent = 'Velg rolle(r)...';
+                    textSpan.textContent = 'Choose role(s)';
                 } else {
                     textSpan.textContent = selectedNames.join(', ');
                 }

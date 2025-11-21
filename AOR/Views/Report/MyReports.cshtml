@@ -224,16 +224,6 @@
         transition: all 0.2s ease;
         display: inline-block;
     }
-    
-    .btn-primary {
-        background: #4f46e5;
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: #4338ca;
-        color: white;
-    }
 
     .status-badge {
         display: inline-block;
@@ -265,6 +255,7 @@
     </div>
     
     <div class="actions-bar">
+        <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @(Model == null ? 0 : Model.Count()) reports</div>
             <div><strong>Power Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "powerline"))</div>
@@ -272,7 +263,6 @@
             <div><strong>Other:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "other"))</div>
             <div id="draftsStats" style="display:none;"><strong>Drafts:</strong> <span id="draftsNumber">0</span></div>
         </div>
-        <a href="/Crew" class="btn btn-primary">Add New Obstacle</a>
     </div>
     
     <div class="obstacles-grid" id="draftsContainer" style="display: none; margin-bottom: 24px;"></div>
@@ -361,7 +351,6 @@
             <div class="empty-icon">📍</div>
             <h3>No Reports Found</h3>
             <p>You haven't reported any obstacles yet.</p>
-            <a href="/Crew" class="btn btn-primary">Register an Obstacle</a>
         </div>
     }
 </section>
@@ -399,9 +388,7 @@
             console.warn('Unable to clear stored draft state', draftKeyToDelete, error);
         }
     })();
-</script>
 
-<script>
     (function () {
         const draftsContainer = document.getElementById('draftsContainer');
         if (!draftsContainer) {

@@ -89,6 +89,7 @@ public class AdminController : Controller
     
     
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> NewOrg(OrgModel model)
     {
         if (!ModelState.IsValid)
