@@ -1,4 +1,5 @@
 @model AOR.Models.ObstacleData
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Register Obstacle";
     Layout = "_Layout";
@@ -7,6 +8,7 @@
     string coordinatesJson = ViewBag.Coordinates ?? "[]";
     int pointCount = ViewBag.PointCount ?? 0;
     string? draftKey = Context.Request.Query["draft"];
+    string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }
 
 <style>
@@ -576,6 +578,7 @@
 
     <script>
         const initialCoordinatesJson = '@Html.Raw(coordinatesJson)';
+        const currentUserId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(currentUserId));
         let heightInputElement;
         let conversionDisplayElement;
         let hiddenHeightElement;
@@ -634,6 +637,14 @@
 
             loadDraft();
         });
+
+        function sanitizeKeySegment(value) {
+            return (value || '')
+                .toString()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
 
         function showFormNotification(message) {
             if (!formNotification) {
@@ -869,6 +880,7 @@
             setCanonicalField('Coordinates', 'coordinates', 'pointsJson', 'ObstacleData.Coordinates', 'obstacle_data.coordinates', 'coordinatesJson');
             setCanonicalField('PointCount', 'pointCount', 'points', 'ObstacleData.PointCount', 'obstacle_data.point_count');
             setCanonicalField('savedAt', 'SavedAt', 'saved_at', 'ObstacleData.SavedAt', 'obstacle_data.saved_at', 'timestamp');
+            setCanonicalField('ownerId', 'OwnerId');
 
             if (data.ObstacleType) {
                 data.ObstacleType = data.ObstacleType.toString().trim();
@@ -913,6 +925,10 @@
                     data[key] = data[key].trim();
                 }
             });
+
+            if (typeof data.ownerId === 'string') {
+                data.ownerId = data.ownerId.trim();
+            }
 
             if (!data.draftTitle && data.ObstacleName) {
                 data.draftTitle = data.ObstacleName;
@@ -1023,6 +1039,7 @@
             canonicalDraft.savedAt = new Date().toISOString();
             canonicalDraft.isDraft = true;
             canonicalDraft.autoSaved = Boolean(options.autoSave);
+            canonicalDraft.ownerId = currentUserId;
 
             const existingKey = document.getElementById('currentDraftKey')?.value;
             const typeSegment = (canonicalDraft.ObstacleType || 'obstacle')
@@ -1030,7 +1047,9 @@
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')
                 .replace(/^-+|-+$/g, '') || 'obstacle';
-            const draftKey = existingKey || `draft_${typeSegment}_${Date.now()}`;
+            const ownerSegment = sanitizeKeySegment(currentUserId);
+            const keyPrefix = ownerSegment ? `draft_${ownerSegment}_${typeSegment}` : `draft_${typeSegment}`;
+            const draftKey = existingKey || `${keyPrefix}_${Date.now()}`;
             canonicalDraft.draftKey = draftKey;
 
             return canonicalDraft;
@@ -1074,6 +1093,11 @@
                 if (draftData) {
                     try {
                         const data = canonicalizeDraftData(JSON.parse(draftData));
+                        const ownerId = typeof data.ownerId === 'string' ? data.ownerId.trim() : '';
+                        if (ownerId && currentUserId && ownerId !== currentUserId) {
+                            alert('You do not have access to this draft.');
+                            return;
+                        }
                         if (data.ObstacleName) {
                             data.ObstacleName = data.ObstacleName.toString().trim();
                         }

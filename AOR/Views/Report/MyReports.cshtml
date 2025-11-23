@@ -1,8 +1,10 @@
 @model IEnumerable<AOR.Models.ReportModel>
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "My Reports";
     Layout = "_Layout";
+    string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }
 
 <style>
@@ -356,6 +358,7 @@
 </section>
 
 <script>
+    const currentUserId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(currentUserId));
     (function () {
         if (typeof window === 'undefined') {
             return;
@@ -382,6 +385,18 @@
             }
 
             if (window.localStorage && window.localStorage.getItem(draftKeyToDelete)) {
+                const stored = window.localStorage.getItem(draftKeyToDelete);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        const ownerId = typeof parsed.ownerId === 'string' ? parsed.ownerId.trim() : '';
+                        if (ownerId && currentUserId && ownerId !== currentUserId) {
+                            return;
+                        }
+                    } catch (parseError) {
+                        console.warn('Unable to inspect stored draft before removal', draftKeyToDelete, parseError);
+                    }
+                }
                 window.localStorage.removeItem(draftKeyToDelete);
             }
         } catch (error) {
@@ -406,6 +421,10 @@
 
                     const data = JSON.parse(raw);
                     const canonical = canonicalizeDraftData(data);
+                    const ownerId = typeof canonical.ownerId === 'string' ? canonical.ownerId.trim() : '';
+                    if (!ownerId || (currentUserId && ownerId !== currentUserId)) {
+                        return null;
+                    }
                     try {
                         localStorage.setItem(key, JSON.stringify(canonical));
                     } catch (saveError) {
@@ -743,6 +762,7 @@
             setCanonicalField('Coordinates', 'coordinates', 'pointsJson', 'ObstacleData.Coordinates', 'obstacle_data.coordinates', 'coordinatesJson');
             setCanonicalField('PointCount', 'pointCount', 'points', 'ObstacleData.PointCount', 'obstacle_data.point_count');
             setCanonicalField('savedAt', 'SavedAt', 'saved_at', 'ObstacleData.SavedAt', 'obstacle_data.saved_at', 'timestamp');
+            setCanonicalField('ownerId', 'OwnerId');
 
             if (data.ObstacleType) {
                 data.ObstacleType = data.ObstacleType.toString().trim();
@@ -787,6 +807,10 @@
                     data[key] = data[key].trim();
                 }
             });
+
+            if (typeof data.ownerId === 'string') {
+                data.ownerId = data.ownerId.trim();
+            }
 
             if (!data.draftTitle && data.ObstacleName) {
                 data.draftTitle = data.ObstacleName;
