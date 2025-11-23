@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Registrar - Home";
     Layout = "_Layout";
+    var currentSort = (ViewBag.CurrentSort as string) ?? "CreatedAt";
+    var currentDir = (ViewBag.CurrentDir as string) ?? "desc";
+    string Toggle(string key) => (string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase) && currentDir == "asc") ? "desc" : "asc";
+    string Caret(string key) => string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase)
+        ? (currentDir == "asc" ? "▲" : "▼")
+        : "";
 }
 
 <style>
@@ -38,13 +44,41 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Height</th>
-                <th>Created at</th>
-                <th>Created by</th>
-                <th>Organization</th>
-                <th>Status</th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="name" asp-route-dir="@Toggle("name")">
+                        Name @Caret("name")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="type" asp-route-dir="@Toggle("type")">
+                        Type @Caret("type")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="height" asp-route-dir="@Toggle("height")">
+                        Height @Caret("height")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="createdat" asp-route-dir="@Toggle("createdat")">
+                        Created at @Caret("createdat")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="user" asp-route-dir="@Toggle("user")">
+                        Created by @Caret("user")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="org" asp-route-dir="@Toggle("org")">
+                        Organization @Caret("org")
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="status" asp-route-dir="@Toggle("status")">
+                        Status @Caret("status")
+                    </a>
+                </th>
                 <th>Details</th>
                 <th>Action</th>
             </tr>
@@ -54,7 +88,7 @@
             {
                 <tr>
                     <td>@report.Obstacle?.ObstacleName</td>
-                    <td>@report.Obstacle?.ObstacleType</td>
+                    <td>@report.Obstacle?.ObstacleType.ToUpper()</td>
                     <td>@(report.Obstacle?.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
                     <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@report.User?.UserName</td>
