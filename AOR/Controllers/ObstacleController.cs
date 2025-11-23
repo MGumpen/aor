@@ -114,6 +114,8 @@ public class ObstacleController : Controller
                 TempData["DeleteDraft"] = draft;
             }
 
+            TempData["GlobalToastMessage"] = "Report registered!";
+
             return RedirectToAction("MyReports", "Report");
         }
 
