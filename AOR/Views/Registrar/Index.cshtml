@@ -54,7 +54,7 @@
             {
                 <tr>
                     <td>@report.Obstacle?.ObstacleName</td>
-                    <td>@report.Obstacle?.ObstacleType</td>
+                    <td>@report.Obstacle?.ObstacleType.ToUpper()</td>
                     <td>@(report.Obstacle?.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
                     <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>@report.User?.UserName</td>
