@@ -106,7 +106,7 @@
         text-transform: uppercase;
     }
     
-    .badge-powerline { background: #fee2e2; color: #dc2626; }
+    .badge-line { background: #fee2e2; color: #dc2626; }
     .badge-mast { background: #dbeafe; color: #2563eb; }
     .badge-other { background: #d1fae5; color: #059669; }
     
@@ -258,7 +258,7 @@
         <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @(Model == null ? 0 : Model.Count()) reports</div>
-            <div><strong>Power Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "powerline"))</div>
+            <div><strong>Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "line"))</div>
             <div><strong>Masts:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "mast"))</div>
             <div><strong>Other:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "other"))</div>
             <div id="draftsStats" style="display:none;"><strong>Drafts:</strong> <span id="draftsNumber">0</span></div>
@@ -692,8 +692,8 @@
             switch (lower) {
                 case 'mast':
                     return 'Mast';
-                case 'powerline':
-                    return 'Power Line';
+                case 'line':
+                    return 'Line';
                 case 'other':
                     return 'Other';
                 default:

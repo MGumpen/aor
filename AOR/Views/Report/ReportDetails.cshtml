@@ -55,6 +55,7 @@
         background: #fee2e2;
         color: #991b1b;
     }
+    
     .details-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -245,7 +246,7 @@
             </div>
         }
         
-        @if (Model.Obstacle.ObstacleType.ToLower() == "powerline")
+        @if (Model.Obstacle.ObstacleType.ToLower() == "line")
         {
             @if (Model.Obstacle.WireCount.HasValue)
             {
@@ -369,12 +370,11 @@
 
             // 4) Vis enten punkt eller linje
             const isLineType =
-                obstacleType === 'powerline' ||
+                obstacleType === 'line' ||
                 obstacleType === 'line' ||
                 latLngs.length > 1; // fallback: flere punkter => vis linje
 
             if (isLineType) {
-                // Polyline for powerline/linje
                 L.polyline(latLngs, { weight: 4 }).addTo(map);
                 latLngs.forEach(p => L.marker(p).addTo(map));
                 map.fitBounds(L.latLngBounds(latLngs), { padding: [20, 20] });
