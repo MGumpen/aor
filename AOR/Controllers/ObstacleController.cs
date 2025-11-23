@@ -1,26 +1,31 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using AOR.Data;
 using AOR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Globalization;
-using System.Linq;
+using AOR.Repositories;
+
 namespace AOR.Controllers;
 [Authorize(Roles = "Crew")]
 public class ObstacleController : Controller
 {
-    private readonly AorDbContext _db;
     private readonly ILogger<ObstacleController> _logger;
     private readonly UserManager<User> _userManager;
+    private readonly IObstacleRepository _obstacleRepository;
+    private readonly IReportRepository _reportRepository;
     
-    public ObstacleController(AorDbContext db, ILogger<ObstacleController> logger, UserManager<User> userManager)
+    public ObstacleController(
+        ILogger<ObstacleController> logger,
+        UserManager<User> userManager,
+        IObstacleRepository obstacleRepository,
+        IReportRepository reportRepository)
     {
-        _db = db;
         _logger = logger;
         _userManager = userManager;
+        _obstacleRepository = obstacleRepository;
+        _reportRepository = reportRepository;
     }
     
     [HttpGet("/Obstacle")]
@@ -29,11 +34,7 @@ public class ObstacleController : Controller
     [HttpGet("/Obstacle/All")]
     public async Task<IActionResult> All()
     {
-        var obstacles = await _db.Obstacles
-            .AsNoTracking()
-            .OrderByDescending(o => o.CreatedAt)
-            .ToListAsync();
-        
+        var obstacles = await _obstacleRepository.GetAllAsync();
         return View("AllObstacles", obstacles);
     }
     
@@ -54,21 +55,20 @@ public class ObstacleController : Controller
         });
     }
 
-[HttpGet("/Crew/MyReports")]
-public async Task<IActionResult> MyReports()
-{
-    // Hent rapporter for den innloggede brukeren, inkludert Obstacle og Status for å unngå null-referanser i view
-    var userId = _userManager.GetUserId(User);
+    [HttpGet("/Crew/MyReports")]
+    public async Task<IActionResult> MyReports()
+    {
+        var userId = _userManager.GetUserId(User);
 
-    var reports = await _db.Reports
-        .Where(r => r.UserId == userId)
-        .Include(r => r.Obstacle)
-        .Include(r => r.Status)
-        .OrderByDescending(r => r.CreatedAt)
-        .ToListAsync();
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Challenge(); // sender bruker til login om noe er rart
+        }
 
-    return View("MyReports", reports);
-}
+        var reports = await _reportRepository.GetByUserAsync(userId);
+
+        return View("~/Views/Report/MyReports.cshtml", reports);
+    }
 
 
     [HttpPost]
@@ -89,8 +89,7 @@ public async Task<IActionResult> MyReports()
             obstacleData.Status = "Pending"; 
             
             Console.WriteLine("=== SUCCESS - Saving to database ===");
-            _db.Obstacles.Add(obstacleData);
-            await _db.SaveChangesAsync();
+            await _obstacleRepository.AddAsync(obstacleData);
 
             
             var currentUser = await _userManager.GetUserAsync(User);
@@ -107,8 +106,7 @@ public async Task<IActionResult> MyReports()
                     StatusId = 1
                 };
 
-                _db.Reports.Add(report);
-                await _db.SaveChangesAsync();
+                await _reportRepository.AddAsync(report);
             }
 
             if (!string.IsNullOrEmpty(draft))
@@ -239,8 +237,6 @@ public async Task<IActionResult> MyReports()
         else if (obstacleData.ObstacleType?.ToLower() == "other")
         {
             var category = Request.Form["Category"].FirstOrDefault();
-            var material = Request.Form["Material"].FirstOrDefault();
-            
             obstacleData.Category = category;
         }
     }
@@ -317,24 +313,22 @@ public async Task<IActionResult> MyReports()
         try
         {
             _logger.LogInformation("AllObstacles GET startet");
-            var reports = await _db.Reports
-                .AsNoTracking()
-                .Include(r => r.Obstacle)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync();
+
+            var reports = await _reportRepository.GetAllWithIncludesAsync();
+
             _logger.LogInformation("Hentet {Count} reports", reports.Count);
             return View(reports);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Feil i AllObstacles");
-            throw; // Re-throw for å få 500
+            throw;
         }
     }
 
     public async Task<IActionResult> Details(int id)
     {
-        var obstacle = await _db.Obstacles.FindAsync(id);
+        var obstacle = await _obstacleRepository.GetByIdAsync(id);
         if (obstacle == null) return NotFound();
         return View("Overview", obstacle);
     }
@@ -342,21 +336,21 @@ public async Task<IActionResult> MyReports()
     [HttpGet("/Obstacle/Last30Days")]
     public async Task<IActionResult> Last30Days()
     {
-        var cutoffDate = DateTime.UtcNow.AddDays(-30);
-        var reports = await _db.Reports
-            .AsNoTracking()
-            .Include(r => r.Obstacle)
-            .Where(r => r.CreatedAt >= cutoffDate)
-            .Select(r => new {
+        var reports = await _reportRepository.GetLast30DaysAsync();
+
+        var result = reports
+            .Where(r => r.Obstacle != null) // litt ekstra sikkerhet
+            .Select(r => new
+            {
                 r.ReportId,
-                r.Obstacle.ObstacleName,
+                r.Obstacle!.ObstacleName,
                 r.Obstacle.ObstacleType,
                 r.Obstacle.Coordinates,
                 r.CreatedAt
             })
-            .ToListAsync();
-        
-        return Json(reports);
+            .ToList();
+
+        return Json(result);
     }
     
     
