@@ -59,7 +59,7 @@
         text-transform: uppercase;
     }
     
-    .badge-powerline { background: #fee2e2; color: #dc2626; }
+    .badge-line { background: #fee2e2; color: #dc2626; }
     .badge-mast { background: #dbeafe; color: #2563eb; }
     .badge-other { background: #d1fae5; color: #059669; }
     .badge-unknown { background: #f3f4f6; color: #6b7280; }
@@ -171,7 +171,7 @@
         <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @Model.Count() reports</div>
-            <div><strong>Power Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "powerline")</div>
+            <div><strong>Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "line")</div>
             <div><strong>Masts:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "mast")</div>
             <div><strong>Other:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "other")</div>
         </div>
