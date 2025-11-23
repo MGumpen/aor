@@ -10,81 +10,64 @@
 }
 
 <style>
+    /* Form container - fills viewport with balanced spacing */
     .pilot-form-container {
-        max-width: 800px;
-        margin: 0 auto;
+        position: relative;
+        width: 100%;
+        min-height: calc(100vh - 210px);
+        margin: 20px auto 100px;
+        max-width: 1200px;
         background: #ffffff;
         border-radius: 24px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        padding: 24px;
+        padding: 24px 24px 150px;
         border: 1px solid #e5e7eb;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        transition: min-height 0.3s ease, margin 0.3s ease, padding 0.3s ease;
     }
+
+    .pilot-form-container form {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 100%;
+    }
+
+    .pilot-form-header {
+        flex-shrink: 0;
+        margin-bottom: 20px;
+    }
+
     .pilot-form-header h1 {
         font-size: 1.5rem;
         font-weight: 600;
         margin-bottom: 6px;
     }
+
     .pilot-form-header p {
         color: #6b7280;
         margin: 0;
     }
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
-    }
-    .form-row {
-        grid-column: span 1;
-    }
-    .form-row.wide {
-        grid-column: span 2;
-    }
-    .pilot-label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 6px;
-    }
-    .pilot-input, .pilot-textarea, .pilot-select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 14px;
-        outline: none;
-        box-sizing: border-box;
-    }
-    .pilot-input:focus, .pilot-textarea:focus, .pilot-select:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
-    }
-    .pilot-validation {
-        color: #dc2626;
-        font-size: 0.875rem;
-        margin-top: 4px;
-        display: block;
-    }
-    .pilot-help {
-        display: block;
-        font-size: 0.875rem;
-        color: #6b7280;
-        margin-top: 6px;
-    }
+
     .obstacle-info {
-        background-color: #f0f9ff;
-        border: 1px solid #0ea5e9;
-        border-radius: 12px;
-        padding: 16px;
+        flex-shrink: 0;
         margin-bottom: 20px;
+        background: #f0f9ff;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid #bfdbfe;
     }
+
     .obstacle-info h3 {
         color: #0c4a6e;
         margin: 0 0 8px 0;
         font-size: 1.1rem;
     }
+
     .coordinates-list {
-        background-color: #f8fafc;
+        background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         padding: 12px;
@@ -93,21 +76,88 @@
         max-height: 200px;
         overflow-y: auto;
     }
+
     .coordinate-item {
         margin-bottom: 4px;
         padding: 4px 8px;
-        background-color: white;
+        background: #ffffff;
         border-radius: 4px;
         border-left: 3px solid #3b82f6;
     }
-    .pilot-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 20px;
-        justify-content: flex-start;
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        flex: 1 1 auto;
+        align-content: start;
+        margin-bottom: 20px;
     }
-    
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        min-height: fit-content;
+        grid-column: span 1;
+    }
+
+    .form-row.wide {
+        grid-column: span 2;
+    }
+
+    .form-row label {
+        margin-bottom: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        color: #374151;
+    }
+
+    .pilot-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .pilot-input,
+    .pilot-textarea,
+    .pilot-select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .pilot-input:focus,
+    .pilot-textarea:focus,
+    .pilot-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+
+    .pilot-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .pilot-validation {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .pilot-help {
+        display: block;
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 6px;
+    }
+
     .obstacle-type-badge {
         display: inline-block;
         padding: 4px 12px;
@@ -117,21 +167,25 @@
         text-transform: uppercase;
         margin-left: 10px;
     }
-    
+
+    .badge-powerline { background: #fee2e2; color: #dc2626; }
+    .badge-mast { background: #dbeafe; color: #2563eb; }
+    .badge-other { background: #d1fae5; color: #059669; }
+
     .height-input-container {
         display: flex;
         gap: 10px;
         align-items: center;
     }
-    
+
     .height-input-wrapper {
         flex: 1;
         position: relative;
     }
-    
+
     .height-input-wrapper input {
-            padding-right: 35px !important; /* Override default padding */
-        }
+        padding-right: 35px !important;
+    }
 
     .unit-label {
         position: absolute;
@@ -142,9 +196,9 @@
         font-size: 0.875rem;
         pointer-events: none;
         font-weight: 500;
-         z-index: 1;
+        z-index: 1;
     }
-    
+
     .conversion-display {
         padding: 8px 12px;
         background: #f9fafb;
@@ -156,31 +210,73 @@
         font-weight: 500;
         border: 1px solid #e5e7eb;
     }
-    
+
     .pilot-actions {
         display: flex;
         gap: 12px;
-        margin-top: 24px;
         justify-content: flex-end;
+        margin-top: auto;
+        padding-top: 20px;
+        padding-bottom: 10px;
+        border-top: 1px solid #e5e7eb;
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        background: linear-gradient(to top, #ffffff 85%, transparent);
     }
-    
-    .btn-draft {
+
+    .pilot-primary,
+    .pilot-secondary,
+    .pilot-draft {
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        min-width: 120px;
+    }
+
+    .pilot-primary {
+        background: #4f46e5;
+        color: #ffffff;
+    }
+
+    .pilot-primary:hover {
+        background: #4338ca;
+    }
+
+    .pilot-secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .pilot-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .pilot-draft {
         background: #fbbf24;
         color: #92400e;
         border: 1px solid #f59e0b;
     }
-    
-    .btn-draft:hover {
+
+    .pilot-draft:hover {
         background: #f59e0b;
-        color: white;
+        color: #ffffff;
     }
-    
-    .draft-saved-notification {
+
+    .form-toast-notification {
         position: fixed;
         top: 110px;
         left: 50%;
         background: #10b981;
-        color: white;
+        color: #ffffff;
         padding: 12px 20px;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -190,10 +286,106 @@
         transition: all 0.3s ease;
         text-align: center;
     }
-    
-    .draft-saved-notification.show {
+
+    .form-toast-notification.show {
         opacity: 1;
         transform: translate(-50%, 0);
+    }
+
+    @@media (max-width: 900px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 190px);
+            margin: 15px auto 70px;
+            padding: 20px 20px 130px;
+            border-radius: 20px;
+        }
+
+        .form-grid {
+            gap: 16px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 170px);
+            margin: 10px auto 60px;
+            padding: 16px 16px 110px;
+            border-radius: 16px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .form-row.wide {
+            grid-column: span 1;
+        }
+
+        .pilot-actions {
+            flex-direction: column;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .pilot-primary,
+        .pilot-secondary,
+        .pilot-draft {
+            width: 100%;
+        }
+
+        .obstacle-info {
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .coordinates-list {
+            max-height: 120px;
+            font-size: 11px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 150px);
+            margin: 5px auto 50px;
+            padding: 14px 14px 100px;
+            border-radius: 12px;
+        }
+
+        .form-grid {
+            gap: 12px;
+        }
+
+        .pilot-form-header h1 {
+            font-size: 1.1rem;
+        }
+    }
+
+    @@media (max-height: 600px) {
+        .pilot-form-container {
+            min-height: calc(100vh - 150px);
+            margin: 10px auto 60px;
+            padding: 20px 20px 110px;
+        }
+
+        .pilot-form-header {
+            margin-bottom: 12px;
+        }
+
+        .obstacle-info {
+            margin-bottom: 12px;
+            padding: 12px;
+        }
+
+        .form-grid {
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .pilot-actions {
+            padding-top: 12px;
+        }
     }
 </style>
 
@@ -367,15 +559,15 @@
         </div>
 
         <div class="pilot-actions">
-            <a href="/Crew" class="btn btn-cancel">Cancel</a>
-            <button type="button" class="btn btn-draft" onclick="saveDraft()">Save as Draft</button>
-            <button type="submit" class="btn btn-primary">Register Obstacle</button>
+            <a href="/Crew" class="pilot-secondary">Cancel</a>
+            <button type="button" class="pilot-draft" onclick="saveDraft()">Save as Draft</button>
+            <button type="submit" class="pilot-primary">Register Obstacle</button>
         </div>
     </form>
 </section>
 
-<!-- Draft saved notification -->
-<div id="draftNotification" class="draft-saved-notification">
+<!-- Form toast notification -->
+<div id="formNotification" class="form-toast-notification">
     Draft saved successfully!
 </div>
 
@@ -387,11 +579,22 @@
         let heightInputElement;
         let conversionDisplayElement;
         let hiddenHeightElement;
+        let containerResizeTimeout;
+        let formNotification;
 
         document.addEventListener('DOMContentLoaded', function () {
             heightInputElement = document.getElementById('heightInput');
             conversionDisplayElement = document.getElementById('conversionDisplay');
             hiddenHeightElement = document.getElementById('hiddenHeight');
+            formNotification = document.getElementById('formNotification') || document.getElementById('globalToast');
+
+            try {
+                if (window.sessionStorage) {
+                    window.sessionStorage.removeItem('aor_form_notification');
+                }
+            } catch (error) {
+                console.warn('Unable to reset pending notification state', error);
+            }
 
             if (heightInputElement) {
                 heightInputElement.addEventListener('input', updateHeightConversion);
@@ -410,6 +613,16 @@
                 form.addEventListener('submit', function () {
                     updateHeightConversion();
 
+                    showFormNotification('Report registered!');
+
+                    try {
+                        if (window.sessionStorage) {
+                            window.sessionStorage.setItem('aor_form_notification', 'Report registered!');
+                        }
+                    } catch (error) {
+                        console.warn('Unable to persist submission notification', error);
+                    }
+
                     const urlParams = new URLSearchParams(window.location.search);
                     const draftKey = urlParams.get('draft');
 
@@ -421,6 +634,27 @@
 
             loadDraft();
         });
+
+        function showFormNotification(message) {
+            if (!formNotification) {
+                return;
+            }
+
+            if (typeof message === 'string' && message.trim()) {
+                formNotification.textContent = message;
+            }
+
+            if (formNotification.hideTimeout) {
+                clearTimeout(formNotification.hideTimeout);
+            }
+
+            formNotification.classList.add('show');
+
+            formNotification.hideTimeout = setTimeout(() => {
+                formNotification.classList.remove('show');
+                formNotification.hideTimeout = undefined;
+            }, 3000);
+        }
 
         function updateHeightConversion() {
             if (!heightInputElement || !conversionDisplayElement || !hiddenHeightElement) {
@@ -815,35 +1049,21 @@
                 currentDraftKeyField.value = draftData.draftKey;
             }
 
-            showDraftNotification('Draft saved successfully!');
+            showFormNotification('Draft saved successfully!');
+
+            try {
+                if (window.sessionStorage) {
+                    window.sessionStorage.setItem('aor_form_notification', 'Draft saved successfully!');
+                }
+            } catch (error) {
+                console.warn('Unable to persist draft notification', error);
+            }
 
             setTimeout(() => {
                 window.location.href = '/Crew';
             }, 1000);
         }
 
-        function showDraftNotification(message) {
-            const notification = document.getElementById('draftNotification');
-            if (!notification) {
-                return;
-            }
-
-            if (typeof message === 'string' && message.trim()) {
-                notification.textContent = message;
-            }
-
-            if (notification.hideTimeout) {
-                clearTimeout(notification.hideTimeout);
-            }
-
-            notification.classList.add('show');
-
-            notification.hideTimeout = setTimeout(() => {
-                notification.classList.remove('show');
-                notification.hideTimeout = undefined;
-            }, 3000);
-        }
-        
         // Load draft data if available
         function loadDraft() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -896,7 +1116,7 @@
                             currentDraftKeyField.value = draftKey;
                         }
 
-                        showDraftNotification('Draft loaded successfully!');
+                        showFormNotification('Draft loaded successfully!');
                         
                     } catch (e) {
                         console.error('Error loading draft:', e);
@@ -1015,5 +1235,20 @@
                 localStorage.removeItem(autoSaves[0]);
             }
         }
+
+        window.addEventListener('resize', () => {
+            const container = document.querySelector('.pilot-form-container');
+            if (!container) {
+                return;
+            }
+
+            clearTimeout(containerResizeTimeout);
+            containerResizeTimeout = setTimeout(() => {
+                const previousDisplay = container.style.display;
+                container.style.display = 'none';
+                container.offsetHeight;
+                container.style.display = previousDisplay || '';
+            }, 100);
+        });
     </script>
 }
