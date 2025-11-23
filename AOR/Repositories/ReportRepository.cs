@@ -19,7 +19,7 @@ namespace AOR.Repositories
             return await _context.Reports
                 .AsNoTracking()
                 .Include(r => r.Obstacle)
-                .Include(r => r.User)
+                .Include(r => r.User).ThenInclude(u => u.Organization)
                 .Include(r => r.Status)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();

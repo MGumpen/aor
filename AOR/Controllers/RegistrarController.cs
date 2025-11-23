@@ -30,7 +30,7 @@ public class RegistrarController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Index(string sort = "CreatedAt", string dir = "desc")
+    public async Task<IActionResult> Index(string sort = "CreatedAt", string dir = "asc")
     {
         ViewBag.CurrentSort = sort;
         ViewBag.CurrentDir = dir;
