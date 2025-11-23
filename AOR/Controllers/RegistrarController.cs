@@ -1,4 +1,3 @@
-
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -31,12 +30,33 @@ public class RegistrarController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string sort = "CreatedAt", string dir = "desc")
     {
+        ViewBag.CurrentSort = sort;
+        ViewBag.CurrentDir = dir;
         try
         {
             // Henter alle rapporter med Obstacle, User, Organization, Status via repo
             var reports = await _reportRepository.GetAllWithIncludesAsync();
+            // Sorter listen
+            reports = (sort?.ToLower(), dir?.ToLower()) switch
+            {
+                ("name", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleName).ToList(),
+                ("name", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleName).ToList(),
+                ("type", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleType).ToList(),
+                ("type", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleType).ToList(),
+                ("height", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleHeight).ToList(),
+                ("height", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleHeight).ToList(),
+                ("createdat", "desc") => reports.OrderBy(r => r.CreatedAt).ToList(),
+                ("createdat", "asc") => reports.OrderByDescending(r => r.CreatedAt).ToList(),
+                ("user", "desc") => reports.OrderBy(r => r.User?.UserName).ToList(),
+                ("user", "asc") => reports.OrderByDescending(r => r.User?.UserName).ToList(),
+                ("org", "desc") => reports.OrderBy(r => r.User?.Organization?.OrgName).ToList(),
+                ("org", "asc") => reports.OrderByDescending(r => r.User?.Organization?.OrgName).ToList(),
+                ("status", "desc") => reports.OrderBy(r => r.Status?.Status).ToList(),
+                ("status", "asc") => reports.OrderByDescending(r => r.Status?.Status).ToList(),
+                _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
+            };
             return View(reports);
         }
         catch (Exception ex)
