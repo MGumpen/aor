@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using AOR.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 
@@ -13,6 +13,11 @@ builder.Services.AddControllersWithViews();
 var connectionString = builder.Configuration.GetConnectionString("AorDb");
 builder.Services.AddDbContext<AorDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(11, 4, 0))));
+
+builder.Services.AddScoped<IObstacleRepository, ObstacleRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Identity - registered after DbContext so stores are available
 // Use full AddIdentity so SignInManager, UserManager, RoleManager and cookie handling are configured
