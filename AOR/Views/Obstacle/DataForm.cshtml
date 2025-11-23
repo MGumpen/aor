@@ -59,7 +59,7 @@
         background: #f0f9ff;
         padding: 16px;
         border-radius: 12px;
-        border: 1px solid #bfdbfe;
+        border: 1px solid #0ea5e9;
     }
 
     .obstacle-info h3 {
@@ -221,6 +221,7 @@
         display: flex;
         gap: 12px;
         justify-content: flex-end;
+        align-items: center;
         margin-top: auto;
         padding-top: 20px;
         padding-bottom: 10px;
@@ -231,53 +232,19 @@
         background: linear-gradient(to top, #ffffff 85%, transparent);
     }
 
-    .pilot-primary,
-    .pilot-secondary,
-    .pilot-draft {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-        min-width: 120px;
-    }
-
-    .pilot-primary {
-        background: #4f46e5;
-        color: #ffffff;
-    }
-
-    .pilot-primary:hover {
-        background: #4338ca;
-    }
-
-    .pilot-secondary {
-        background: #f3f4f6;
-        color: #374151;
-        border: 1px solid #d1d5db;
-    }
-
-    .pilot-secondary:hover {
-        background: #e5e7eb;
-    }
-
-    .pilot-draft {
+    .btn-draft {
         background: #fbbf24;
         color: #92400e;
         border: 1px solid #f59e0b;
     }
 
-    .pilot-draft:hover {
+    .btn-draft:hover {
         background: #f59e0b;
         color: #ffffff;
     }
 
-    .form-toast-notification {
+    .form-toast-notification,
+    .draft-saved-notification {
         position: fixed;
         top: 110px;
         left: 50%;
@@ -293,7 +260,8 @@
         text-align: center;
     }
 
-    .form-toast-notification.show {
+    .form-toast-notification.show,
+    .draft-saved-notification.show {
         opacity: 1;
         transform: translate(-50%, 0);
     }
@@ -334,9 +302,8 @@
             align-items: stretch;
         }
 
-        .pilot-primary,
-        .pilot-secondary,
-        .pilot-draft {
+        .pilot-actions .btn,
+        .pilot-actions .btn-draft {
             width: 100%;
         }
 
@@ -565,15 +532,19 @@
         </div>
 
         <div class="pilot-actions">
-            <a href="/Crew" class="pilot-secondary">Cancel</a>
-            <button type="button" class="pilot-draft" onclick="saveDraft()">Save as Draft</button>
-            <button type="submit" class="pilot-primary">Register Obstacle</button>
+            <a href="/Crew" class="btn btn-cancel">Cancel</a>
+            <button type="button" class="btn btn-draft" onclick="saveDraft()">Save as Draft</button>
+            <button type="submit" class="btn btn-primary">Register Obstacle</button>
         </div>
     </form>
 </section>
 
 <!-- Form toast notification -->
-<div id="formNotification" class="form-toast-notification">
+<div id="formNotification" class="form-toast-notification" role="status" aria-live="polite">
+    Report registered!
+</div>
+
+<div id="draftNotification" class="draft-saved-notification" role="status" aria-live="polite">
     Draft saved successfully!
 </div>
 
@@ -668,6 +639,28 @@
             formNotification.hideTimeout = setTimeout(() => {
                 formNotification.classList.remove('show');
                 formNotification.hideTimeout = undefined;
+            }, 3000);
+        }
+
+        function showDraftNotification(message) {
+            const notification = document.getElementById('draftNotification');
+            if (!notification) {
+                return;
+            }
+
+            if (typeof message === 'string' && message.trim()) {
+                notification.textContent = message;
+            }
+
+            if (notification.hideTimeout) {
+                clearTimeout(notification.hideTimeout);
+            }
+
+            notification.classList.add('show');
+
+            notification.hideTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+                notification.hideTimeout = undefined;
             }, 3000);
         }
 
@@ -1072,7 +1065,7 @@
                 currentDraftKeyField.value = draftData.draftKey;
             }
 
-            showFormNotification('Draft saved successfully!');
+            showDraftNotification('Draft saved successfully!');
 
             try {
                 if (window.sessionStorage) {
@@ -1144,7 +1137,7 @@
                             currentDraftKeyField.value = draftKey;
                         }
 
-                        showFormNotification('Draft loaded successfully!');
+                        showDraftNotification('Draft loaded successfully!');
                         
                     } catch (e) {
                         console.error('Error loading draft:', e);
@@ -1253,8 +1246,12 @@
                 return;
             }
 
-            const typeSegment = (draftData.ObstacleType || 'obstacle').toLowerCase().replace(/\s+/g, '-');
-            const draftKey = `autosave_${typeSegment}_${Date.now()}`;
+            const typeSegment = sanitizeKeySegment(draftData.ObstacleType) || 'obstacle';
+            const ownerSegment = sanitizeKeySegment(currentUserId);
+            const autoPrefix = ownerSegment ? `autosave_${ownerSegment}_${typeSegment}` : `autosave_${typeSegment}`;
+            const draftKey = `${autoPrefix}_${Date.now()}`;
+            draftData.draftKey = draftKey;
+            draftData.ownerId = currentUserId;
             localStorage.setItem(draftKey, JSON.stringify(draftData));
 
             const autoSaves = Object.keys(localStorage).filter(key => key.startsWith('autosave_'));
