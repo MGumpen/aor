@@ -171,7 +171,7 @@
         <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @Model.Count() reports</div>
-            <div><strong>Power Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "powerline")</div>
+            <div><strong>Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "line")</div>
             <div><strong>Masts:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "mast")</div>
             <div><strong>Other:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "other")</div>
         </div>

@@ -34,7 +34,7 @@ namespace AOR.Controllers;
         return View(reports); // fortsatt Views/Report/MyReports.cshtml
     }
     
-    [Authorize(Roles = "Crew, Registrar")]
+    [Authorize(Roles = "Crew, Registrar, Admin")]
     [HttpGet]
     public async Task<IActionResult> ReportDetails(int id)
     {
@@ -51,11 +51,8 @@ namespace AOR.Controllers;
             return NotFound();
         }
 
-        // Ekstra: Crew uten Registrar-rolle får bare se egne rapporter
-        if (User.IsInRole("Crew") && !User.IsInRole("Registrar") && report.UserId != userId)
-        {
-            return Forbid();
-        }
+        // Crew får se rapporten, men brukernavn skjules hvis de ikke eier den
+        // (gjort i viewet via activeRole)
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 

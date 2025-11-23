@@ -159,14 +159,13 @@
 </style>
 
 <section class="container">
+    @{
+        var activeRole = User.FindFirst("ActiveRole")?.Value;
+    }
     <div class="details-header">
-        @{
-            var activeRole = User.FindFirst("ActiveRole")?.Value;
-        }
         @if (activeRole == "Registrar" || activeRole == "Admin")
         {
             <a href="/Registrar" class="btn btn-primary back-button">Back to Overview</a>
-            //    <a href="/Registrar/Reports" class="btn btn-secondary">All Reports</a>
         }
         @if (activeRole == "Crew")
         {
@@ -182,7 +181,7 @@
         @{
             var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var isOwner = currentUserId == Model.UserId;
-            var isAdminOrRegistrar = User.IsInRole("Admin") || User.IsInRole("Registrar");
+            var isAdminOrRegistrar = activeRole == "Admin" || activeRole == "Registrar";
             var canViewUser = isOwner || isAdminOrRegistrar;
         }
         
