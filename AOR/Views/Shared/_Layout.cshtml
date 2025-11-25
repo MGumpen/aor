@@ -1,11 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using AOR.Data
+@using System.Text.Json
 @inject SignInManager<User> SignInManager
-@using Microsoft.AspNetCore.Identity
 @inject UserManager<User> UserManager
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
+    var globalToastMessage = TempData["GlobalToastMessage"] as string;
 }
 
 <!DOCTYPE html>
@@ -28,12 +29,12 @@
     .navbar .dropdown-menu.show,
     .dropdown-item {
         z-index: 20000 !important;
-        min-width: 300px;        
-        font-size: 1.5rem;        
+        min-width: 300px;
+        font-size: 1.5rem;
     }
 
     .navbar .dropdown-item {
-        padding: 0.75rem 1.25rem; 
+        padding: 0.75rem 1.25rem;
     }
 
     .navbar {
@@ -264,6 +265,29 @@
     body.dark-mode .empty-state {
         color: #a0a0a0 !important;
     }
+
+    .form-toast-notification {
+        position: fixed;
+        top: 110px;
+        left: 50%;
+        background: #10b981;
+        color: #ffffff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 30000;
+        opacity: 0;
+        transform: translate(-50%, -20px);
+        transition: all 0.3s ease;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .form-toast-notification.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
 </style>
 
     @RenderSection("Styles", required: false)
@@ -335,13 +359,10 @@
                                             <a asp-controller="Account" asp-action="EditUser" class="dropdown-item">Edit user</a>
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" asp-controller="Settings" asp-action="Index">Settings</a>
-                                        </li>
-                                        <li>
                                             <hr class="dropdown-divider"/>
                                         </li>
                                         <li>
-                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3">
+                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
                                                     <i class="fa fa-sign-out-alt me-2"></i> Log out
@@ -378,6 +399,7 @@
         <a asp-area="" asp-controller="Privacy" asp-action="Index">Privacy</a>
     </div>
 </footer>
+<div id="globalToast" class="form-toast-notification" aria-live="polite" aria-atomic="true"></div>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
@@ -422,5 +444,49 @@
 </script>
 
 @await RenderSectionAsync("Scripts", required: false)
+<script>
+    (function () {
+        const toast = document.getElementById('globalToast');
+        if (!toast) {
+            return;
+        }
+
+        let message = '';
+        const serverMessage = @Html.Raw(JsonSerializer.Serialize(globalToastMessage ?? string.Empty));
+        if (serverMessage) {
+            message = serverMessage;
+            try {
+                if (window.sessionStorage) {
+                    window.sessionStorage.removeItem('aor_form_notification');
+                }
+            } catch (storageCleanupError) {
+                console.warn('Unable to clear sessionStorage toast state', storageCleanupError);
+            }
+        } else {
+            try {
+                if (window.sessionStorage) {
+                    const stored = window.sessionStorage.getItem('aor_form_notification');
+                    if (stored) {
+                        message = stored;
+                        window.sessionStorage.removeItem('aor_form_notification');
+                    }
+                }
+            } catch (storageError) {
+                console.warn('Unable to access sessionStorage for toast message', storageError);
+            }
+        }
+
+        if (!message) {
+            return;
+        }
+
+        toast.textContent = message;
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    })();
+</script>
 </body>
 </html>

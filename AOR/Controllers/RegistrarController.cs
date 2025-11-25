@@ -1,28 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using AOR.Models;
-using AOR.Data;
 using Microsoft.AspNetCore.Identity;
+using AOR.Data;
+using AOR.Models;
+using AOR.Repositories;
 
 namespace AOR.Controllers;
-
 
 [Authorize(Policy = "AsRegistrar")]
 public class RegistrarController : Controller
 {
-    private readonly AorDbContext _db;
     private readonly ILogger<RegistrarController> _logger;
-    private readonly AorDbContext _context;
     private readonly UserManager<User> _userManager;
+    private readonly IReportRepository _reportRepository;
 
-    public RegistrarController(AorDbContext db, ILogger<RegistrarController> logger, AorDbContext context, UserManager<User> userManager)
+    public RegistrarController(
+        ILogger<RegistrarController> logger,
+        UserManager<User> userManager,
+        IReportRepository reportRepository)
     {
         _logger = logger;
-        _context = context;
-        _db = db;
         _userManager = userManager;
+        _reportRepository = reportRepository;
     }
 
     public IActionResult LogIn()
@@ -30,18 +30,33 @@ public class RegistrarController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string sort = "CreatedAt", string dir = "asc")
     {
+        ViewBag.CurrentSort = sort;
+        ViewBag.CurrentDir = dir;
         try
         {
-            var reports = await _context.Reports
-                .Include(r => r.Obstacle)
-                .Include(r => r.User)
-                .ThenInclude(u => u.Organization)
-                .Include(r => r.Status)
-                .OrderByDescending(x => x.CreatedAt)
-                .ToListAsync();
-
+            // Henter alle rapporter med Obstacle, User, Organization, Status via repo
+            var reports = await _reportRepository.GetAllWithIncludesAsync();
+            // Sorter listen
+            reports = (sort?.ToLower(), dir?.ToLower()) switch
+            {
+                ("name", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleName).ToList(),
+                ("name", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleName).ToList(),
+                ("type", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleType).ToList(),
+                ("type", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleType).ToList(),
+                ("height", "desc") => reports.OrderBy(r => r.Obstacle?.ObstacleHeight).ToList(),
+                ("height", "asc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleHeight).ToList(),
+                ("createdat", "desc") => reports.OrderBy(r => r.CreatedAt).ToList(),
+                ("createdat", "asc") => reports.OrderByDescending(r => r.CreatedAt).ToList(),
+                ("user", "desc") => reports.OrderBy(r => r.User?.UserName).ToList(),
+                ("user", "asc") => reports.OrderByDescending(r => r.User?.UserName).ToList(),
+                ("org", "desc") => reports.OrderBy(r => r.User?.Organization?.OrgName).ToList(),
+                ("org", "asc") => reports.OrderByDescending(r => r.User?.Organization?.OrgName).ToList(),
+                ("status", "desc") => reports.OrderBy(r => r.Status?.Status).ToList(),
+                ("status", "asc") => reports.OrderByDescending(r => r.Status?.Status).ToList(),
+                _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
+            };
             return View(reports);
         }
         catch (Exception ex)
@@ -56,16 +71,11 @@ public class RegistrarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Approve(int id)
     {
-        var report = await _context.Reports
-            .Include(r => r.Obstacle)
-            .FirstOrDefaultAsync(r => r.ReportId == id); 
-
+        var report = await _reportRepository.GetByIdWithIncludesAsync(id);
         if (report == null) return NotFound();
 
-       
-        report.StatusId = 2;
-
-        await _context.SaveChangesAsync();
+        report.StatusId = 2; // approved
+        await _reportRepository.UpdateAsync(report);
 
         var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
         TempData["Message"] = $"Report for '{obstacleName}' approved.";
@@ -78,15 +88,11 @@ public class RegistrarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(int id)
     {
-        var report = await _context.Reports
-            .Include(r => r.Obstacle)
-            .FirstOrDefaultAsync(r => r.ReportId == id); 
-
+        var report = await _reportRepository.GetByIdWithIncludesAsync(id);
         if (report == null) return NotFound();
 
-        report.StatusId = 3;
-
-        await _context.SaveChangesAsync();
+        report.StatusId = 3; // rejected
+        await _reportRepository.UpdateAsync(report);
 
         var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
         TempData["Message"] = $"Report for '{obstacleName}' rejected.";
@@ -104,26 +110,16 @@ public class RegistrarController : Controller
     {
         return View(new ErrorModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> ReportDetails(int id)
     {
-        var userId = _userManager.GetUserId(User);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return RedirectToAction("Index", "LogIn");
-        }
+        var report = await _reportRepository.GetByIdWithIncludesAsync(id);
 
-        var report = await _db.Reports
-            .AsNoTracking()
-            .Where(r => r.UserId == userId && r.ReportId == id)
-            .Include(r => r.Obstacle)
-            .Include(r => r.Status)
-            .Include(r => r.User)
-            .FirstOrDefaultAsync();
+        if (report == null)
+            return NotFound();
 
-        ViewBag.DisplayName = User?.Identity?.Name ?? "User";
-
+        // Registrar skal alltid se rapportinfo, ingen eierskapssjekk
         return View("ReportDetails", report);
     }
 }
