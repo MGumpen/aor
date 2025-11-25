@@ -206,6 +206,19 @@
         background: #4a2020 !important;
         color: #fca5a5 !important;
     }
+    
+    /* Dark mode map filter */
+    :root {
+        --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+    }
+    
+    body.dark-mode .map-tiles {
+        filter: var(--map-tiles-filter, none);
+    }
+    
+    body.dark-mode #report-map {
+        border-color: #444;
+    }
 </style>
 
 <section class="container">
@@ -351,7 +364,7 @@
         </div>
     }
     
-    <div style="margin-bottom: 24px;">
+    <div style="margin-bottom: 36px;">
         <div id="map-wrapper">
             <div id="report-map" style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
         </div>
@@ -412,7 +425,8 @@
             // Bakgrunnskart (OSM)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '&copy; OpenStreetMap contributors',
+                className: 'map-tiles'
             }).addTo(map);
 
             const latLngs = coordinates.map(c => L.latLng(c.lat, c.lng));
