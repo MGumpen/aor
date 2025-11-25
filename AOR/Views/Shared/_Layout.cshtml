@@ -332,7 +332,7 @@
                 @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
                 {
                     <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
-                        <i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>
+                        <i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>
                     </button>
                 }
                 <ul class="navbar-nav ms-auto fs-5">
@@ -420,13 +420,13 @@
             body.classList.remove('dark-mode');
             icon.classList.remove('fa-sun');
             icon.classList.add('fa-moon');
-            btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
+            btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
             localStorage.setItem('theme', 'light');
         } else {
             body.classList.add('dark-mode');
             icon.classList.remove('fa-moon');
             icon.classList.add('fa-sun');
-            btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"> Light mode</span>';
+            btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -446,18 +446,18 @@
                 icon.classList.add('fa-sun');
             }
             if (btn) {
-                btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"> Light mode</span>';
+                btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
             }
         } else if (!isAuthenticated) {
             // Force light mode for non-authenticated users (login page)
             document.body.classList.remove('dark-mode');
             if (btn) {
-                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
+                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
             }
         } else {
             // Default to light mode
             if (btn) {
-                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
+                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
             }
         }
     });
