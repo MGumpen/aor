@@ -151,6 +151,7 @@
     body.dark-mode .btn-primary {
         background-color: #0d6efd !important;
         border-color: #0d6efd !important;
+        color: #ffffff !important;
     }
     
     body.dark-mode .btn-success {
@@ -288,6 +289,10 @@
         transform: translate(-50%, 0);
     }
 
+    #themeToggleBtn {
+        white-space: nowrap;
+    }
+
 </style>
 
     @RenderSection("Styles", required: false)
@@ -324,10 +329,10 @@
                         <i class="fa fa-calendar-days me-2"></i>Last 30 Days
                     </button>
                 }
-                @if (User?.Identity?.IsAuthenticated == true)
+                @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
                 {
                     <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
-                        <i class="fa fa-moon" id="themeIcon"></i>
+                        <i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>
                     </button>
                 }
                 <ul class="navbar-nav ms-auto fs-5">
@@ -362,7 +367,7 @@
                                             <hr class="dropdown-divider"/>
                                         </li>
                                         <li>
-                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown');">
+                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown'); localStorage.removeItem('theme');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
                                                     <i class="fa fa-sign-out-alt me-2"></i> Log out
@@ -409,16 +414,19 @@
     function toggleTheme() {
         const body = document.body;
         const icon = document.getElementById('themeIcon');
+        const btn = document.getElementById('themeToggleBtn');
         
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
             icon.classList.remove('fa-sun');
             icon.classList.add('fa-moon');
+            btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
             localStorage.setItem('theme', 'light');
         } else {
             body.classList.add('dark-mode');
             icon.classList.remove('fa-moon');
             icon.classList.add('fa-sun');
+            btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"> Light mode</span>';
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -427,6 +435,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('theme');
         const icon = document.getElementById('themeIcon');
+        const btn = document.getElementById('themeToggleBtn');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
         // Only apply dark mode if user is authenticated
@@ -436,9 +445,20 @@
                 icon.classList.remove('fa-moon');
                 icon.classList.add('fa-sun');
             }
+            if (btn) {
+                btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"> Light mode</span>';
+            }
         } else if (!isAuthenticated) {
             // Force light mode for non-authenticated users (login page)
             document.body.classList.remove('dark-mode');
+            if (btn) {
+                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
+            }
+        } else {
+            // Default to light mode
+            if (btn) {
+                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"> Dark mode</span>';
+            }
         }
     });
 </script>
