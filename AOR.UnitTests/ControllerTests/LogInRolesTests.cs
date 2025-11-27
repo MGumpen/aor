@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using AOR.Controllers;
-using AOR.Models;
+using AOR.Models.View;
 using AOR.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

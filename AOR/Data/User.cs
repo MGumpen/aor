@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
-using AOR.Models;
+using AOR.Models.Data;
 
 namespace AOR.Data;
 

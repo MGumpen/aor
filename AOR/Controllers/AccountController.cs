@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
-using AOR.Models;
+using AOR.Models.View;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AOR.Repositories;

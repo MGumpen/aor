@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AOR.Data;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
