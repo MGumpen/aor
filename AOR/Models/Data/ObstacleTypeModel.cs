@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace AOR.Models;
+namespace AOR.Models.Data;
 
 [Index(nameof(TypeName), IsUnique = true)]
 public class ObstacleTypeModel

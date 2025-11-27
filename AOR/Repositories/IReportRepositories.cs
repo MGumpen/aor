@@ -1,4 +1,4 @@
-using AOR.Models;
+using AOR.Models.Data;
 
 namespace AOR.Repositories
 {

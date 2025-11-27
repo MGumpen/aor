@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using AOR.Controllers;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

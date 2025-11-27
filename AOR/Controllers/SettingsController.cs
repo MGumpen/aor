@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using AOR.Models;
+using AOR.Models.View;
 
 namespace AOR.Controllers
 {

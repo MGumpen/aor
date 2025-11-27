@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AOR.Models
+namespace AOR.Models.Data
 {
     public class ObstacleData : IValidatableObject
     {

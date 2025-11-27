@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AOR.Data;

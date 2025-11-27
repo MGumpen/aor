@@ -1,4 +1,4 @@
-namespace AOR.Models
+namespace AOR.Models.Data
 {
     public class AdviceDto
     {
