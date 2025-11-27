@@ -168,6 +168,26 @@
         color: #000 !important;
     }
     
+    /* Theme toggle icon colors */
+    #themeIcon.fa-circle,
+    #themeIcon.fa-sun {
+        color: #fbbf24 !important;
+        text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    
+    #themeIcon.fa-moon {
+        color: #e2e8f0 !important;
+    }
+    
+    body.dark-mode #themeIcon.fa-circle,
+    body.dark-mode #themeIcon.fa-sun {
+        color: #fbbf24 !important;
+    }
+    
+    body.dark-mode #themeIcon.fa-moon {
+        color: #e2e8f0 !important;
+    }
+    
     /* Dark Mode for MyReports page */
     body.dark-mode .obstacle-card {
         background: #2d2d2d !important;
@@ -302,7 +322,7 @@
                 }
                 @if (User?.Identity?.IsAuthenticated == true)
                 {
-                    <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
+                    <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Switch to dark mode">
                         <i class="fa fa-moon" id="themeIcon"></i>
                     </button>
                 }
@@ -387,16 +407,19 @@
     function toggleTheme() {
         const body = document.body;
         const icon = document.getElementById('themeIcon');
+        const btn = document.getElementById('themeToggleBtn');
         
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
-            icon.classList.remove('fa-sun');
+            icon.classList.remove('fa-circle');
             icon.classList.add('fa-moon');
+            btn.setAttribute('title', 'Switch to dark mode');
             localStorage.setItem('theme', 'light');
         } else {
             body.classList.add('dark-mode');
             icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
+            icon.classList.add('fa-circle');
+            btn.setAttribute('title', 'Switch to light mode');
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -405,6 +428,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('theme');
         const icon = document.getElementById('themeIcon');
+        const btn = document.getElementById('themeToggleBtn');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
         // Only apply dark mode if user is authenticated
@@ -412,7 +436,10 @@
             document.body.classList.add('dark-mode');
             if (icon) {
                 icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
+                icon.classList.add('fa-circle');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to light mode');
             }
         } else if (!isAuthenticated) {
             // Force light mode for non-authenticated users (login page)
