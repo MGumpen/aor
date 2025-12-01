@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AOR.Controllers;
-using AOR.Models;
+using AOR.Models.View;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 

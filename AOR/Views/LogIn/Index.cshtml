@@ -1,8 +1,11 @@
-@model AOR.Models.LogInViewModel
+@model AOR.Models.View.LogInViewModel
 @{
     ViewData["Title"] = "Log In";
     Layout = "_Layout";
 }
+
+<link rel="stylesheet" href="~/css/LogIn/Index.css" />
+
 
 <div class="text-center">
     <h1 class="display-4" style="margin-top: 50px;">Welcome to</h1>
@@ -98,19 +101,4 @@
 
     <!-- Backdrop -->
     <div class="modal-backdrop fade show"></div>
-
-    <style>
-        .role-btn {
-            width: 240px;
-            min-height: 42px;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        @@media (max-width: 500px) {
-            .role-btn {
-                width: 100%;
-            }
-        }
-    </style>
 }

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using AOR.Models;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
 

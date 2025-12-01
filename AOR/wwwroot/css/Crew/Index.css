@@ -1,0 +1,629 @@
+/* Map dark mode filter */
+:root {
+    --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+body.dark-mode .map-tiles {
+    filter: var(--map-tiles-filter, none);
+}
+
+/* Map container - responsive */
+.map-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 160px); /* Account for both header and footer */
+    min-height: 600px;
+    margin: 30px 0;              /* Equal top and bottom margin */
+    border-radius: 8px;
+}
+
+#obstacle-map {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.welcome-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none; /* Changed from flex to none */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+.welcome-popup-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.welcome-popup h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.welcome-popup p {
+    margin: 0 0 1.5rem 0;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+.welcome-popup button {
+    background: #0C5AA6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.welcome-popup button:hover {
+    background: #0A4A8A;
+    transform: translateY(-1px);
+}
+
+/* Location button - responsive */
+.location-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    color: #495057;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    touch-action: manipulation;
+}
+
+.location-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Zoom controls */
+.leaflet-control-zoom {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+}
+
+.leaflet-control-zoom a {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid #e9ecef !important;
+    touch-action: manipulation;
+}
+
+/* Action buttons - responsive */
+.action-buttons {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 12px;
+    z-index: 1000;
+    justify-content: center;
+}
+
+.main-action-btn {
+    flex: 1;
+    padding: 32px 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    touch-action: manipulation;
+    letter-spacing: 0.5px;
+}
+
+.btn-line {
+    background: #E74C3C;
+}
+
+.btn-line:hover, .btn-line:active {
+    background: #C0392B;
+}
+
+.btn-mast {
+    background: #0C5AA6;
+}
+
+.btn-mast:hover, .btn-mast:active {
+    background: #0A4A8A;
+}
+
+.btn-other {
+    background: #ffffff;
+    color: #495057;
+    border: 1px solid #e9ecef;
+}
+
+.btn-other:hover, .btn-other:active {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Points panel - compact with scrollable content */
+.points-panel {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 280px;
+    max-width: 90vw;
+    max-height: 300px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+}
+
+.points-panel-header {
+    padding: 10px 12px;
+    background: rgba(248, 249, 250, 0.8);
+    border-bottom: 1px solid rgba(233, 236, 239, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;                  /* Prevents header from shrinking */
+}
+
+.points-panel-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.points-panel-title:hover {
+    color: #0C5AA6;
+}
+
+
+
+.panel-controls {
+    display: flex;
+    gap: 8px;
+    order: 2;
+}
+
+.points-panel.hidden {
+    display: none !important;
+}
+
+.panel-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    touch-action: manipulation;
+}
+
+.panel-btn.undo {
+    background: #6c757d;
+    color: white;
+}
+
+.panel-btn.confirm {
+    background: #28a745;
+    color: white;
+}
+
+.panel-btn.cancel {
+    background: #dc3545;
+    color: white;
+}
+
+.panel-btn:active {
+    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+.points-list {
+    max-height: 180px;               /* Fits ~2 items, then scrolls */
+    overflow-y: auto;
+    padding: 4px;
+    scrollbar-width: thin;           /* Firefox: thin scrollbar */
+    scrollbar-color: rgba(0,0,0,0.3) transparent; /* Firefox: scrollbar colors */
+}
+
+/* Webkit scrollbar styling for better appearance */
+.points-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.points-list::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+}
+
+.points-list::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.3);
+    border-radius: 3px;
+}
+
+.points-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.5);
+}
+
+.point-item {
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(233, 236, 239, 0.5);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    flex-shrink: 0;                  /* Prevents items from shrinking */
+    min-height: 60px;                /* Consistent item height */
+}
+
+.point-item:active {
+    background: rgba(248, 249, 250, 0.9);
+    border-color: rgba(108, 117, 125, 0.3);
+}
+
+.point-item.confirmed {
+    background: rgba(40, 167, 69, 0.1);
+    border-color: rgba(40, 167, 69, 0.3);
+}
+
+.point-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.point-number {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.point-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.point-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    touch-action: manipulation;
+}
+
+.point-btn.accept {
+    background: #28a745;
+    color: white;
+}
+
+.point-btn.remove {
+    background: #dc3545;
+    color: white;
+}
+
+.point-btn:active {
+    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+.point-coords {
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+    font-size: 15px;
+    line-height: 1.2;
+}
+
+/* Touch-friendly markers */
+.simple-marker {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition: all 0.2s ease;
+    touch-action: none;
+}
+
+.simple-marker:hover {
+    transform: scale(1.1);
+}
+
+.simple-marker:active {
+    cursor: grabbing;
+}
+
+.marker-line {
+    background: #E74C3C;
+}
+
+.marker-mast {
+    background: #0C5AA6;
+}
+
+.marker-other {
+    background: #00A651;
+}
+
+/* Notification - responsive */
+.drawing-notification {
+    position: absolute;
+    bottom: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 11px;
+    font-weight: 400;
+    color: #495057;
+    z-index: 1000;
+    display: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+/* Tablet responsiveness */
+@media (max-width: 900px) {
+    .main-action-btn {
+        font-size: 20px;
+        padding: 28px 12px;
+    }
+}
+
+/* Mobile responsiveness - keep left-aligned */
+@media (max-width: 768px) {
+    .points-panel {
+        /* Keep consistent size and position - no centering */
+        top: 80px;
+        left: 10px;  /* Slightly closer to edge on mobile */
+    }
+
+    .action-buttons {
+        gap: 8px;
+        bottom: 20px;
+        left: 15px;
+        right: 15px;
+    }
+
+    .main-action-btn {
+        padding: 20px 8px;
+        font-size: 18px;
+    }
+
+    .drawing-notification {
+        bottom: 120px;
+        font-size: 10px;
+        padding: 5px 10px;
+    }
+
+    .location-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+
+}
+
+@media (max-width: 480px) {
+    .points-panel {
+        /* Keep consistent on very small screens too */
+        left: 5px;  /* Even closer to edge on very small screens */
+    }
+
+    .action-buttons {
+        bottom: 15px;
+        left: 10px;
+        right: 10px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .main-action-btn {
+        padding: 18px 6px;
+        font-size: 16px;
+        flex-shrink: 0;
+        min-width: 0;
+    }
+
+
+}
+
+/* Dark mode styles for Crew Index */
+body.dark-mode .welcome-popup-content {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode .welcome-popup-content h3 {
+    color: #e0e0e0;
+}
+
+body.dark-mode .welcome-popup-content p {
+    color: #a0a0a0;
+}
+
+body.dark-mode .welcome-popup-content button {
+    background: #0d6efd;
+    color: #ffffff;
+}
+
+body.dark-mode .welcome-popup-content button:hover {
+    background: #0b5ed7;
+}
+
+body.dark-mode .location-btn {
+    background: rgba(45, 45, 45, 0.95);
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode .location-btn:hover {
+    background: rgba(45, 45, 45, 1);
+}
+
+body.dark-mode .points-panel {
+    background: rgba(45, 45, 45, 0.9);
+    border-color: #555;
+}
+
+body.dark-mode .points-panel-header {
+    background: rgba(45, 45, 45, 0.8);
+    border-color: rgba(85, 85, 85, 0.5);
+}
+
+body.dark-mode .points-panel-title {
+    color: #e0e0e0;
+}
+
+body.dark-mode .points-panel-title:hover {
+    color: #63b3ed;
+}
+
+body.dark-mode .panel-btn {
+    background: #6c757d;
+    color: #ffffff;
+}
+
+body.dark-mode .panel-btn.confirm {
+    background: #198754;
+}
+
+body.dark-mode .panel-btn.cancel {
+    background: #dc3545;
+}
+
+body.dark-mode .point-item {
+    background: rgba(45, 45, 45, 0.7);
+    border-color: rgba(85, 85, 85, 0.5);
+    color: #e0e0e0;
+}
+
+body.dark-mode .point-item:active {
+    background: rgba(55, 55, 55, 0.9);
+    border-color: rgba(108, 117, 125, 0.3);
+}
+
+body.dark-mode .point-item.confirmed {
+    background: rgba(25, 135, 84, 0.1);
+    border-color: rgba(25, 135, 84, 0.3);
+}
+
+body.dark-mode .point-number {
+    color: #e0e0e0;
+}
+
+body.dark-mode .point-coords {
+    color: #a0a0a0;
+}
+
+body.dark-mode .point-btn.accept {
+    background: #198754;
+    color: #ffffff;
+}
+
+body.dark-mode .point-btn.remove {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+body.dark-mode .drawing-notification {
+    background: rgba(45, 45, 45, 0.95);
+    color: #000000;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .btn-line {
+    background: #E74C3C;
+}
+
+body.dark-mode .btn-line:hover,
+body.dark-mode .btn-line:active {
+    background: #C0392B;
+}
+
+body.dark-mode .btn-mast {
+    background: #0C5AA6;
+}
+
+body.dark-mode .btn-mast:hover,
+body.dark-mode .btn-mast:active {
+    background: #0A4A8A;
+}
+
+body.dark-mode .btn-other {
+    background: #2d2d2d;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+body.dark-mode .btn-other:hover,
+body.dark-mode .btn-other:active {
+    background: #3a3a3a;
+    border-color: #666;
+}
+
+/* Marker label styles */
+.marker-number-label {
+    color: black; /* Changed to black for better visibility in dark mode */
+}

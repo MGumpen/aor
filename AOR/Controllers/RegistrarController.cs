@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using AOR.Data;
-using AOR.Models;
+using AOR.Models.Data;
 using AOR.Repositories;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
 

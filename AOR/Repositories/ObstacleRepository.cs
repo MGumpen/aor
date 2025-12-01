@@ -1,5 +1,5 @@
 using AOR.Data;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AOR.Repositories

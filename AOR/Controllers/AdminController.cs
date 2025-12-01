@@ -2,10 +2,11 @@ using System.Diagnostics;
 using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AOR.Repositories;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
 

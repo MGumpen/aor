@@ -1,37 +1,11 @@
-@model AOR.Models.NewUserViewModel
+@model AOR.Models.View.NewUserViewModel
 
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Users";
 }
 
-<style>
-    .container {
-        width: 90%;
-        max-width: 100%;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .site-header {
-        margin-bottom: 32px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #10b981;
-    }
-
-    .role-dropdown .role-dropdown-menu {
-        min-width: 100%;
-        margin-top: 0;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
-
-    .role-dropdown .form-check {
-        margin-bottom: 0.25rem;
-    }
-</style>
+<link rel="stylesheet" href="~/css/Account/NewUser.css" />
 
 <section class="container align-content-center">
 
@@ -146,42 +120,5 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const checkboxes = document.querySelectorAll('.role-checkbox');
-            const hiddenContainer = document.getElementById('roleHiddenInputs');
-            const textSpan = document.getElementById('roleDropdownText');
-
-            function updateHiddenInputs() {
-                hiddenContainer.innerHTML = '';
-                const selectedNames = [];
-
-                checkboxes.forEach(cb => {
-                    if (cb.checked) {
-                        const label = cb.closest('.form-check').querySelector('.form-check-label');
-                        if (label) {
-                            selectedNames.push(label.textContent.trim());
-                        }
-
-                        const hidden = document.createElement('input');
-                        hidden.type = 'hidden';
-                        hidden.name = 'RoleIds';
-                        hidden.value = cb.value;
-                        hiddenContainer.appendChild(hidden);
-                    }
-                });
-
-                if (selectedNames.length === 0) {
-                    textSpan.textContent = 'Choose role(s)';
-                } else {
-                    textSpan.textContent = selectedNames.join(', ');
-                }
-            }
-
-            checkboxes.forEach(cb => cb.addEventListener('change', updateHiddenInputs));
-
-            // Initial sync when page loads (for validation errors etc.)
-            updateHiddenInputs();
-        });
-    </script>
+    <script src="~/js/NewUser.js"></script>
 }

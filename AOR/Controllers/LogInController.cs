@@ -2,7 +2,7 @@ using AOR.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using AOR.Models;
+using AOR.Models.View;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -258,7 +258,7 @@ namespace AOR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(AOR.Models.ForgotPasswordModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -270,7 +270,7 @@ namespace AOR.Controllers
             {
                 TempData["ForgotPassword_Info"] = "Hvis e-postadressen finnes og er bekreftet, er en lenke sendt.";
                 ModelState.Clear();
-                return View(new AOR.Models.ForgotPasswordModel());
+                return View(new ForgotPasswordModel());
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -286,7 +286,7 @@ namespace AOR.Controllers
             TempData["ResetLink"] = callbackUrl;
 
             ModelState.Clear();
-            return View(new AOR.Models.ForgotPasswordModel());
+            return View(new ForgotPasswordModel());
         }
 
         // -------------------- ACCESS DENIED --------------------

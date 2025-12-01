@@ -4,7 +4,7 @@ using AOR.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace AOR.Models;
+namespace AOR.Models.Data;
 
 [Index(nameof(UserId), nameof(ObstacleId))]
 public class ReportModel
@@ -19,7 +19,7 @@ public class ReportModel
     public int ObstacleId { get; set; }
     public ObstacleData Obstacle { get; set; } = default!;
 
-    public int StatusId { get; set; }          
+    public int StatusId { get; set; }
     public StatusModel Status { get; set; } = null!;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
