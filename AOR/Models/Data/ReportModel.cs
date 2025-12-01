@@ -16,6 +16,9 @@ public class ReportModel
 
     public User User { get; set; } = default!;
 
+    public string? AssignedToId { get; set; }
+    public User? AssignedTo { get; set; }
+
     public int ObstacleId { get; set; }
     public ObstacleData Obstacle { get; set; } = default!;
 

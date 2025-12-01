@@ -36,7 +36,7 @@ namespace AOR.Controllers;
     
     [Authorize(Roles = "Crew, Registrar, Admin")]
     [HttpGet]
-    public async Task<IActionResult> ReportDetails(int id)
+    public async Task<IActionResult> ReportDetails(int id, string? returnUrl)
     {
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId))
@@ -51,10 +51,8 @@ namespace AOR.Controllers;
             return NotFound();
         }
 
-        // Crew får se rapporten, men brukernavn skjules hvis de ikke eier den
-        // (gjort i viewet via activeRole)
-
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
+        ViewBag.ReturnUrl = returnUrl; // send returnUrl to view
 
         return View("ReportDetails", report);
     }

@@ -35,6 +35,12 @@ public class AorDbContext : IdentityDbContext<User>
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict); 
 
+            e.HasOne(r => r.AssignedTo)
+                .WithMany()
+                .HasForeignKey(r => r.AssignedToId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
+
             e.HasIndex(r => new { r.UserId, r.ObstacleId });
         });
         

@@ -1,0 +1,55 @@
+.registrar-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+html, body { height: 100%; }
+.registrar-container {
+    box-sizing: border-box;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 1.25rem 2rem !important;
+    margin: 0 !important;
+    min-height: calc(100vh - 80px);
+    display: block;
+    background: transparent;
+}
+
+.registrar-container .table {
+    width: 100%;
+}
+
+.registrar-container .table-responsive {
+    max-height: calc(100vh - 220px);
+    overflow: auto;
+}
+
+.assign-block { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.assign-block .form-select { min-width:160px; max-width:40vw; }
+.action-buttons { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; }
+.action-cell { display:flex; flex-direction:column; gap:0.5rem; align-items:flex-start; }
+
+.action-cell .assign-block { width:100%; }
+.action-cell .action-buttons { width:100%; }
+@media (max-width:576px) {
+    .assign-block .form-select{min-width:120px;}
+    .assign-block { width:100%; }
+    .assign-block .form-select{ max-width: 100%; }
+    .action-buttons { width:100%; margin-top:6px; }
+}
