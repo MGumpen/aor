@@ -146,13 +146,33 @@ public class RegistrarController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> AssignedReports()
+    public async Task<IActionResult> AssignedReports(string sort = "CreatedAt", string dir = "desc")
     {
         // Hent innlogget bruker
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
+        ViewBag.CurrentSort = sort;
+        ViewBag.CurrentDir = dir;
+
         var reports = await _reportRepository.GetAssignedToAsync(user.Id);
+
+        // Utfør sortering etter parametrer
+        reports = (sort?.ToLower(), dir?.ToLower()) switch
+        {
+            ("type", "asc") => reports.OrderBy(r => r.Obstacle?.ObstacleType).ToList(),
+            ("type", "desc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleType).ToList(),
+            ("createdby", "asc") => reports.OrderBy(r => r.User?.UserName).ToList(),
+            ("createdby", "desc") => reports.OrderByDescending(r => r.User?.UserName).ToList(),
+            ("org", "asc") => reports.OrderBy(r => r.User?.Organization?.OrgName).ToList(),
+            ("org", "desc") => reports.OrderByDescending(r => r.User?.Organization?.OrgName).ToList(),
+            ("status", "asc") => reports.OrderBy(r => r.Status?.Status).ToList(),
+            ("status", "desc") => reports.OrderByDescending(r => r.Status?.Status).ToList(),
+            ("createdat", "asc") => reports.OrderBy(r => r.CreatedAt).ToList(),
+            ("createdat", "desc") => reports.OrderByDescending(r => r.CreatedAt).ToList(),
+            _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
+        };
+
         return View(reports);
     }
 
