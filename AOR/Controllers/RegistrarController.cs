@@ -31,7 +31,7 @@ public class RegistrarController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Index(string sort = "CreatedAt", string dir = "asc")
+    public async Task<IActionResult> AllReports(string sort = "CreatedAt", string dir = "asc")
     {
         ViewBag.CurrentSort = sort;
         ViewBag.CurrentDir = dir;
@@ -39,6 +39,11 @@ public class RegistrarController : Controller
         {
             // Henter alle rapporter med Obstacle, User, Organization, Status via repo
             var reports = await _reportRepository.GetAllWithIncludesAsync();
+
+            // Hent registrars for dropdowns
+            var registrars = await _reportRepository.GetRegistrarsAsync();
+            ViewBag.Registrars = registrars;
+
             // Sorter listen
             reports = (sort?.ToLower(), dir?.ToLower()) switch
             {
@@ -70,7 +75,7 @@ public class RegistrarController : Controller
     [Authorize(Roles = "Registrar")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Approve(int id)
+    public async Task<IActionResult> Approve(int id, string? returnUrl)
     {
         var report = await _reportRepository.GetByIdWithIncludesAsync(id);
         if (report == null) return NotFound();
@@ -81,13 +86,16 @@ public class RegistrarController : Controller
         var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
         TempData["Message"] = $"Report for '{obstacleName}' approved.";
 
-        return RedirectToAction(nameof(Index));
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
+        return RedirectToAction(nameof(AllReports));
     }
 
     [Authorize(Roles = "Registrar")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Reject(int id)
+    public async Task<IActionResult> Reject(int id, string? returnUrl)
     {
         var report = await _reportRepository.GetByIdWithIncludesAsync(id);
         if (report == null) return NotFound();
@@ -98,7 +106,20 @@ public class RegistrarController : Controller
         var obstacleName = report.Obstacle?.ObstacleName ?? "unknown obstacle";
         TempData["Message"] = $"Report for '{obstacleName}' rejected.";
 
-        return RedirectToAction(nameof(Index));
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
+        return RedirectToAction(nameof(AllReports));
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        var pendingCount = await _reportRepository.GetAssignedPendingCountAsync(user.Id);
+        ViewBag.AssignedPendingCount = pendingCount;
+        return View();
     }
 
     public IActionResult Privacy()
@@ -122,5 +143,72 @@ public class RegistrarController : Controller
 
         // Registrar skal alltid se rapportinfo, ingen eierskapssjekk
         return View("ReportDetails", report);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AssignedReports(string sort = "CreatedAt", string dir = "desc")
+    {
+        // Hent innlogget bruker
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        ViewBag.CurrentSort = sort;
+        ViewBag.CurrentDir = dir;
+
+        var reports = await _reportRepository.GetAssignedToAsync(user.Id);
+
+        // Utfør sortering etter parametrer
+        reports = (sort?.ToLower(), dir?.ToLower()) switch
+        {
+            ("type", "asc") => reports.OrderBy(r => r.Obstacle?.ObstacleType).ToList(),
+            ("type", "desc") => reports.OrderByDescending(r => r.Obstacle?.ObstacleType).ToList(),
+            ("createdby", "asc") => reports.OrderBy(r => r.User?.UserName).ToList(),
+            ("createdby", "desc") => reports.OrderByDescending(r => r.User?.UserName).ToList(),
+            ("org", "asc") => reports.OrderBy(r => r.User?.Organization?.OrgName).ToList(),
+            ("org", "desc") => reports.OrderByDescending(r => r.User?.Organization?.OrgName).ToList(),
+            ("status", "asc") => reports.OrderBy(r => r.Status?.Status).ToList(),
+            ("status", "desc") => reports.OrderByDescending(r => r.Status?.Status).ToList(),
+            ("createdat", "asc") => reports.OrderBy(r => r.CreatedAt).ToList(),
+            ("createdat", "desc") => reports.OrderByDescending(r => r.CreatedAt).ToList(),
+            _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
+        };
+
+        return View(reports);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Assign(int reportId, string registrarId, string? returnUrl)
+    {
+        // Hvis tom eller blank => fjern tildeling (unassign)
+        if (string.IsNullOrWhiteSpace(registrarId))
+        {
+            await _reportRepository.AssignToAsync(reportId, null);
+            TempData["Message"] = "Rapporten ble fjernet fra tildeling.";
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
+            return RedirectToAction(nameof(AllReports));
+        }
+
+        // Ellers valider valgt user
+        var regUser = await _userManager.FindByIdAsync(registrarId);
+        if (regUser == null)
+        {
+            TempData["Error"] = "Valgt bruker finnes ikke.";
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
+            return RedirectToAction(nameof(AllReports));
+        }
+
+        var isRegistrar = await _userManager.IsInRoleAsync(regUser, "Registrar");
+        if (!isRegistrar)
+        {
+            TempData["Error"] = "Valgt bruker har ikke Registrar-rollen.";
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
+            return RedirectToAction(nameof(AllReports));
+        }
+
+        await _reportRepository.AssignToAsync(reportId, registrarId);
+        TempData["Message"] = "Rapporten ble tildelt.";
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) return Redirect(returnUrl);
+        return RedirectToAction(nameof(AllReports));
     }
 }

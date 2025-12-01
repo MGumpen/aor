@@ -9,20 +9,28 @@
 <section class="container">
     @{
         var activeRole = User.FindFirst("ActiveRole")?.Value;
+        var returnUrl = ViewBag.ReturnUrl as string;
     }
     <div class="details-header">
-        @if (activeRole == "Registrar" || activeRole == "Admin")
+        @if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
         {
-            <a href="/Registrar" class="btn btn-primary back-button">Back to Overview</a>
+            <a href="@returnUrl" class="btn btn-primary back-button">Back</a>
         }
-        @if (activeRole == "Crew")
+        else
         {
-            <a href="/Crew" class="btn btn-primary back-button">Back to Map</a>
-            <a href="/Report/MyReports" class="btn btn-secondary right-button">Your reports</a>
+            if (activeRole == "Registrar")
+            {
+                <a href="/Registrar/AllReports" class="btn btn-primary back-button">Back to Overview</a>
+            }
+            if (activeRole == "Crew")
+            {
+                <a href="/Crew" class="btn btn-primary back-button">Back to Map</a>
+                <a href="/Report/MyReports" class="btn btn-secondary right-button">Your reports</a>
+            }
         }
         <h1>Report details</h1>
     </div>
-    
+
 
     <div class="details-grid">
         
@@ -42,7 +50,7 @@
             
             <div class="detail-card">
                 <div class="detail-label">Organization</div>
-                <div class="detail-value">@(Model.User.Organization.OrgName)</div>
+                <div class="detail-value">@(Model.User.Organization?.OrgName ?? "-")</div>
             </div>
             
         }
@@ -158,8 +166,7 @@
     
 </section>
 
-@section Scripts {
-    <!-- Leaflet CSS -->
+
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -172,4 +179,5 @@
     </script>
 
     <script src="~/js/Report/ReportDetails.js"></script>
-}
+
+

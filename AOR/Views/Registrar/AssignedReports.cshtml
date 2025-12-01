@@ -1,0 +1,106 @@
+@model IEnumerable<AOR.Models.Data.ReportModel>
+@{
+    ViewData["Title"] = "Assigned reports";
+    Layout = "_Layout";
+    var currentSort = (ViewBag.CurrentSort as string) ?? "CreatedAt";
+    var currentDir = (ViewBag.CurrentDir as string) ?? "desc";
+    string Toggle(string key) => (string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase) && currentDir == "asc") ? "desc" : "asc";
+    string Caret(string key) => string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase)
+        ? (currentDir == "asc" ? "▲" : "▼")
+        : "";
+}
+
+<link rel="stylesheet" href="~/css/Registrar/AssignedReports.css" />
+
+
+<div class="registrar-container mt-4">
+    <h2>Your assigned reports</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>
+                        <a asp-action="AssignedReports" asp-route-sort="type" asp-route-dir="@Toggle("type")">Type @Caret("type")</a>
+                    </th>
+                    <th>Height</th>
+                    <th>
+                        <a asp-action="AssignedReports" asp-route-sort="createdat" asp-route-dir="@Toggle("createdat")">Created at @Caret("createdat")</a>
+                    </th>
+                    <th>
+                        <a asp-action="AssignedReports" asp-route-sort="createdby" asp-route-dir="@Toggle("createdby")">Created by @Caret("createdby")</a>
+                    </th>
+                    <th>
+                        <a asp-action="AssignedReports" asp-route-sort="org" asp-route-dir="@Toggle("org")">Organization @Caret("org")</a>
+                    </th>
+                    <th>
+                        <a asp-action="AssignedReports" asp-route-sort="status" asp-route-dir="@Toggle("status")">Status @Caret("status")</a>
+                    </th>
+                     <th>Details</th>
+                     <th>Action</th>
+                 </tr>
+             </thead>
+             <tbody>
+                 @if (!(Model?.Any() ?? false))
+                 {
+                     <tr>
+                         <td colspan="9"><div class="alert alert-info mb-0">Du har ingen assignede rapporter.</div></td>
+                     </tr>
+                 }
+                 else
+                 {
+                     foreach (var report in Model)
+                     {
+                         <tr>
+                             <td>@(report.Obstacle?.ObstacleName ?? "Ukjent")</td>
+                             <td>@(report.Obstacle?.ObstacleType ?? "-")</td>
+                             <td>@(report.Obstacle?.ObstacleHeight?.ToString("F1") ?? "-") m</td>
+                             <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                             <td>@(report.User?.UserName ?? "-")</td>
+                             <td>@(report.User?.Organization?.OrgName ?? "-")</td>
+                             <td>
+                                 @{
+                                     var statusText = report.Status?.Status ?? "Pending";
+                                     var statusClass = statusText.ToLower() switch
+                                     {
+                                         "approved" => "badge bg-success",
+                                         "rejected" => "badge bg-danger",
+                                         _ => "badge bg-warning text-dark"
+                                     };
+                                 }
+                                 <span class="@statusClass">@statusText</span>
+                             </td>
+                             <td>
+                                 <a class="btn btn-info btn-sm" href="@Url.Action("ReportDetails", "Report", new { id = report.ReportId, returnUrl = Url.Action("AssignedReports", "Registrar") })">View details</a>
+                             </td>
+                             <td>
+                                 <div class="d-flex gap-2">
+                                     @if (!string.Equals(report.Status?.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                                     {
+                                         <form asp-action="Approve" asp-controller="Registrar" method="post" class="m-0">
+                                             @Html.AntiForgeryToken()
+                                             <input type="hidden" name="id" value="@report.ReportId" />
+                                             <input type="hidden" name="returnUrl" value="@Url.Action("AssignedReports","Registrar")" />
+                                             <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                         </form>
+                                     }
+
+                                     @if (!string.Equals(report.Status?.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                                     {
+                                         <form asp-action="Reject" asp-controller="Registrar" method="post" class="m-0">
+                                             @Html.AntiForgeryToken()
+                                             <input type="hidden" name="id" value="@report.ReportId" />
+                                             <input type="hidden" name="returnUrl" value="@Url.Action("AssignedReports","Registrar")" />
+                                             <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                         </form>
+                                     }
+                                 </div>
+                             </td>
+                         </tr>
+                     }
+                 }
+             </tbody>
+         </table>
+     </div>
+ </div>

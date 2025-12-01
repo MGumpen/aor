@@ -1,115 +1,34 @@
 @model IEnumerable<AOR.Models.Data.ReportModel>
+@using AOR.Data
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+
 @{
-    ViewData["Title"] = "Registrar - Home";
+    var currentUser = await UserManager.GetUserAsync(User);
     Layout = "_Layout";
-    var currentSort = (ViewBag.CurrentSort as string) ?? "CreatedAt";
-    var currentDir = (ViewBag.CurrentDir as string) ?? "desc";
-    string Toggle(string key) => (string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase) && currentDir == "asc") ? "desc" : "asc";
-    string Caret(string key) => string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase)
-        ? (currentDir == "asc" ? "▲" : "▼")
-        : "";
+    ViewData["Title"] = "Registrar - Dashboard";
+    var assignedPending = (ViewBag.AssignedPendingCount as int?) ?? 0;
 }
 
 <link rel="stylesheet" href="~/css/Registrar/Index.css" />
 
 
-<h1>Welcome, Registrar</h1>
+<section class="container align-content-center">
 
+<div class="admin-wrapper">
+    <h2>Welcome, @($"{currentUser?.FirstName} {currentUser?.LastName}")</h2>
 
-<div class="registrar-container mt-4">
-    <h2>Obstacle reports</h2>
-    
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>
-                    <a asp-action="Index" asp-route-sort="name" asp-route-dir="@Toggle("name")">
-                        Name @Caret("name")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="type" asp-route-dir="@Toggle("type")">
-                        Type @Caret("type")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="height" asp-route-dir="@Toggle("height")">
-                        Height @Caret("height")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="createdat" asp-route-dir="@Toggle("createdat")">
-                        Created at @Caret("createdat")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="user" asp-route-dir="@Toggle("user")">
-                        Created by @Caret("user")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="org" asp-route-dir="@Toggle("org")">
-                        Organization @Caret("org")
-                    </a>
-                </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="status" asp-route-dir="@Toggle("status")">
-                        Status @Caret("status")
-                    </a>
-                </th>
-                <th>Details</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var report in Model)
-            {
-                <tr>
-                    <td>@report.Obstacle?.ObstacleName</td>
-                    <td>@report.Obstacle?.ObstacleType.ToUpper()</td>
-                    <td>@(report.Obstacle?.ObstacleHeight?.ToString("F1") ?? "N/A") m</td>
-                    <td>@report.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td>@report.User?.UserName</td>
-                    <td>@(report.User?.Organization?.OrgName ?? "Unknown")</td>
-                    <td>
-                        @{
-                            var statusText = report.Status?.Status ?? "Pending";
-                            var statusClass = statusText.ToLower() switch
-                            {
-                                "approved" => "badge bg-success",
-                                "rejected" => "badge bg-danger",
-                                _ => "badge bg-warning text-dark"
-                            };
-                        }
-                        <span class="@statusClass">@statusText</span>
-                    </td>
-                    <td>
-                        <a asp-controller="Report" asp-action="ReportDetails" asp-route-id="@report.ReportId" class="btn btn-info btn-sm me-1">
-                            View details
-                        </a>
-                    </td>
-                    <td>
-                        @if (!string.Equals(report.Status?.Status, "Approved", StringComparison.OrdinalIgnoreCase))
-                        {
-                            <form asp-action="Approve" asp-controller="Registrar" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@report.ReportId" />
-                                <button type="submit" class="btn btn-success btn-sm me-1">Approve</button>
-                            </form>
-                        }
-
-                        @if (!string.Equals(report.Status?.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
-                        {
-                            <form asp-action="Reject" asp-controller="Registrar" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@report.ReportId" />
-                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                            </form>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
+    <div class="admin-grid">
+        <a class="admin-tile" asp-action="AllReports">All reports</a>
+        <a class="admin-tile" asp-action="AssignedReports">Assigned reports @if(assignedPending > 0) { <span class="badge badge-orange ms-2">@assignedPending Pending</span> }</a>
+    </div>
 </div>
+
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        var first = document.querySelector('.admin-tile');
+        if(first) first.setAttribute('tabindex','0');
+    });
+</script>

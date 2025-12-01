@@ -1,3 +1,4 @@
+using AOR.Data;
 using AOR.Models.Data;
 
 namespace AOR.Repositories
@@ -9,6 +10,18 @@ namespace AOR.Repositories
 
         // Hent rapporter for én bestemt bruker (MyReports)
         Task<List<ReportModel>> GetByUserAsync(string userId);
+
+        // Hent rapporter der brukeren er assignet (AssignedToId)
+        Task<List<ReportModel>> GetAssignedToAsync(string userId);
+
+        // Hent antall rapporter som er assignet til en bruker og fortsatt er Pending
+        Task<int> GetAssignedPendingCountAsync(string userId);
+
+        // Hent alle brukere som har rollen Registrar
+        Task<List<User>> GetRegistrarsAsync();
+
+        // Assign en rapport til en registrar (satt AssignedToId)
+        Task AssignToAsync(int reportId, string? registrarUserId);
 
         // Hent rapporter siste 30 dager (for Last30Days-endepunktet)
         Task<List<ReportModel>> GetLast30DaysAsync();
