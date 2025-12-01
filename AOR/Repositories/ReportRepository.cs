@@ -20,6 +20,7 @@ namespace AOR.Repositories
                 .AsNoTracking()
                 .Include(r => r.Obstacle)
                 .Include(r => r.User).ThenInclude(u => u.Organization)
+                .Include(r => r.AssignedTo).ThenInclude(u => u.Organization)
                 .Include(r => r.Status)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
@@ -50,6 +51,60 @@ namespace AOR.Repositories
                 .ToListAsync();
         }
 
+        // Hent rapporter der en bruker er assignet (AssignedToId)
+        public async Task<List<ReportModel>> GetAssignedToAsync(string userId)
+        {
+            return await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.AssignedToId == userId)
+                .Include(r => r.Obstacle)
+                .Include(r => r.User).ThenInclude(u => u.Organization)
+                .Include(r => r.AssignedTo).ThenInclude(u => u.Organization)
+                .Include(r => r.Status)
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+        }
+
+        // Hent antall rapporter som er assignet til en bruker og fortsatt er Pending
+        public async Task<int> GetAssignedPendingCountAsync(string userId)
+        {
+            // Assuming Pending has StatusId = 1 (seeded in DbContext)
+            return await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.AssignedToId == userId && r.StatusId == 1)
+                .CountAsync();
+        }
+
+        // Hent alle brukere som har rollen Registrar
+        public async Task<List<User>> GetRegistrarsAsync()
+        {
+            // Tabellen for AspNetUserRoles er tilgjengelig som _context.UserRoles
+            var registrarRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Registrar");
+            if (registrarRole == null) return new List<User>();
+
+            var userIds = await _context.UserRoles
+                .Where(ur => ur.RoleId == registrarRole.Id)
+                .Select(ur => ur.UserId)
+                .ToListAsync();
+
+            return await _context.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Include(u => u.Organization)
+                .ToListAsync();
+        }
+
+        // Assign en rapport til en registrar (setter AssignedToId)
+        public async Task AssignToAsync(int reportId, string? registrarUserId)
+        {
+            var report = await _context.Reports.FindAsync(reportId);
+            if (report == null) return;
+
+            // Hvis registrarUserId er tom eller null -> fjern tildeling
+            report.AssignedToId = string.IsNullOrWhiteSpace(registrarUserId) ? null : registrarUserId;
+            _context.Reports.Update(report);
+            await _context.SaveChangesAsync();
+        }
+
         // Hente én spesifikk rapport med relasjoner (til detaljer-view)
         public async Task<ReportModel?> GetByIdWithIncludesAsync(int id)
         {
@@ -57,6 +112,7 @@ namespace AOR.Repositories
                 .Include(r => r.Obstacle)
                 .Include(r => r.User)
                 .ThenInclude(u => u.Organization)
+                .Include(r => r.AssignedTo).ThenInclude(u => u.Organization)
                 .Include(r => r.Status)
                 .FirstOrDefaultAsync(r => r.ReportId == id);
         }
