@@ -16,8 +16,13 @@
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Controllers/RegistrarController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/RegistrarController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Repositories/ReportRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Repositories/ReportRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 2.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInRolesTests.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/aor.sln" beforeDir="false" afterPath="$PROJECT_DIR$/aor.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +57,6 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/erfansarwari/Documents/Semester 3/IS-202-1/aor/AOR/Controllers/AccountController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
@@ -73,12 +77,20 @@
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/UnitTests/AthorizationAttributeTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/UnitTests/LogInControllerTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/UnitTests/RegistrarControllerTests.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/UnitTests/ReportRepositoryTest.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file:///usr/local/share/dotnet/sdk/9.0.304/Microsoft.Common.CurrentVersion.targets" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -100,7 +112,8 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Erfan/RepositoryDesignPattern&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;UnitTest2.0&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -189,6 +202,8 @@
       <workItem from="1762780121531" duration="1988000" />
       <workItem from="1763640749137" duration="4658000" />
       <workItem from="1763646703155" duration="1801000" />
+      <workItem from="1764246033843" duration="3047000" />
+      <workItem from="1764251119653" duration="11493000" />
     </task>
     <task id="LOCAL−00001" summary="Refactor: Replace direct DbContext usage with repository pattern in ObstacleController&#10;&#10;- Added IObstacleRepository and ObstacleRepository&#10;- Added IReportRepository and ReportRepository&#10;- Updated ObstacleController to use repositories instead of AorDbContext&#10;- Moved report and obstacle data access behind abstraction&#10;- Constructor updated to use DI for repositories&#10;- Cleaned up unused DbContext references">
       <option name="closed" value="true" />
