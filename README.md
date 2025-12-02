@@ -35,8 +35,9 @@ docker compose up -d --build
 docker compose up -d
 
 # Åpne applikasjonen:
-# - Web App: http://localhost:5001
-# - Database Admin: http://localhost:8080
+# - Web App: http://localhost:5001 (container: web 5001:8080)
+# - Database Admin: http://localhost:8080 (Gir oversikt over databasen med tabeller)
+# - Bruker av appen kan se bort i fra containeren som heter Adminer og mariadb.
 
 # Stopp alle services
 docker compose down
@@ -54,7 +55,7 @@ git shortlog -sne update
 
 ## Sikkerhet
 
-### Autentisering og autorisasjon
+### Autentisering og autorisering
 - Innlogging håndteres av ASP.NET Core Identity.
 - Brukere tildeles roller som 'Crew', 'Registrar' og 'Admin'.
 - Tilgang kontrolleres i controllere og actions med '[Authorize]' og '[Authorize(Roles = "...")]'.
