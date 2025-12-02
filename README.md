@@ -1,5 +1,5 @@
 # AOR - Aviation Obstacle Registration
-ASP.NET Core MVC Application with Docker & MariaDB
+ASP.NET Core MVC Application med Docker & MariaDB
 Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
 Gruppe 3, IT og informasjonssystemer, høsten 2025.
@@ -49,7 +49,30 @@ enn de andre i gruppen.
 ```bash
 git shortlog -sne update
 ```
-- Copilot står som Contributer. Den er hovedsakelig brukt til å gjøre endringer i CI/CD workflow filen, og ikke selve applikasjonsfilene.
+- Copilot står som Contributer. Den er brukt til å gjøre endringer i CI/CD workflow filen, og ikke selve applikasjonsfilene.
+
+## Sikkerhet
+
+### Autentisering og autorisasjon
+- Innlogging håndteres av ASP.NET Core Identity.
+- Brukere tildeles roller som 'Crew', 'Registrar' og 'Admin'.
+- Tilgang kontrolleres i controllere og actions med '[Authorize]' og '[Authorize(Roles = "...")]'.
+
+### Passord og brukere
+- Passord lagres aldri i klartekst, men som hasher i databasen.
+- Testbrukere blir seeda til databasen ved oppstart og er kun ment for utvikling og testing av nye funksjoner.
+
+### Data og kommunikasjon
+- Applikasjonen er laget for å kjøres bak HTTPS i produksjon \/(f.eks. via omvendt proxy eller Kubernetes ingress\).
+- Connection string og andre hemmeligheter bør settes via miljøvariabler eller hemmelighetshåndtering i produksjon, ikke sjekkes inn i repo.
+
+### Roller og tilgangskontroll
+- Crew: Kan registrere hindringer i rapporter eller som utkast (Draft). Kan se egne rapporter, og kan se andre hindringer, men disse er anonymisert (Viser ikke bruker eller Org).
+- Registrar: Får opp nye rapporter for godkjenning. Registrar kan tildele rapporten til andre registrarer, som får varsel om nye tildelinger.
+- Admin: Kan legge til, fjerne og redigere både brukere og organisasjoner i systemet.
+- En bruker kan ha flere roller i systemet, og velger da hvilken rolle de skal bruke når de logger inn.
+- Sensitive operasjoner (som brukeradministrasjon) er begrenset til Admin.
+
 
 
 
