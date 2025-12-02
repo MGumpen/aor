@@ -15,7 +15,55 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInRolesTests 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AccountController 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/RegistrarController 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ReportController 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContext 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContextFactory 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbSeeder 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/User 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030131419_InitialCreate 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030131419_InitialCreate.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030133329_AddedOrgToUser 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030133329_AddedOrgToUser.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030135943_AddObstacleStatus 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251030135943_AddObstacleStatus.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251101104101_Link_Report_to_IdentityUser 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251101104101_Link_Report_to_IdentityUser.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251104093212_Added_Report_Deleted_Voltage 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251104093212_Added_Report_Deleted_Voltage.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251104104636_Removed_Entity_From_ObstacleData 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251104104636_Removed_Entity_From_ObstacleData.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251201110900_AddAssignedToReport 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/20251201110900_AddAssignedToReport.Designer 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Migrations/AorDbContextModelSnapshot 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/IObstacleRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/IOrganizationRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/IReportRepositories 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/IUserRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/ObstacleRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/OrganizationRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/ReportRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Repositories/UserRepository 2.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Account/AdminEditUser 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Account/AppUsers 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Account/EditUser 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Account/NewUser 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/EditOrg 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Map 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/NewOrg 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Orgs 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Reports 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Stats 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/AccessDenied 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Registrar/AllReports 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Registrar/AssignedReports 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/MyReports 2.cshtml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails 2.cshtml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
