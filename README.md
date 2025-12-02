@@ -63,10 +63,6 @@ git shortlog -sne update
 - Passord lagres aldri i klartekst, men som hasher i databasen.
 - Testbrukere blir seeda til databasen ved oppstart og er kun ment for utvikling og testing av nye funksjoner.
 
-### Data og kommunikasjon
-- Applikasjonen er laget for å kjøres bak HTTPS i produksjon \/(f.eks. via omvendt proxy eller Kubernetes ingress\).
-- Connection string og andre hemmeligheter bør settes via miljøvariabler eller hemmelighetshåndtering i produksjon, ikke sjekkes inn i repo.
-
 ### Roller og tilgangskontroll
 - Crew: Kan registrere hindringer i rapporter eller som utkast (Draft). Kan se egne rapporter, og kan se andre hindringer, men disse er anonymisert (Viser ikke bruker eller Org).
 - Registrar: Får opp nye rapporter for godkjenning. Registrar kan tildele rapporten til andre registrarer, som får varsel om nye tildelinger.
