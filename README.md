@@ -70,7 +70,26 @@ git shortlog -sne update
 - En bruker kan ha flere roller i systemet, og velger da hvilken rolle de skal bruke når de logger inn.
 - Sensitive operasjoner (som brukeradministrasjon) er begrenset til Admin.
 
+## Bruk av applikasjonen
+### Crew
+AOR er en applikasjon laget for at piloter og andre flybesetningsmedlemmer skal kunne rapportere hindringer de oppdager under flyvning som ikke er registrert i deres systemer.
+Som crew kan man logge inn i applikasjonen, og får da tilgang til et kart som viser posisjonen til brukeren. 
+Brukeren kan klikke på en at hurtigknappene på skjermen for å registrere den hindringen de ser foran seg. 
+Ved å legge til punkter på kartet, registreres posisjonen til hindringen automatisk.
+Når brukeren er fornøyd med plassering av posisjonspunktene, kan brukeren fylle ut et skjema med informasjon om den aktuelle hindringen.
+Deretter kan brukeren lagre informasjonen som draft til senere redigering, eller sende inn rapporten til registerfører hos NRL teamet til Kartverket.
+Brukeren kan også finne en liste over sine egne rapporter, hvor draft også lagres, og se status på innsendte rapporter.
 
+### Registrar (registerfører)
+Som registerfører i NRL teamet, kan man logge inn for å få opp rapportene som er registrert av crew brukere.
+Registerfører får opp all informasjon om rapportene, og kan velge å tildele rapporten til en annen saksbehandler som skal gå gjennom den, eller godkjenne/avslå rapporten selv.
+Når rapporten er godkjent eller avslått, kommer det opp som statur hos crew medlemmet, og lagres i databasen med den aktuelle statusen. 
+Registerfører har også tilgang til å se Epost til brukeren som har rapportert, som gir muligheten til å etterspørre mer informasjon om nødvendig.
+
+### Admin
+En bruker som er admin har tilgang til å administrere brukere og organisasjoner i applikasjonen.
+En bruker kan ha flere roller i systemet, så en admin kan være crew eller registerfører, eller bare ha rollen admin.
+På sikt er planen også at admin skal få tilgang til rapporter og statistikk, men dette er ikke implementert i løsningen enda.
 
 
 # Teknisk
