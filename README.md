@@ -4,9 +4,10 @@ Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
 Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
-- Vi har en egen fil som viser hvordan vi bruker github: Github.md
-
-- Forskjellige testingscenarier finner du i Testing.md
+### Forskjellige .md dokumentasjonsfiler:
+- Hvordan vi bruker Github: Github.md
+- Testing er dokumentert i Testing.md
+- Systemarkitektur er beskrevet i Architecture.md
 
 ## Testbrukere i Web Applikasjonen (blir seedet til databasen ved oppstart):
 - Crew: crew@test.no Passord: Test123$ Rolle(r): Crew
