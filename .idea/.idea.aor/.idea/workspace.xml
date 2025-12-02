@@ -15,7 +15,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 2.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInRolesTests.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testing.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testing.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aor.sln" beforeDir="false" afterPath="$PROJECT_DIR$/aor.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,15 +58,8 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///Users/erfansarwari/Documents/Semester 3/IS-202-1/aor/AOR/Controllers/AccountController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/NewUserViewModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/ObstacleTypeModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/OrgModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/PhotoModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/PositionModel.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/AOR/Models/ReportModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IObstacleRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IOrganizationRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IReportRepositories.cs" root0="FORCE_HIGHLIGHTING" />
@@ -71,6 +72,7 @@
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/UnitTests/UnitTest1.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -98,7 +100,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "update",
+    "git-widget-placeholder": "UnitTests",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",

@@ -1,55 +1,60 @@
-### Testing scenarier
+# Testing
 
-# Log In
-- Logg inn med de forskjellige brukerne og passordene som står i README.md, så skal du komme til forskjellige index sider.
+Dette dokumentet beskriver hvordan vi tester prosjektet, hvilke deler som er dekket av tester, og hvordan man kjører testene.
 
-# Unit tests:
+## Hvordan kjøre testene
 
-LogInControllerTests:
+For å kjøre alle tester i løsningen:
 
-1. Index_Post_ValidRegisterforer_RedirectsToRegisterforerIndex
+```bash
+dotnet test
 
-Tester at når en bruker logger inn med riktige legitimasjon (reg@uia.no, 123), blir de sendt videre til riktig side — Registerforer/Index.
-Denne testen bekrefter at RedirectToActionResult fungerer og at brukeren får riktig rolle.
+Prosjektstruktur (relevant for testing):
+	•	AOR/ – webapplikasjon og domene/modeller
+	•	UnitTests/ – NUnit unit tester for domene og repositories
 
-2. Index_Post_InvalidUser_ReturnsViewWithError
+Testprosjektet bruker:
+	•	NUnit som test-rammeverk
+	•	EF Core InMemory-database for å teste repositories uten ekte database
 
-Tester at hvis brukeren skriver feil brukernavn eller passord, så vises innloggingssiden igjen.
-I tillegg kontrolleres det at ModelState inneholder en feilmelding, noe som betyr at innloggingen mislykkes.
+Hva de ulike testene gjør
 
-3. Index_Get_ReturnsLoginView_WithViewData
+Domene / modeller
 
-Tester at GET /LogIn/Index returnerer innloggingssiden (ViewResult) med riktig modell (LogInData).
-Den sjekker også at ViewData inneholder informasjon om database-tilkoblingen (DbConnected og DbError).
+AorDbContext_ShouldSeed_DefaultStatuses
+Tester at databasen seedes med fem standardstatusverdier:
+Pending, Approved, Rejected, Draft, Deleted.
 
+ObstacleData_ShouldSetCreatedAt_OnCreation
+Sikrer at CreatedAt setter seg automatisk når et nytt ObstacleData-objekt opprettes.
 
-ObstacleControllerTests:
+ObstacleData_ShouldRequireDescription_WhenTypeIsOther
+Validerer at ObstacleDescription kreves når ObstacleType == "other".
 
-1. DataForm_Post_ValidModel_Returns_Overview_And_Sets_CreatedAt
+ObstacleData_ShouldBeValid_WhenTypeOtherHasDescription
+Tester at modellen er gyldig når type er other og beskrivelse er angitt.
 
-Tester at når et gyldig hinder (Obstacle) sendes inn via POST, returneres “Overview”-viewet.
-Testen bekrefter også at CreatedAt-feltet blir automatisk satt til riktig tidspunkt.
+⸻
 
-ForgotPasswordControllerTests:
+Repository-tester
 
-1. Index_Post_ValidModel_RedirectsToLogIn
+OrganizationRepository_ExistsAsync_ReturnsTrue_WhenOrganizationExists
+Returnerer true hvis en organisasjon med gitt OrgNr finnes.
 
-Tester at når brukeren skriver inn en gyldig e-post i “Glemt passord”-skjemaet, logges forespørselen.
-Deretter sjekkes det at brukeren sendes videre til LogIn/Index-siden.
+OrganizationRepository_ExistsAsync_ReturnsFalse_WhenOrganizationDoesNotExist
+Returnerer false når organisasjonen ikke finnes.
 
-CrewControllerTests
+OrganizationRepository_DeleteAsync_RemovesOrganization
+Tester at sletting fungerer og kun riktig organisasjon fjernes.
 
-1. Index_Returns_ViewResult
+ObstacleRepository_AddAndGetByIdAsync_PersistsObstacle
+Sjekker at hinder lagres og kan hentes opp igjen riktig.
 
-Tester at CrewController.Index() returnerer et gyldig ViewResult.
-Denne testen sikrer at hovedsiden for Crew vises uten feil.
+UserRepository_GetByOrganizationAsync_ReturnsOnlyUsersFromThatOrganization
+Sikrer at kun brukere som tilhører en bestemt organisasjon returneres.
 
-2. Privacy_Returns_ViewResult
+ReportRepository_UpdateStatusAndDelete_WorksAsExpected
+Tester:
+	1.	At UpdateStatusAsync oppdaterer status på riktig rapport
+	2.	At DeleteAsync fjerner rapporten permanent
 
-Tester at CrewController.Privacy() returnerer riktig view.
-Bekrefter at personvern-siden lastes og vises som forventet.
-
-3.  Error_Returns_View_With_ErrorViewModel
-
-Tester at CrewController.Error() returnerer et view med en modell av typen ErrorViewModel.
-Den sjekker at RequestId ikke er tom og at feilhåndteringen fungerer som planlagt.
