@@ -13,7 +13,7 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 - Crew: crew@test.no Passord: Test123$ Rolle(r): Crew
 - Crew 2: crew2@test.no Passord: Test123$ Rolle(r): Crew, Admin
 - Admin: admin@test.no Passord: Test123$ Rolle(r): Admin
-- Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registerfører
+- Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registrar
 
 ### Forutsetninger for å starte applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
