@@ -40,6 +40,20 @@ docker compose up -d
 # Stopp alle services
 docker compose down
 ```
+## Contributors
+- Vi har jobbet med en update branch. Det gjør at main branchen ikke inneholder riktig informasjon om hvem som har jobbet med 
+prosjektet dersom man sjekker Insights og deretter Contributors på github, ettersom den bare viser commits til main. 
+- Ettersom det stort sett er samme person som har laget PR og merget fra update til main, får denne personen veldig mange flere commits 
+enn de andre i gruppen.
+- For å få et mer riktig bilde av hvem som har bidratt til prosjektet, anbefaler vi å kjøre følgende kommando i terminalen:
+```bash
+git shortlog -sne
+```
+-Copilot står som Contributer. Den er hovedsakelig brukt til å gjøre endringer i CI/CD workflow filen, og ikke selve applikasjonsfilene.
+
+
+
+# Teknisk
 
 ## 🛠️ Database
 
