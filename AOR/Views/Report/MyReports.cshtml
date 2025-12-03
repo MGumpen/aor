@@ -119,8 +119,50 @@
 </section>
 
 <script>
-    window.myReportsConfig = {
-        currentUserId: '@currentUserId'
-    };
+    const currentUserId = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(currentUserId));
+    (function () {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        let draftKeyToDelete = null;
+
+        @if (TempData["DeleteDraft"] != null)
+        {
+        <text>draftKeyToDelete = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["DeleteDraft"]));</text>
+        }
+
+        if (!draftKeyToDelete && window.sessionStorage) {
+            draftKeyToDelete = window.sessionStorage.getItem('deleteDraft');
+        }
+
+        if (!draftKeyToDelete) {
+            return;
+        }
+
+        try {
+            if (window.sessionStorage) {
+                window.sessionStorage.removeItem('deleteDraft');
+            }
+
+            if (window.localStorage && window.localStorage.getItem(draftKeyToDelete)) {
+                const stored = window.localStorage.getItem(draftKeyToDelete);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        const ownerId = typeof parsed.ownerId === 'string' ? parsed.ownerId.trim() : '';
+                        if (ownerId && currentUserId && ownerId !== currentUserId) {
+                            return;
+                        }
+                    } catch (parseError) {
+                        console.warn('Unable to inspect stored draft before removal', draftKeyToDelete, parseError);
+                    }
+                }
+                window.localStorage.removeItem(draftKeyToDelete);
+            }
+        } catch (error) {
+            console.warn('Unable to clear stored draft state', draftKeyToDelete, error);
+        }
+    })();
 </script>
 <script src="~/js/Report/MyReports.js" asp-append-version="true"></script>

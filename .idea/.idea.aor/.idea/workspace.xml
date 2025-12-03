@@ -15,11 +15,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/copilotDiffState.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Views/Report/MyReports.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Report/MyReports.cshtml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/css/Report/MyReports.css" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/css/Report/MyReports.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/js/Report/MyReports.js" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/js/Report/MyReports.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
