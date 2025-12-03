@@ -7,8 +7,7 @@
     string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 }
 
-<link rel="stylesheet" href="~/css/Report/MyReports.css" />
-
+<link rel="stylesheet"  href="~/css/Report/MyReports.css" asp-append-version="true"> 
 
 <section class="container">
     <div class="header">
@@ -17,7 +16,7 @@
     </div>
     
     <div class="actions-bar">
-        <a href="/Crew" class="btn btn-primary btn-back">Back to map</a>
+        <a href="/Crew" class="btn btn-primary">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @(Model == null ? 0 : Model.Count()) reports</div>
             <div><strong>Lines:</strong> @(Model == null ? 0 : Model.Count(x => x.Obstacle != null && !string.IsNullOrEmpty(x.Obstacle.ObstacleType) && x.Obstacle.ObstacleType.ToLower() == "line"))</div>
@@ -115,6 +114,13 @@
             <p>You haven't reported any obstacles yet.</p>
         </div>
     }
+    
+    
 </section>
 
-<script src="~/js/Report/MyReports.js"></script>
+<script>
+    window.myReportsConfig = {
+        currentUserId: '@currentUserId'
+    };
+</script>
+<script src="~/js/Report/MyReports.js" asp-append-version="true"></script>
