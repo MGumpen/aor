@@ -15,16 +15,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 2.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/CrewControllerTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ForgotPasswordControllerTest.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/LogInRolesTests.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/ControllerTests/ObstacleControllerTest.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 3.csproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 4.csproj" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Testing.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testing.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/aor.sln" beforeDir="false" afterPath="$PROJECT_DIR$/aor.sln" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,12 +43,12 @@
     &quot;assignee&quot;: &quot;MGumpen&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/MGumpen/aor.git",
-    "accountId": "868d185d-3199-4df5-80d0-9c9dd6d0785b"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MGumpen/aor.git&quot;,
+    &quot;accountId&quot;: &quot;868d185d-3199-4df5-80d0-9c9dd6d0785b&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.vscode/launch.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -101,7 +94,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Marius/dokumentasjon",
+    "git-widget-placeholder": "update",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
