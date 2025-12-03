@@ -356,7 +356,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-user-circle"></i>
+                                    <i class="fa fa-user-sun"></i>
                                     @($"{currentUser?.FirstName} {currentUser?.LastName}")
                                 </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -382,7 +382,7 @@
                                             <hr class="dropdown-divider"/>
                                         </li>
                                         <li>
-                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown');">
+                                            <form asp-controller="LogIn" asp-action="Logout" method="post" class="px-3" onsubmit="localStorage.removeItem('aor_welcome_shown'); localStorage.removeItem('theme');">
                                                 @Html.AntiForgeryToken()
                                                 <button type="submit" class="btn btn-link dropdown-item p-0 text-start">
                                                     <i class="fa fa-sign-out-alt me-2"></i> Log out
@@ -433,15 +433,23 @@
         
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
-            icon.classList.remove('fa-circle');
-            icon.classList.add('fa-moon');
-            btn.setAttribute('title', 'Switch to dark mode');
+            if (icon) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to dark mode');
+            }
             localStorage.setItem('theme', 'light');
         } else {
             body.classList.add('dark-mode');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-circle');
-            btn.setAttribute('title', 'Switch to light mode');
+            if (icon) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to light mode');
+            }
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -453,19 +461,26 @@
         const btn = document.getElementById('themeToggleBtn');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
-        // Only apply dark mode if user is authenticated
+        // Bare bruke lagret dark-mode for innloggede brukere
         if (isAuthenticated && savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
             if (icon) {
                 icon.classList.remove('fa-moon');
-                icon.classList.add('fa-circle');
+                icon.classList.add('fa-sun');
             }
             if (btn) {
                 btn.setAttribute('title', 'Switch to light mode');
             }
-        } else if (!isAuthenticated) {
-            // Force light mode for non-authenticated users (login page)
+        } else {
+            // For ikke-innloggede eller hvis ingen lagret dark-mode: bruk light
             document.body.classList.remove('dark-mode');
+            if (icon) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to dark mode');
+            }
         }
     });
 </script>

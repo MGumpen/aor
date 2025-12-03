@@ -218,15 +218,15 @@
     background: linear-gradient(to top, #ffffff 85%, transparent);
 }
 
-.btn-draft {
+.btn.btn-draft {
     background: #fbbf24;
-    color: #92400e;
+    color: #111827 !important;
     border: 1px solid #f59e0b;
 }
 
-.btn-draft:hover {
+.btn.btn-draft:hover {
     background: #f59e0b;
-    color: #ffffff;
+    color: #ffffff !important;
 }
 
 .form-toast-notification,
@@ -433,4 +433,8 @@ body.dark-mode .badge-mast {
 body.dark-mode .badge-other {
     background: #1e4d3a;
     color: #86efac;
+}
+
+body.dark-mode .btn.btn-draft {
+    color: #111827 !important;
 }
