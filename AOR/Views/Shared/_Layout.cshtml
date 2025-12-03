@@ -344,7 +344,7 @@
                         <i class="fa fa-calendar-days me-2"></i>Last 30 Days
                     </button>
                 }
-                @if (User?.Identity?.IsAuthenticated == true)
+                @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
                 {
                     <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Switch to dark mode">
                         <i class="fa fa-moon" id="themeIcon"></i>
