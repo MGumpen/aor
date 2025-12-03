@@ -15,6 +15,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Obstacle/AllObstacles.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Obstacle/AllObstacles.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/MyReports.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Report/MyReports.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Report/ReportDetails.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/css/Obstacle/DataForm.css" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/css/Obstacle/DataForm.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 3.csproj" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR.UnitTests/AOR.UnitTests 4.csproj" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Testing.md" beforeDir="false" afterPath="$PROJECT_DIR$/Testing.md" afterDir="false" />
