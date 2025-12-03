@@ -119,6 +119,10 @@ public class RegistrarController : Controller
 
         var pendingCount = await _reportRepository.GetAssignedPendingCountAsync(user.Id);
         ViewBag.AssignedPendingCount = pendingCount;
+
+        var unassignedPending = await _reportRepository.GetUnassignedPendingCountAsync();
+        ViewBag.UnassignedPendingCount = unassignedPending;
+
         return View();
     }
 

@@ -75,6 +75,15 @@ namespace AOR.Repositories
                 .CountAsync();
         }
 
+        // Hent antall rapporter som ikke er assignet og fortsatt er Pending
+        public async Task<int> GetUnassignedPendingCountAsync()
+        {
+            return await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.AssignedToId == null && r.StatusId == 1)
+                .CountAsync();
+        }
+
         // Hent alle brukere som har rollen Registrar
         public async Task<List<User>> GetRegistrarsAsync()
         {

@@ -17,6 +17,9 @@ namespace AOR.Repositories
         // Hent antall rapporter som er assignet til en bruker og fortsatt er Pending
         Task<int> GetAssignedPendingCountAsync(string userId);
 
+        // Hent antall rapporter som ikke er assignet og fortsatt er Pending
+        Task<int> GetUnassignedPendingCountAsync();
+
         // Hent alle brukere som har rollen Registrar
         Task<List<User>> GetRegistrarsAsync();
 
