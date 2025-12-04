@@ -6,8 +6,10 @@ Dette dokumentet beskriver hvordan vi tester prosjektet, hvilke deler som er dek
 
 For å kjøre alle tester i løsningen:
 
-```bash
 dotnet test
+´´´bash
+Test summary: total: 10; failed: 0; succeeded: 10; skipped: 0; duration: 1,2s
+Build succeeded with 1 warning(s) in 2,4s
 
 Prosjektstruktur (relevant for testing):
 	•	AOR/ – webapplikasjon og domene/modeller
