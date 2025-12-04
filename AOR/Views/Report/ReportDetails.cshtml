@@ -1,4 +1,4 @@
-@model AOR.Models.Data.ReportModel
+@model AOR.Models.View.ReportDetailsViewModel
 
 @{
     ViewData["Title"] = "Report details";
@@ -41,16 +41,16 @@
             var canViewUser = isOwner || isAdminOrRegistrar;
         }
         
-        @if (canViewUser && Model.User != null)
+        @if (canViewUser && !string.IsNullOrEmpty(Model.UserName))
         {
             <div class="detail-card">
                 <div class="detail-label">User</div>
-                <div class="detail-value">@Model.User.UserName</div>
+                <div class="detail-value">@Model.UserName</div>
             </div>
             
             <div class="detail-card">
                 <div class="detail-label">Organization</div>
-                <div class="detail-value">@(Model.User.Organization?.OrgName ?? "-")</div>
+                <div class="detail-value">@(Model.UserOrganizationName ?? "-")</div>
             </div>
             
         }
@@ -65,99 +65,90 @@
         <div class="detail-card">
             <div class="detail-label">Status</div>
             <div class="detail-value">
-                @{
-                    var statusText = Model.Status?.Status ?? "Pending";
-                    var badgeClass = statusText.ToLower() switch
-                    {
-                        "approved" => "status-badge approved",
-                        "rejected" => "status-badge rejected",
-                        _ => "status-badge pending"
-                    };
-                }
-                <span class="@badgeClass">@statusText</span>
+                <span class="@Model.StatusCssClass">@Model.StatusText</span>
             </div>
         </div>
         
         <div class="detail-card">
             <div class="detail-label">Type</div>
-            <div class="detail-value">@Model.Obstacle.ObstacleType.ToUpper()</div>
+            <div class="detail-value">@Model.ObstacleType.ToUpper()</div>
         </div>
 
         <div class="detail-card">
             <div class="detail-label">Name</div>
-            <div class="detail-value">@Model.Obstacle.ObstacleName</div>
+            <div class="detail-value">@Model.ObstacleName</div>
         </div>
         
-        @if (Model.Obstacle.ObstacleHeight.HasValue)
+        @if (Model.ObstacleHeight.HasValue)
         {
             <div class="detail-card">
                 <div class="detail-label">Height</div>
                 <div class="detail-value">
-                    @Model.Obstacle.ObstacleHeight.Value.ToString("F1") m
+                    @Model.ObstacleHeight.Value.ToString("F1") m
                     <span style="color: #6b7280; font-size: 0.875rem;">
-                        (≈ @((Model.Obstacle.ObstacleHeight.Value * 3.28084).ToString("F1")) ft)
+                        (≈ @((Model.ObstacleHeight.Value * 3.28084).ToString("F1")) ft)
                     </span>
                 </div>
             </div>
         }
         
-        @if (Model.Obstacle.ObstacleType.ToLower() == "line")
+        @if (Model.ObstacleType.ToLower() == "line")
         {
-            @if (Model.Obstacle.WireCount.HasValue)
+            @if (Model.WireCount.HasValue)
             {
                 <div class="detail-card">
                     <div class="detail-label">Wire Count</div>
-                    <div class="detail-value">@Model.Obstacle.WireCount wires</div>
+                    <div class="detail-value">@Model.WireCount wires</div>
                 </div>
             }
         }
-        else if (Model.Obstacle.ObstacleType.ToLower() == "mast")
+        else if (Model.ObstacleType.ToLower() == "mast")
         {
-            @if (!string.IsNullOrEmpty(Model.Obstacle.MastType))
+            @if (!string.IsNullOrEmpty(Model.MastType))
             {
                 <div class="detail-card">
                     <div class="detail-label">Mast Type</div>
-                    <div class="detail-value">@Model.Obstacle.MastType</div>
+                    <div class="detail-value">@Model.MastType</div>
                 </div>
             }
 
-            @if (Model.Obstacle.HasLighting.HasValue)
+            @if (Model.HasLighting.HasValue)
             {
                 <div class="detail-card">
                     <div class="detail-label">Aviation Lighting</div>
-                    <div class="detail-value">@(Model.Obstacle.HasLighting.Value ? "Yes" : "No")</div>
+                    <div class="detail-value">@(Model.HasLighting.Value ? "Yes" : "No")</div>
                 </div>
             }
         }
         else
         {
-            @if (!string.IsNullOrEmpty(Model.Obstacle.Category))
+            @if (!string.IsNullOrEmpty(Model.Category))
             {
                 <div class="detail-card">
                     <div class="detail-label">Category</div>
-                    <div class="detail-value">@Model.Obstacle.Category</div>
+                    <div class="detail-value">@Model.Category</div>
                 </div>
             }
         }
     </div>
     
-    @if (!string.IsNullOrEmpty(Model.Obstacle.ObstacleDescription))
+    @if (!string.IsNullOrEmpty(Model.ObstacleDescription))
     {
         <div class="detail-card" style="margin-bottom: 24px;">
             <div class="detail-label">Description</div>
-            <div class="detail-value">@Model.Obstacle.ObstacleDescription</div>
+            <div class="detail-value">@Model.ObstacleDescription</div>
         </div>
     }
     
-    @if (!string.IsNullOrEmpty(Model.Obstacle.Coordinates) && Model.Obstacle.Coordinates != "[]")
+    @if (!string.IsNullOrEmpty(Model.Coordinates) && Model.Coordinates != "[]")
     {
         <div class="coordinates-section">
             <h3 style="margin: 0 0 12px 0; color: #0c4a6e;">GPS Coordinates</h3>
             <div class="coordinates-list" id="coordinates-display"></div>
         </div>
     }
-    <input type="hidden" id="reportCoordinates" value="@Model.Obstacle.Coordinates" />
-    <input type="hidden" id="reportObstacleType" value="@Model.Obstacle.ObstacleType" />
+    <input type="hidden" id="reportCoordinates" value="@Model.Coordinates" />
+    <input type="hidden" id="reportObstacleType" value="@Model.ObstacleType" />
     <div style="margin-bottom: 36px;">
         <div id="map-wrapper">
             <div id="report-map" style="border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0;"></div>
