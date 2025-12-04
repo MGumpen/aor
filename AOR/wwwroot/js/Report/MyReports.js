@@ -13,7 +13,6 @@
     }
 
     if (!draftKeyToDelete) {
-        // Videre nedlasting av drafts fra localStorage skjer uansett nedenfor
     }
 
     try {
@@ -28,7 +27,6 @@
                     const parsed = JSON.parse(stored);
                     const ownerId = typeof parsed.ownerId === 'string' ? parsed.ownerId.trim() : '';
                     if (ownerId && currentUserId && ownerId !== currentUserId) {
-                        // Ikke slett andre brukeres drafts
                     } else {
                         window.localStorage.removeItem(draftKeyToDelete);
                     }

@@ -1,4 +1,3 @@
-// ReportModel.cs
 using System.ComponentModel.DataAnnotations;
 using AOR.Data;
 using Microsoft.AspNetCore.Identity;

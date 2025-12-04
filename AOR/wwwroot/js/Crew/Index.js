@@ -29,13 +29,11 @@ function togglePointsPanel() {
     const title = document.getElementById('panel-title');
 
     if (isPanelVisible) {
-        // Hide only the points list, keep header and controls visible
         pointsList.style.display = 'none';
         title.setAttribute('title', 'Click to show points');
 
         isPanelVisible = false;
     } else {
-        // Show the points list
         pointsList.style.display = 'block';
         title.setAttribute('title', 'Click to hide points');
 
@@ -47,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showWelcomePopup();
     setTimeout(initializeMap, 100);
 
-    // Show the Last 30 Days button only on Crew page
     const last30DaysBtn = document.getElementById('last30DaysBtn');
     if (last30DaysBtn) {
         last30DaysBtn.style.display = 'inline-block';
@@ -56,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeMap() {
     map = L.map('obstacle-map', {
-        center: [58.16376, 8.00183],
+        center: showMyLocation(),
         zoom: 16,
         zoomControl: true,
         touchZoom: true,
@@ -116,7 +113,6 @@ function startDrawing(type) {
     document.getElementById('drawing-notification').style.display = 'block';
     document.getElementById('points-panel').style.display = 'block';
 
-    // Ensure panel content is visible
     document.getElementById('points-list').style.display = 'block';
 
     isPanelVisible = true;
@@ -152,7 +148,6 @@ function addPoint(latlng) {
         pointId: pointId
     });
 
-    // Add permanent number label to the marker
     const numberIcon = L.divIcon({
         className: 'marker-number-label',
         html: `<div style="
@@ -182,15 +177,12 @@ function addPoint(latlng) {
     numberMarker.addTo(drawingLayer);
     markers.push(numberMarker);
 
-    // MOBILE-FRIENDLY: Support both mouse and touch events
     let isDragging = false;
 
-    // Mouse events
     marker.on('mousedown', function(e) {
         startDrag(e);
     });
 
-    // Touch events
     marker.on('touchstart', function(e) {
         startDrag(e);
     });
@@ -205,7 +197,6 @@ function addPoint(latlng) {
                 const newLatLng = e.latlng || map.mouseEventToLatLng(e.originalEvent.touches[0]);
                 marker.setLatLng(newLatLng);
 
-                // Update the number label position
                 const labelMarker = markers.find(m => m.options.pointId === pointId + '_label');
                 if (labelMarker) {
                     labelMarker.setLatLng(newLatLng);
@@ -228,7 +219,6 @@ function addPoint(latlng) {
             map.off('touchend', onEnd);
         };
 
-        // Listen for both mouse and touch events
         map.on('mousemove', onMove);
         map.on('mouseup', onEnd);
         map.on('touchmove', onMove);
@@ -297,7 +287,6 @@ function removePoint(pointId) {
         markers.splice(markerIndex, 1);
     }
 
-    // Also remove the number label
     const labelIndex = markers.findIndex(marker => marker.options.pointId === pointId + '_label');
     if (labelIndex !== -1) {
         drawingLayer.removeLayer(markers[labelIndex]);
@@ -324,7 +313,6 @@ function undoLastPoint() {
 }
 
 function updateCurrentDrawing() {
-    // Only get positions from actual markers, not labels
     currentDrawing = markers
         .filter(marker => !marker.options.pointId.includes('_label'))
         .map(marker => marker.getLatLng());
@@ -429,7 +417,6 @@ async function toggleLast30Days() {
     const btn = document.getElementById('last30DaysBtn');
 
     if (showingLast30Days) {
-        // Hide the layer
         if (last30DaysLayer) {
             map.removeLayer(last30DaysLayer);
             last30DaysLayer = null;
@@ -438,7 +425,6 @@ async function toggleLast30Days() {
         btn.classList.remove('active');
         btn.innerHTML = '<i class="fa fa-calendar-days me-2"></i>Last 30 Days';
     } else {
-        // Show the layer
         try {
             btn.disabled = true;
             btn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Loading...';
@@ -507,7 +493,6 @@ function displayLast30DaysObstacles(obstacles) {
 
                 marker.addTo(last30DaysLayer);
             } else {
-                // Multiple points - create a polyline
                 const latlngs = coords.map(c => [c.lat, c.lng]);
                 const polyline = L.polyline(latlngs, {
                     color: color,

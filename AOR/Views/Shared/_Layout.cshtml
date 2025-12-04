@@ -24,291 +24,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <style>
-    .navbar .dropdown-menu,
-    .navbar .dropdown-menu.show,
-    .dropdown-item {
-        z-index: 20000 !important;
-        min-width: 300px;
-        font-size: 1.5rem;
-    }
-
-    .navbar .dropdown-item {
-        padding: 0.75rem 1.25rem;
-    }
-
-    .navbar {
-        position: relative;
-        z-index: 20000;
-    }
-
-    .navbar-collapse {
-        overflow: visible !important;
-    }
-    
-    /* Dark Mode Styles */
-    body.dark-mode {
-        background-color: #1a1a1a !important;
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .navbar {
-        background-color: #2d2d2d !important;
-        border-bottom-color: #444 !important;
-    }
-    
-    body.dark-mode .navbar-light .navbar-brand,
-    body.dark-mode .nav-link,
-    body.dark-mode .dropdown-toggle {
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .dropdown-menu {
-        background-color: #2d2d2d !important;
-        border-color: #444 !important;
-    }
-    
-    body.dark-mode .dropdown-item {
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .dropdown-item:hover {
-        background-color: #3d3d3d !important;
-    }
-    
-    body.dark-mode .footer {
-        background-color: #2d2d2d !important;
-        color: #e0e0e0 !important;
-        border-top-color: #444 !important;
-    }
-    
-    body.dark-mode .container,
-    body.dark-mode .card {
-        background-color: #1a1a1a !important;
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .alert-info {
-        background-color: #2c5282 !important;
-        color: #e0e0e0 !important;
-        border-color: #3c6292 !important;
-    }
-    
-    body.dark-mode a {
-        color: #63b3ed !important;
-    }
-    
-    body.dark-mode a:hover {
-        color: #4299e1 !important;
-    }
-    
-    /* Dark mode for tables */
-    body.dark-mode table {
-        background-color: #2d2d2d !important;
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode table thead th {
-        background-color: #1f1f1f !important;
-        color: #f5f5f5 !important;
-        border-color: #555 !important;
-        font-weight: 600 !important;
-    }
-    
-    body.dark-mode table tbody td {
-        background-color: #252525 !important;
-        color: #d5d5d5 !important;
-        border-color: #444 !important;
-    }
-    
-    body.dark-mode table tbody tr:hover td {
-        background-color: #2f2f2f !important;
-    }
-    
-    /* Dark mode for headings */
-    body.dark-mode h1 {
-        color: #f0f0f0 !important;
-        font-weight: 500 !important;
-    }
-    
-    body.dark-mode h2 {
-        color: #f0f0f0 !important;
-        font-weight: 600 !important;
-        background-color: #2a2a2a !important;
-        padding: 12px 16px;
-        border-radius: 8px;
-    }
-    
-    body.dark-mode h3,
-    body.dark-mode h4,
-    body.dark-mode h5,
-    body.dark-mode h6 {
-        color: #f0f0f0 !important;
-        font-weight: 500 !important;
-    }
-    
-    /* Dark mode for buttons - preserve their colors but adjust if needed */
-    body.dark-mode .btn-primary {
-        background-color: #0d6efd !important;
-        border-color: #0d6efd !important;
-    }
-    
-    body.dark-mode .btn-success {
-        background-color: #198754 !important;
-        border-color: #198754 !important;
-    }
-    
-    body.dark-mode .btn-danger {
-        background-color: #dc3545 !important;
-        border-color: #dc3545 !important;
-    }
-    
-    body.dark-mode .btn-info {
-        background-color: #0dcaf0 !important;
-        border-color: #0dcaf0 !important;
-        color: #000 !important;
-    }
-    
-    /* Theme toggle icon colors */
-    #themeIcon.fa-circle,
-    #themeIcon.fa-sun {
-        color: #fbbf24 !important;
-        text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
-    }
-    
-    #themeIcon.fa-moon {
-        color: #e2e8f0 !important;
-    }
-    
-    body.dark-mode #themeIcon.fa-circle,
-    body.dark-mode #themeIcon.fa-sun {
-        color: #fbbf24 !important;
-    }
-    
-    body.dark-mode #themeIcon.fa-moon {
-        color: #e2e8f0 !important;
-    }
-    
-    /* Dark Mode for MyReports page */
-    body.dark-mode .obstacle-card {
-        background: #2d2d2d !important;
-        border-color: #444 !important;
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode #draftsContainer .obstacle-card {
-        background: #3a3a1a !important;
-        border-color: #5a5a3a !important;
-    }
-    
-    body.dark-mode #draftsContainer .obstacle-card::before {
-        background: #5a5a3a;
-        color: #fcd34d;
-    }
-    
-    body.dark-mode .obstacle-name {
-        color: #f0f0f0 !important;
-    }
-    
-    body.dark-mode .obstacle-type-badge {
-        background: #3d3d3d !important;
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .badge-powerline {
-        background: #4a2020 !important;
-        color: #fca5a5 !important;
-    }
-    
-    body.dark-mode .badge-mast {
-        background: #1e3a5f !important;
-        color: #93c5fd !important;
-    }
-    
-    body.dark-mode .badge-other {
-        background: #1e4d3a !important;
-        color: #86efac !important;
-    }
-    
-    body.dark-mode .detail-label {
-        color: #a0a0a0 !important;
-    }
-    
-    body.dark-mode .detail-value {
-        color: #e0e0e0 !important;
-    }
-    
-    body.dark-mode .obstacle-description {
-        background: #252525 !important;
-        color: #b0b0b0 !important;
-    }
-    
-    body.dark-mode .actions-bar {
-        background: #2d2d2d !important;
-        border: 1px solid #444;
-    }
-    
-    body.dark-mode .stats {
-        color: #a0a0a0 !important;
-    }
-    
-    body.dark-mode .btn-details {
-        background: #3d3d3d !important;
-        color: #e0e0e0 !important;
-        border-color: #555 !important;
-    }
-    
-    body.dark-mode .btn-details:hover {
-        background: #4a4a4a !important;
-        color: #f0f0f0 !important;
-    }
-    
-    body.dark-mode .status-badge-pending {
-        background: #4a3810 !important;
-        color: #fcd34d !important;
-    }
-    
-    body.dark-mode .status-badge-approved {
-        background: #1e4d3a !important;
-        color: #86efac !important;
-    }
-    
-    body.dark-mode .status-badge-rejected {
-        background: #4a2020 !important;
-        color: #fca5a5 !important;
-    }
-    
-    body.dark-mode .header p {
-        color: #a0a0a0 !important;
-    }
-    
-    body.dark-mode .empty-state {
-        color: #a0a0a0 !important;
-    }
-
-    .form-toast-notification {
-        position: fixed;
-        top: 110px;
-        left: 50%;
-        background: #10b981;
-        color: #ffffff;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        z-index: 30000;
-        opacity: 0;
-        transform: translate(-50%, -20px);
-        transition: all 0.3s ease;
-        text-align: center;
-        pointer-events: none;
-    }
-
-    .form-toast-notification.show {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-
-</style>
+   
 
     @RenderSection("Styles", required: false)
 </head>
@@ -425,7 +141,6 @@
 <script src="~/js/site.js" asp-append-version="true"></script>
 
 <script>
-    // Theme toggle functionality
     function toggleTheme() {
         const body = document.body;
         const icon = document.getElementById('themeIcon');
@@ -454,14 +169,12 @@
         }
     }
     
-    // Load saved theme on page load
     document.addEventListener('DOMContentLoaded', function() {
         const savedTheme = localStorage.getItem('theme');
         const icon = document.getElementById('themeIcon');
         const btn = document.getElementById('themeToggleBtn');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
-        // Bare bruke lagret dark-mode for innloggede brukere
         if (isAuthenticated && savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
             if (icon) {
@@ -472,7 +185,6 @@
                 btn.setAttribute('title', 'Switch to light mode');
             }
         } else {
-            // For ikke-innloggede eller hvis ingen lagret dark-mode: bruk light
             document.body.classList.remove('dark-mode');
             if (icon) {
                 icon.classList.remove('fa-sun');

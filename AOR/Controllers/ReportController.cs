@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using AOR.Data;
 using AOR.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
     [Authorize]
@@ -31,7 +32,7 @@ namespace AOR.Controllers;
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
-        return View(reports); // fortsatt Views/Report/MyReports.cshtml
+        return View(reports); 
     }
     
     [Authorize(Roles = "Crew, Registrar, Admin")]
@@ -52,9 +53,11 @@ namespace AOR.Controllers;
         }
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
-        ViewBag.ReturnUrl = returnUrl; // send returnUrl to view
+        ViewBag.ReturnUrl = returnUrl; 
 
-        return View("ReportDetails", report);
+        var viewModel = ReportDetailsViewModel.FromReport(report);
+
+        return View("ReportDetails", viewModel);
     }
     
     

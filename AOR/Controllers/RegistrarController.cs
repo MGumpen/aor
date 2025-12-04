@@ -145,14 +145,12 @@ public class RegistrarController : Controller
         if (report == null)
             return NotFound();
 
-        // Registrar skal alltid se rapportinfo, ingen eierskapssjekk
         return View("ReportDetails", report);
     }
 
     [HttpGet]
     public async Task<IActionResult> AssignedReports(string sort = "CreatedAt", string dir = "desc")
     {
-        // Hent innlogget bruker
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
@@ -161,7 +159,6 @@ public class RegistrarController : Controller
 
         var reports = await _reportRepository.GetAssignedToAsync(user.Id);
 
-        // Utfør sortering etter parametrer
         reports = (sort?.ToLower(), dir?.ToLower()) switch
         {
             ("type", "asc") => reports.OrderBy(r => r.Obstacle?.ObstacleType).ToList(),
@@ -184,7 +181,6 @@ public class RegistrarController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Assign(int reportId, string registrarId, string? returnUrl)
     {
-        // Hvis tom eller blank => fjern tildeling (unassign)
         if (string.IsNullOrWhiteSpace(registrarId))
         {
             await _reportRepository.AssignToAsync(reportId, null);
@@ -193,7 +189,6 @@ public class RegistrarController : Controller
             return RedirectToAction(nameof(AllReports));
         }
 
-        // Ellers valider valgt user
         var regUser = await _userManager.FindByIdAsync(registrarId);
         if (regUser == null)
         {

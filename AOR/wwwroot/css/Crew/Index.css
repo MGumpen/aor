@@ -130,6 +130,11 @@ body.dark-mode .map-tiles {
     justify-content: center;
 }
 
+/* Felles stil for back-knapper i dark mode (Crew-sider) */
+body.dark-mode .btn-back {
+    color: #ffffff !important;
+}
+
 .main-action-btn {
     flex: 1;
     padding: 32px 16px;
@@ -174,7 +179,6 @@ body.dark-mode .map-tiles {
     border-color: #dee2e6;
 }
 
-/* Points panel - compact with scrollable content */
 .points-panel {
     position: absolute;
     top: 80px;
@@ -233,10 +237,10 @@ body.dark-mode .map-tiles {
 }
 
 .panel-btn {
-    width: 36px;
-    height: 36px;
+    width: 72px;
+    height: 48px;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -245,11 +249,6 @@ body.dark-mode .map-tiles {
     font-size: 18px;
     font-weight: 500;
     touch-action: manipulation;
-}
-
-.panel-btn.undo {
-    background: #6c757d;
-    color: white;
 }
 
 .panel-btn.confirm {
@@ -268,14 +267,13 @@ body.dark-mode .map-tiles {
 }
 
 .points-list {
-    max-height: 180px;               /* Fits ~2 items, then scrolls */
+    max-height: 180px;               
     overflow-y: auto;
     padding: 4px;
-    scrollbar-width: thin;           /* Firefox: thin scrollbar */
-    scrollbar-color: rgba(0,0,0,0.3) transparent; /* Firefox: scrollbar colors */
+    scrollbar-width: thin;           
+    scrollbar-color: rgba(0,0,0,0.3) transparent; 
 }
 
-/* Webkit scrollbar styling for better appearance */
 .points-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -335,8 +333,8 @@ body.dark-mode .map-tiles {
 }
 
 .point-btn {
-    width: 36px;
-    height: 36px;
+    width: 64px;
+    height: 48px;
     border: none;
     border-radius: 3px;
     cursor: pointer;

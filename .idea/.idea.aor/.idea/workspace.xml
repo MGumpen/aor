@@ -15,11 +15,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="398c0a6a-7d11-43c0-b2f7-050805866515" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.aor/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/AdminController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ForgotPasswordController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ForgotPasswordController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/LogInController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ObstacleController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AOR/Controllers/RegistrarController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/RegistrarController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Repositories/IReportRepositories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Repositories/IReportRepositories.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Repositories/ReportRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Repositories/ReportRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Registrar/Index 2.cshtml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AOR/Views/Registrar/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Registrar/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Controllers/ReportController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Controllers/ReportController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbContextFactory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbContextFactory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Data/AorDbSeeder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/Data/ObstacleData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/Data/ObstacleData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/Data/ObstacleTypeModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/Data/ObstacleTypeModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/Data/OrgModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/Data/OrgModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/Data/PhotoModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/Data/PhotoModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/Data/ReportModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/Data/ReportModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Models/View/ReportDetailsViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Models/View/ReportDetailsViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Admin/Map.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Admin/Map.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/LogIn/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Obstacle/Overview.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Obstacle/Overview.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Privacy/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Privacy/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/Views/Shared/_Layout.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/css/site.css" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/css/site.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/js/NewUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/js/NewUser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/js/Obstacle/DataForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/js/Obstacle/DataForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AOR/wwwroot/js/Report/MyReports.js" beforeDir="false" afterPath="$PROJECT_DIR$/AOR/wwwroot/js/Report/MyReports.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +48,13 @@
   </component>
   <component name="DpaMonitoringSettings">
     <option name="firstShow" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -56,6 +83,7 @@
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Controllers/PrivacyController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Data/User.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/AOR/Models/View/ReportDetailsViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IObstacleRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IOrganizationRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Repositories/IReportRepositories.cs" root0="FORCE_HIGHLIGHTING" />
@@ -68,7 +96,6 @@
     <setting file="file://$PROJECT_DIR$/AOR/Views/Account/NewUser.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/NewOrg.cshtml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/AOR/Views/Admin/Orgs.cshtml" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/UnitTests/UnitTest1.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -96,7 +123,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;update&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Marius/fix&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,

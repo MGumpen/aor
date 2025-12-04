@@ -62,7 +62,7 @@ public class ObstacleController : Controller
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Challenge(); // sender bruker til login om noe er rart
+            return Challenge();
         }
 
         var reports = await _reportRepository.GetByUserAsync(userId);
@@ -78,7 +78,6 @@ public class ObstacleController : Controller
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
     ProcessHeightConversion(obstacleData);
-    // Process other type-specific fields
     ProcessTypeSpecificFields(obstacleData);
     NormalizeObstacleData(obstacleData);
     ApplyAdditionalValidation(obstacleData);
@@ -119,7 +118,6 @@ public class ObstacleController : Controller
             return RedirectToAction("MyReports", "Report");
         }
 
-        // If validation failed, preserve ViewBag data
         Console.WriteLine("=== VALIDATION FAILED ===");
         foreach (var kvp in ModelState)
         {
@@ -159,7 +157,6 @@ public class ObstacleController : Controller
         Console.WriteLine($"HeightMeters: {heightMetersStr}");
         Console.WriteLine($"HeightFeet: {heightFeetStr}");
 
-        // Process height based on selected unit
         var parsed = TryParseDouble(heightMetersStr);
 
         if (!parsed.HasValue && !string.IsNullOrWhiteSpace(heightFeetStr))
@@ -212,7 +209,6 @@ public class ObstacleController : Controller
     }
     private void ProcessTypeSpecificFields(ObstacleData obstacleData)
     {
-        // Handle mast-specific fields
         if (obstacleData.ObstacleType?.ToLower() == "mast")
         {
             var mastType = Request.Form["MastType"].FirstOrDefault();
@@ -235,7 +231,6 @@ public class ObstacleController : Controller
             }
         }
         
-        // Handle other-specific fields
         else if (obstacleData.ObstacleType?.ToLower() == "other")
         {
             var category = Request.Form["Category"].FirstOrDefault();
@@ -341,7 +336,7 @@ public class ObstacleController : Controller
         var reports = await _reportRepository.GetLast30DaysAsync();
 
         var result = reports
-            .Where(r => r.Obstacle != null) // litt ekstra sikkerhet
+            .Where(r => r.Obstacle != null) 
             .Select(r => new
             {
                 r.ReportId,
