@@ -6,11 +6,17 @@ Dette dokumentet beskriver hvordan vi tester prosjektet, hvilke deler som er dek
 
 For å kjøre alle tester i løsningen:
 
+Dotnet test
+
+## Test resultater:
+
 ```bash
-
-dotnet test
-
+Test summary: total: 10; failed: 0; succeeded: 10; skipped: 0; duration: 1,2s
+Build succeeded with 1 warning(s) in 2,4s
 ```
+
+## Teststruktur:
+
 Prosjektstruktur (relevant for testing):
 	•	AOR/ – webapplikasjon og domene/modeller
 	•	UnitTests/ – NUnit unit tester for domene og repositories
