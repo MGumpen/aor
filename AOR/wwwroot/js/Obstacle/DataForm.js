@@ -1,4 +1,3 @@
-// FIX: Fjernet ugyldig Razor i statisk fil og leser koordinater fra skjult input
 let initialCoordinatesJson = '[]';
 let currentUserId = '';
 let heightInputElement;
@@ -8,12 +7,10 @@ let containerResizeTimeout;
 let formNotification;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Hent koordinater fra hidden felt (generert i DataForm.cshtml)
     const hiddenCoordField = document.getElementById('hiddenCoordinates');
     if (hiddenCoordField && hiddenCoordField.value) {
         initialCoordinatesJson = hiddenCoordField.value.trim();
     }
-    // Hent bruker-id hvis tilgjengelig (kan legges inn som <meta name="current-user-id" content="..."> eller hidden input)
     const metaUser = document.querySelector('meta[name="current-user-id"]');
     if (metaUser) {
         currentUserId = metaUser.getAttribute('content') || '';
@@ -42,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateHeightConversion();
     }
 
-    // Nå rendres koordinatene korrekt
     renderCoordinatesFromJson(initialCoordinatesJson);
     updateMapSummaryFromData({
         ObstacleType: document.getElementById('hiddenObstacleType')?.value,
