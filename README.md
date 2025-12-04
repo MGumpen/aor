@@ -15,6 +15,9 @@ Gruppe 3, IT og informasjonssystemer, høsten 2025.
 - Admin: admin@test.no Passord: Test123$ Rolle(r): Admin
 - Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registrar
 
+Appen er laget med tanke på at piloter og crew bruker den på iPad mens registerfører (Registrar) og Admin bruker den på PC. 
+Appen er ikke skalert til mobil.
+
 ### Forutsetninger for å starte applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) 
