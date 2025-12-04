@@ -7,6 +7,8 @@ var polyline = null;
 var pointCounter = 0;
 var isPanelVisible = false;
 var myLocationMarker = null;
+var myLocationAccuracyCircle = null;
+var myLocationWatchId = null;
 var last30DaysLayer = null;
 var showingLast30Days = false;
 
@@ -53,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeMap() {
     map = L.map('obstacle-map', {
-        center: showMyLocation(),
-        zoom: 16,
+        center: [63.4305, 10.3951], // midlertidig senter (Trondheim)
+        zoom: 13,
         zoomControl: true,
         touchZoom: true,
         scrollWheelZoom: true,
@@ -76,6 +78,7 @@ function initializeMap() {
     }, 100);
 
     setupMapEvents();
+    startLiveLocationTracking();
 }
 
 function setupMapEvents() {
@@ -84,6 +87,66 @@ function setupMapEvents() {
             addPoint(e.latlng);
         }
     });
+}
+
+function startLiveLocationTracking() {
+    if (!navigator.geolocation) {
+        console.warn('Geolocation is not supported by this browser.');
+        return;
+    }
+
+    const options = {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 10000
+    };
+
+    var firstFix = true;
+
+    myLocationWatchId = navigator.geolocation.watchPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy || 0;
+            const latlng = [lat, lng];
+
+            if (!myLocationMarker) {
+                myLocationMarker = L.circleMarker(latlng, {
+                    radius: 8,
+                    fillColor: '#2A66FF',
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(map);
+            } else {
+                myLocationMarker.setLatLng(latlng);
+            }
+
+            if (!myLocationAccuracyCircle) {
+                myLocationAccuracyCircle = L.circle(latlng, {
+                    radius: accuracy,
+                    color: '#2A66FF',
+                    weight: 1,
+                    opacity: 0.4,
+                    fillColor: '#2A66FF',
+                    fillOpacity: 0.1
+                }).addTo(map);
+            } else {
+                myLocationAccuracyCircle.setLatLng(latlng);
+                myLocationAccuracyCircle.setRadius(accuracy);
+            }
+
+            if (firstFix) {
+                map.setView(latlng, 16);
+                firstFix = false;
+            }
+        },
+        function (error) {
+            console.warn('Could not get live location:', error);
+        },
+        options
+    );
 }
 
 function startDrawing(type) {
@@ -382,21 +445,33 @@ function cancelDrawing() {
 }
 
 function showMyLocation() {
+    // Behold denne for "My Location"-knappen, men bruk eksisterende marker
+    if (myLocationMarker) {
+        map.setView(myLocationMarker.getLatLng(), 16);
+        return;
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
+                const latlng = [lat, lng];
 
-                if (myLocationMarker) {
-                    map.removeLayer(myLocationMarker);
+                if (!myLocationMarker) {
+                    myLocationMarker = L.circleMarker(latlng, {
+                        radius: 8,
+                        fillColor: '#2A66FF',
+                        color: '#ffffff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+                } else {
+                    myLocationMarker.setLatLng(latlng);
                 }
 
-                myLocationMarker = L.marker([lat, lng])
-                    .bindPopup('Your Current Location')
-                    .addTo(map);
-
-                map.setView([lat, lng], 15);
+                map.setView(latlng, 16);
             },
             function(error) {
                 alert('Could not get your location. Please ensure location services are enabled.');
