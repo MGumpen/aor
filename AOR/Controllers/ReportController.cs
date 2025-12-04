@@ -32,7 +32,7 @@ namespace AOR.Controllers;
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
-        return View(reports); // fortsatt Views/Report/MyReports.cshtml
+        return View(reports); 
     }
     
     [Authorize(Roles = "Crew, Registrar, Admin")]
@@ -53,7 +53,7 @@ namespace AOR.Controllers;
         }
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
-        ViewBag.ReturnUrl = returnUrl; // send returnUrl to view
+        ViewBag.ReturnUrl = returnUrl; 
 
         var viewModel = ReportDetailsViewModel.FromReport(report);
 

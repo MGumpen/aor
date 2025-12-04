@@ -540,7 +540,6 @@ function saveDraft() {
     }, 1000);
 }
 
-// Load draft data if available
 function loadDraft() {
     const urlParams = new URLSearchParams(window.location.search);
     const draftKey = urlParams.get('draft');

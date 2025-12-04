@@ -31,6 +31,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
     checkboxes.forEach(cb => cb.addEventListener('change', updateHiddenInputs));
 
-    // Initial sync when page loads (for validation errors etc.)
     updateHiddenInputs();
 });

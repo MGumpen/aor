@@ -32,7 +32,6 @@ namespace AOR.Controllers
 
         private async Task SignInWithActiveRole(User user, string chosenRole, bool rememberMe)
         {
-            // Sørg for at cookien gjenspeiler valgt rolle ved å bygge principal og signere eksplisitt
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
@@ -48,7 +47,6 @@ namespace AOR.Controllers
             );
         }
 
-        // Deterministisk landingsside basert på ActiveRole-claim
         [Authorize]
         [HttpGet]
         public IActionResult RoleHome()
@@ -63,14 +61,11 @@ namespace AOR.Controllers
             };
         }
 
-        // -------------------- LOGIN --------------------
 
         [AllowAnonymous]
         [HttpGet]
         public IActionResult Index(string? returnUrl = null)
         {
-            // Her lar vi deg komme til ren login-side,
-            // også via tilbake-knappen.
             return View(new LogInViewModel { ReturnUrl = returnUrl });
         }
 
@@ -92,7 +87,6 @@ namespace AOR.Controllers
                     return View(model);
                 }
 
-                // Bruk username-overload for stabilitet
                 if (string.IsNullOrEmpty(user.UserName))
                 {
                     _logger.LogWarning("User {Email} has no UserName set", user.Email);
@@ -111,15 +105,11 @@ namespace AOR.Controllers
                     _logger.LogInformation("LOGIN OK: {Email}, ReturnUrl={ReturnUrl}, Roles=[{Roles}], Count={Count}",
                         user.Email, model.ReturnUrl, string.Join(",", roles), roles?.Count ?? -1);
 
-                    // 1) Har brukeren 2+ roller? → redirect til egen GET som viser popup
                     if (roles.Count > 1)
                     {
-                        // PRG: vi viser rolle-popup via RolePicker (GET),
-                        // slik at back-knappen ikke treffer en gammel POST-side.
                         return RedirectToAction(nameof(RolePicker), new { returnUrl = model.ReturnUrl });
                     }
 
-                    // 2) Kun én rolle → sett aktiv rolle og ruter deterministisk
                     if (roles.Count == 1)
                     {
                         var only = roles[0];
@@ -131,7 +121,6 @@ namespace AOR.Controllers
                         return RedirectToAction(nameof(RoleHome));
                     }
 
-                    // 3) Ingen rolle → hjem
                     return RedirectToAction("Index", "Home");
                 }
 
@@ -152,7 +141,6 @@ namespace AOR.Controllers
             }
         }
 
-        // GET: egen side som viser login-view + rolle-popup (for brukere med flere roller)
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> RolePicker(string? returnUrl = null)
@@ -160,14 +148,10 @@ namespace AOR.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                // Hvis noe er rart → bare send til login igjen
                 return RedirectToAction(nameof(Index));
             }
 
-            // 🔑 NY DEL:
-            // Hvis brukeren allerede har valgt en aktiv rolle,
-            // betyr det at vi har kommet hit via tilbake-knappen.
-            // Da vil du IKKE se popupen igjen → gå heller til login.
+           
             var activeRole = User.FindFirst("ActiveRole")?.Value;
             if (!string.IsNullOrEmpty(activeRole))
             {
@@ -178,7 +162,6 @@ namespace AOR.Controllers
 
             if (roles == null || roles.Count <= 1)
             {
-                // Hvis det ikke lenger er flere roller å velge mellom → gå "hjem"
                 return RedirectToAction(nameof(RoleHome));
             }
 
@@ -189,11 +172,9 @@ namespace AOR.Controllers
                 ReturnUrl = returnUrl
             };
 
-            // Vi bruker den samme Index-viewen, men nå er dette et helt vanlig GET-respons.
             return View("Index", model);
         }
 
-        // -------------------- VELGE ROLLE --------------------
 
         [Authorize]
         [HttpPost]
@@ -205,26 +186,19 @@ namespace AOR.Controllers
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            // Valider at valgt rolle faktisk tilhører brukeren
             if (string.IsNullOrWhiteSpace(selectedRole) || !roles.Contains(selectedRole))
             {
-                // Gå tilbake til RolePicker (GET) i stedet for å prøve å rendre feilstaten direkte
                 return RedirectToAction(nameof(RolePicker), new { returnUrl });
             }
 
-            // Persistér valgt rolle i auth-cookie
             await SignInWithActiveRole(user, selectedRole, rememberMe: false);
 
-            // La ReturnUrl vinne etter valg hvis satt
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return LocalRedirect(returnUrl);
 
-            // Deterministisk redirect basert på rolle
             return RedirectToAction(nameof(RoleHome));
         }
 
-        // Hvis noen prøver å gå til ChooseRole via GET (f.eks. rar historikk),
-        // så sender vi dem bare til login/rolle-hjem.
         [HttpGet]
         public IActionResult ChooseRole(string? returnUrl = null)
         {
@@ -236,7 +210,6 @@ namespace AOR.Controllers
             return RedirectToAction(nameof(Index), new { returnUrl });
         }
 
-        // -------------------- LOGOUT --------------------
 
         [Authorize]
         [HttpPost]
@@ -248,7 +221,6 @@ namespace AOR.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // -------------------- FORGOT PASSWORD --------------------
 
         [HttpGet]
         public IActionResult ForgotPassword()
@@ -265,7 +237,6 @@ namespace AOR.Controllers
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
-            // Ikke avslør om brukeren finnes eller er bekreftet
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
                 TempData["ForgotPassword_Info"] = "Hvis e-postadressen finnes og er bekreftet, er en lenke sendt.";
@@ -289,7 +260,6 @@ namespace AOR.Controllers
             return View(new ForgotPasswordModel());
         }
 
-        // -------------------- ACCESS DENIED --------------------
 
         [HttpGet]
         public IActionResult AccessDenied()

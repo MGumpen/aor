@@ -40,14 +40,12 @@ namespace AOR.Models.Data
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Status: Pending, Approved, Rejected
         public string Status { get; set; } = "Pending";
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
 
-            // Høyde er påkrevd for alle typer
         if (!ObstacleHeight.HasValue || ObstacleHeight <= 0 || ObstacleHeight > 1000)
             {
                 results.Add(new ValidationResult(
@@ -55,7 +53,6 @@ namespace AOR.Models.Data
                     new[] { nameof(ObstacleHeight) }));
             }
 
-            // Koordinater er påkrevd for alle typer
             if (string.IsNullOrEmpty(Coordinates) || Coordinates == "[]")
             {
                 results.Add(new ValidationResult(
@@ -63,7 +60,6 @@ namespace AOR.Models.Data
                     new[] { nameof(Coordinates) }));
             }
 
-            // Ekstra validering for "Other" type - beskrivelse er påkrevd
             if (ObstacleType?.ToLower() == "other" && 
                 string.IsNullOrWhiteSpace(ObstacleDescription))
             {

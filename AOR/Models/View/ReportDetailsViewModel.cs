@@ -4,19 +4,16 @@ namespace AOR.Models.View;
 
 public class ReportDetailsViewModel
 {
-    // Report info
     public int ReportId { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public string StatusText { get; set; } = "Pending";
     public string StatusCssClass { get; set; } = "status-badge pending";
 
-    // User info
     public string? UserId { get; set; }
     public string? UserName { get; set; }
     public string? UserOrganizationName { get; set; }
 
-    // Obstacle info
     public int ObstacleId { get; set; }
     public string ObstacleType { get; set; } = string.Empty;
     public string ObstacleName { get; set; } = string.Empty;
