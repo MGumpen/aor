@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeMap() {
     map = L.map('obstacle-map', {
-        center: [58.16376, 8.00183],
+        center: showMyLocation(),
         zoom: 16,
         zoomControl: true,
         touchZoom: true,
