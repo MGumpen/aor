@@ -43,7 +43,6 @@ body.dark-mode .btn-back {
     overflow: visible !important;
 }
 
-/* Dark Mode Styles */
 body.dark-mode {
     background-color: #1a1a1a !important;
     color: #e0e0e0 !important;
@@ -99,7 +98,6 @@ body.dark-mode a:hover {
     color: #4299e1 !important;
 }
 
-/* Dark mode for tables */
 body.dark-mode table {
     background-color: #2d2d2d !important;
     color: #e0e0e0 !important;
@@ -122,7 +120,6 @@ body.dark-mode table tbody tr:hover td {
     background-color: #2f2f2f !important;
 }
 
-/* Dark mode for headings */
 body.dark-mode h1 {
     color: #f0f0f0 !important;
     font-weight: 500 !important;
@@ -144,7 +141,6 @@ body.dark-mode h6 {
     font-weight: 500 !important;
 }
 
-/* Dark mode for buttons - preserve their colors but adjust if needed */
 body.dark-mode .btn-primary {
     background-color: #0d6efd !important;
     border-color: #0d6efd !important;
@@ -186,7 +182,6 @@ body.dark-mode #themeIcon.fa-moon {
     color: #e2e8f0 !important;
 }
 
-/* Dark Mode for MyReports page */
 body.dark-mode .obstacle-card {
     background: #2d2d2d !important;
     border-color: #444 !important;
@@ -305,7 +300,6 @@ body.dark-mode .empty-state {
     transform: translate(-50%, 0);
 }
 
-/* Header layout */
 .header-bar {
     display: flex;
     align-items: center;
@@ -335,7 +329,6 @@ body.dark-mode .empty-state {
     flex: 0 0 auto;
 }
 
-/* Ensure dropdown floats over content instead of resizing header */
 .header-bar .dropdown-menu {
     position: absolute;
     min-width: 220px;
