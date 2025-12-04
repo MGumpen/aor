@@ -35,7 +35,7 @@ docker compose up -d --build
 docker compose up -d
 
 # Åpne applikasjonen:
-# - Web App: http://localhost:5001 (container: web 5001:8080)
+  - Web App: http://localhost:5001 (container: web 5001:8080)
 # - Database Admin: http://localhost:8080 (Gir oversikt over databasen med tabeller)
 # - Bruker av appen kan se bort i fra containeren som heter Adminer og mariadb.
 
@@ -95,7 +95,7 @@ På sikt er planen også at admin skal få tilgang til rapporter og statistikk, 
 
 # Teknisk
 
-## 🛠️ Database
+## Database
 
 ### Connection String
 - **Lokal utvikling:** `Server=localhost;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;`
@@ -156,7 +156,7 @@ docker compose up -d --build aor-web
 docker compose down -v
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 **Web app unhealthy:**
 ```bash
