@@ -19,7 +19,13 @@
     <h2>Welcome, @($"{currentUser?.FirstName} {currentUser?.LastName}")</h2>
 
     <div class="admin-grid">
-        <a class="admin-tile" asp-action="AllReports">All reports</a>
+        <a class="admin-tile" asp-action="AllReports">All reports @{
+            var unassigned = (ViewBag.UnassignedPendingCount as int?) ?? 0;
+            if (unassigned > 0)
+            {
+                <text> <span class="badge badge-orange ms-2">@unassigned Unassigned</span></text>;
+            }
+        }</a>
         <a class="admin-tile" asp-action="AssignedReports">Assigned reports @if(assignedPending > 0) { <span class="badge badge-orange ms-2">@assignedPending Pending</span> }</a>
     </div>
 </div>

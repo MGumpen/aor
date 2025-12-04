@@ -6,7 +6,8 @@ Dette dokumentet beskriver hvordan vi tester prosjektet, hvilke deler som er dek
 
 For å kjøre alle tester i løsningen:
 
-dotnet test
+Dotnet test
+
 ## Test resultater:
 
 ```bash
@@ -15,6 +16,7 @@ Build succeeded with 1 warning(s) in 2,4s
 ```
 
 ## Teststruktur:
+
 Prosjektstruktur (relevant for testing):
 	•	AOR/ – webapplikasjon og domene/modeller
 	•	UnitTests/ – NUnit unit tester for domene og repositories

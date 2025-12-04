@@ -151,7 +151,6 @@
     body.dark-mode .btn-primary {
         background-color: #0d6efd !important;
         border-color: #0d6efd !important;
-        color: #ffffff !important;
     }
     
     body.dark-mode .btn-success {
@@ -168,6 +167,26 @@
         background-color: #0dcaf0 !important;
         border-color: #0dcaf0 !important;
         color: #000 !important;
+    }
+    
+    /* Theme toggle icon colors */
+    #themeIcon.fa-circle,
+    #themeIcon.fa-sun {
+        color: #fbbf24 !important;
+        text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+    
+    #themeIcon.fa-moon {
+        color: #e2e8f0 !important;
+    }
+    
+    body.dark-mode #themeIcon.fa-circle,
+    body.dark-mode #themeIcon.fa-sun {
+        color: #fbbf24 !important;
+    }
+    
+    body.dark-mode #themeIcon.fa-moon {
+        color: #e2e8f0 !important;
     }
     
     /* Dark Mode for MyReports page */
@@ -289,10 +308,6 @@
         transform: translate(-50%, 0);
     }
 
-    #themeToggleBtn {
-        white-space: nowrap;
-    }
-
 </style>
 
     @RenderSection("Styles", required: false)
@@ -331,8 +346,8 @@
                 }
                 @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Crew"))
                 {
-                    <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Toggle theme">
-                        <i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>
+                    <button id="themeToggleBtn" class="btn btn-outline-secondary me-3" onclick="toggleTheme()" title="Switch to dark mode">
+                        <i class="fa fa-moon" id="themeIcon"></i>
                     </button>
                 }
                 <ul class="navbar-nav ms-auto fs-5">
@@ -341,7 +356,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa fa-user-circle"></i>
+                                    <i class="fa fa-user-sun"></i>
                                     @($"{currentUser?.FirstName} {currentUser?.LastName}")
                                 </a>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -418,15 +433,23 @@
         
         if (body.classList.contains('dark-mode')) {
             body.classList.remove('dark-mode');
-            icon.classList.remove('fa-sun');
-            icon.classList.add('fa-moon');
-            btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
+            if (icon) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to dark mode');
+            }
             localStorage.setItem('theme', 'light');
         } else {
             body.classList.add('dark-mode');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
-            btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
+            if (icon) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+            if (btn) {
+                btn.setAttribute('title', 'Switch to light mode');
+            }
             localStorage.setItem('theme', 'dark');
         }
     }
@@ -438,7 +461,7 @@
         const btn = document.getElementById('themeToggleBtn');
         const isAuthenticated = @Json.Serialize(User?.Identity?.IsAuthenticated ?? false);
         
-        // Only apply dark mode if user is authenticated
+        // Bare bruke lagret dark-mode for innloggede brukere
         if (isAuthenticated && savedTheme === 'dark') {
             document.body.classList.add('dark-mode');
             if (icon) {
@@ -446,18 +469,17 @@
                 icon.classList.add('fa-sun');
             }
             if (btn) {
-                btn.innerHTML = '<i class="fa fa-sun" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
-            }
-        } else if (!isAuthenticated) {
-            // Force light mode for non-authenticated users (login page)
-            document.body.classList.remove('dark-mode');
-            if (btn) {
-                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
+                btn.setAttribute('title', 'Switch to light mode');
             }
         } else {
-            // Default to light mode
+            // For ikke-innloggede eller hvis ingen lagret dark-mode: bruk light
+            document.body.classList.remove('dark-mode');
+            if (icon) {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
             if (btn) {
-                btn.innerHTML = '<i class="fa fa-moon" id="themeIcon"></i><span class="d-none d-md-inline"></span>';
+                btn.setAttribute('title', 'Switch to dark mode');
             }
         }
     });

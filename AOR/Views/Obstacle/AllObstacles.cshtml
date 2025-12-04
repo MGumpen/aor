@@ -15,7 +15,7 @@
     </div>
     
     <div class="actions-bar">
-        <a href="/Crew" class="btn btn-primary">Back to map</a>
+        <a href="/Crew" class="btn btn-primary btn-back">Back to map</a>
         <div class="stats">
             <div><strong>Total:</strong> @Model.Count() reports</div>
             <div><strong>Lines:</strong> @Model.Count(x => x.Obstacle?.ObstacleType?.ToLower() == "line")</div>

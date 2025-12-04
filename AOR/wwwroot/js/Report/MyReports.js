@@ -1,50 +1,48 @@
-const currentUserId = Html.Raw(System.Text.Json.JsonSerializer.Serialize(currentUserId));
 (function () {
     if (typeof window === 'undefined') {
         return;
     }
 
-    let draftKeyToDelete = null;
+    const config = window.myReportsConfig || {};
+    const currentUserId = (config.currentUserId || '').toString().trim();
 
-if (TempData["DeleteDraft"] != null)
-    {
-        <text>draftKeyToDelete = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["DeleteDraft"]));</text>
-    }
+    let draftKeyToDelete = config.deleteDraftKey || null;
 
     if (!draftKeyToDelete && window.sessionStorage) {
         draftKeyToDelete = window.sessionStorage.getItem('deleteDraft');
     }
 
     if (!draftKeyToDelete) {
-        return;
+        // Videre nedlasting av drafts fra localStorage skjer uansett nedenfor
     }
 
     try {
-        if (window.sessionStorage) {
+        if (draftKeyToDelete && window.sessionStorage) {
             window.sessionStorage.removeItem('deleteDraft');
         }
 
-        if (window.localStorage && window.localStorage.getItem(draftKeyToDelete)) {
+        if (draftKeyToDelete && window.localStorage && window.localStorage.getItem(draftKeyToDelete)) {
             const stored = window.localStorage.getItem(draftKeyToDelete);
             if (stored) {
                 try {
                     const parsed = JSON.parse(stored);
                     const ownerId = typeof parsed.ownerId === 'string' ? parsed.ownerId.trim() : '';
                     if (ownerId && currentUserId && ownerId !== currentUserId) {
-                        return;
+                        // Ikke slett andre brukeres drafts
+                    } else {
+                        window.localStorage.removeItem(draftKeyToDelete);
                     }
                 } catch (parseError) {
                     console.warn('Unable to inspect stored draft before removal', draftKeyToDelete, parseError);
                 }
+            } else {
+                window.localStorage.removeItem(draftKeyToDelete);
             }
-            window.localStorage.removeItem(draftKeyToDelete);
         }
     } catch (error) {
         console.warn('Unable to clear stored draft state', draftKeyToDelete, error);
     }
-})();
 
-(function () {
     const draftsContainer = document.getElementById('draftsContainer');
     if (!draftsContainer) {
         return;
@@ -130,7 +128,6 @@ if (TempData["DeleteDraft"] != null)
 
         title.textContent = candidateName ? candidateName.toString() : 'Draft Unknown';
 
-        // Get obstacle type for badge display
         const obstacleTypeRawValue = getFirstNonEmpty(
             data.ObstacleType,
             data.obstacleType,
@@ -143,7 +140,6 @@ if (TempData["DeleteDraft"] != null)
         const obstacleType = obstacleTypeRaw.toLowerCase();
         const formattedType = formatObstacleType(obstacleTypeRaw);
 
-        // Create type badge (like registered obstacles)
         const typeBadge = document.createElement('span');
         typeBadge.className = 'obstacle-type-badge draft-type-badge';
         typeBadge.textContent = formattedType;
@@ -158,7 +154,6 @@ if (TempData["DeleteDraft"] != null)
         const formattedHeight = formatDraftHeight(data.ObstacleHeight, data.heightInput);
         const pointCount = deriveDraftPointCount(data);
 
-        // Updated detail items WITHOUT the "Type:" row
         const detailItems = [
             { label: 'Height:', value: formattedHeight },
             { label: 'Points:', value: pointCount.toString() },
@@ -265,7 +260,6 @@ if (TempData["DeleteDraft"] != null)
         draftsContainer.appendChild(card);
     });
 
-    // All helper functions remain the same
     function formatSavedDate(value) {
         if (!value) {
             return 'Just now';
@@ -465,32 +459,19 @@ if (TempData["DeleteDraft"] != null)
 
     function getFirstNonEmpty(...values) {
         for (const value of values) {
-            if (value === undefined || value === null) {
-                continue;
-            }
-
-            const candidate = typeof value === 'string' ? value.trim() : value;
-            if (candidate !== '' && !(typeof candidate === 'number' && Number.isNaN(candidate))) {
-                return candidate;
+            if (value !== undefined && value !== null && value !== '') {
+                return value;
             }
         }
-
         return undefined;
     }
 
-    function getFirstNonEmptyFrom(data, ...keys) {
+    function getFirstNonEmptyFrom(obj, ...keys) {
         for (const key of keys) {
-            if (Object.prototype.hasOwnProperty.call(data, key)) {
-                const candidate = data[key];
-                if (candidate !== undefined && candidate !== null) {
-                    if (typeof candidate === 'string') {
-                        const trimmed = candidate.trim();
-                        if (trimmed !== '') {
-                            return trimmed;
-                        }
-                    } else if (!(typeof candidate === 'number' && Number.isNaN(candidate))) {
-                        return candidate;
-                    }
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                const value = obj[key];
+                if (value !== undefined && value !== null && value !== '') {
+                    return value;
                 }
             }
         }
