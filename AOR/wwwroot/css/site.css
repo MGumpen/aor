@@ -27,12 +27,11 @@ body.dark-mode .btn-back {
 .navbar .dropdown-menu.show,
 .dropdown-item {
     z-index: 20000 !important;
-    min-width: 300px;
-    font-size: 1.5rem;
 }
 
 .navbar .dropdown-item {
     padding: 0.75rem 1.25rem;
+    font-size: 1rem;
 }
 
 .navbar {
@@ -304,4 +303,57 @@ body.dark-mode .empty-state {
 .form-toast-notification.show {
     opacity: 1;
     transform: translate(-50%, 0);
+}
+
+/* Header layout */
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+}
+
+.header-brand {
+    flex: 0 0 auto;
+}
+
+.header-actions {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+}
+
+.header-actions .header-btn {
+    white-space: nowrap;
+}
+
+.user-nav {
+    flex: 0 0 auto;
+}
+
+/* Ensure dropdown floats over content instead of resizing header */
+.header-bar .dropdown-menu {
+    position: absolute;
+    min-width: 220px;
+    font-size: 1rem;
+    z-index: 20000;
+}
+
+@media (max-width: 576px) {
+    .header-actions {
+        gap: 0.35rem;
+    }
+
+    #userDropdown {
+        font-size: 0.85rem;
+        white-space: nowrap;
+    }
+
+    #userDropdown i {
+        margin-right: 0.2rem;
+    }
 }
