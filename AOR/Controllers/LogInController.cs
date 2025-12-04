@@ -33,7 +33,7 @@ namespace AOR.Controllers
             var principal = await _signInManager.CreateUserPrincipalAsync(user);
             var id = (ClaimsIdentity)principal.Identity!;
             var existing = id.FindFirst("ActiveRole");
-            if (existing != null) id.RemoveClaim(existing);
+            if (existing != null) id.RemoveClaim(existing); 
             id.AddClaim(new Claim("ActiveRole", chosenRole));
 
             await HttpContext.SignInAsync(

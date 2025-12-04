@@ -1,27 +1,38 @@
-/* Map dark mode filter */
 :root {
     --map-tiles-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
 }
 
 body.dark-mode .map-tiles {
     filter: var(--map-tiles-filter, none);
 }
 
-/* Map container - responsive */
+.crew-layout-wrapper {
+    width: 100vw;
+    max-width: 100vw;
+    padding: 0;
+    margin: 0;
+}
+
 .map-container {
     position: relative;
-    width: 100%;
-    height: calc(100vh - 160px); /* Account for both header and footer */
-    min-height: 600px;
-    margin: 30px 0;              /* Equal top and bottom margin */
-    border-radius: 8px;
+    width: 100vw;
+    max-width: 100vw;
+    height: calc(100vh - 120px); 
+    min-height: 400px;
+    margin: 0;
+    border-radius: 0;
 }
 
 #obstacle-map {
     width: 100%;
     height: 100%;
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
 }
 
 .welcome-popup {
@@ -31,7 +42,7 @@ body.dark-mode .map-tiles {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    display: none; /* Changed from flex to none */
+    display: none; 
     justify-content: center;
     align-items: center;
     z-index: 2000;
@@ -76,7 +87,6 @@ body.dark-mode .map-tiles {
     transform: translateY(-1px);
 }
 
-/* Location button - responsive */
 .location-btn {
     position: absolute;
     top: 20px;
@@ -102,7 +112,6 @@ body.dark-mode .map-tiles {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Zoom controls */
 .leaflet-control-zoom {
     position: absolute !important;
     top: 20px !important;
@@ -117,7 +126,6 @@ body.dark-mode .map-tiles {
     touch-action: manipulation;
 }
 
-/* Action buttons - responsive */
 .action-buttons {
     position: absolute;
     bottom: 30px;
@@ -130,7 +138,6 @@ body.dark-mode .map-tiles {
     justify-content: center;
 }
 
-/* Felles stil for back-knapper i dark mode (Crew-sider) */
 body.dark-mode .btn-back {
     color: #ffffff !important;
 }
@@ -204,7 +211,7 @@ body.dark-mode .btn-back {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;                  /* Prevents header from shrinking */
+    flex-shrink: 0;                 
 }
 
 .points-panel-title {
@@ -300,8 +307,8 @@ body.dark-mode .btn-back {
     border-radius: 6px;
     transition: all 0.2s ease;
     font-size: 14px;
-    flex-shrink: 0;                  /* Prevents items from shrinking */
-    min-height: 60px;                /* Consistent item height */
+    flex-shrink: 0;                  
+    min-height: 60px;                
 }
 
 .point-item:active {
@@ -369,7 +376,6 @@ body.dark-mode .btn-back {
     line-height: 1.2;
 }
 
-/* Touch-friendly markers */
 .simple-marker {
     width: 16px;
     height: 16px;
@@ -401,7 +407,6 @@ body.dark-mode .btn-back {
     background: #00A651;
 }
 
-/* Notification - responsive */
 .drawing-notification {
     position: absolute;
     bottom: 200px;
@@ -421,7 +426,6 @@ body.dark-mode .btn-back {
     white-space: nowrap;
 }
 
-/* Tablet responsiveness */
 @media (max-width: 900px) {
     .main-action-btn {
         font-size: 20px;
@@ -429,12 +433,10 @@ body.dark-mode .btn-back {
     }
 }
 
-/* Mobile responsiveness - keep left-aligned */
 @media (max-width: 768px) {
     .points-panel {
-        /* Keep consistent size and position - no centering */
         top: 80px;
-        left: 10px;  /* Slightly closer to edge on mobile */
+        left: 10px;  
     }
 
     .action-buttons {
@@ -465,8 +467,7 @@ body.dark-mode .btn-back {
 
 @media (max-width: 480px) {
     .points-panel {
-        /* Keep consistent on very small screens too */
-        left: 5px;  /* Even closer to edge on very small screens */
+        left: 5px; 
     }
 
     .action-buttons {
@@ -487,7 +488,6 @@ body.dark-mode .btn-back {
 
 }
 
-/* Dark mode styles for Crew Index */
 body.dark-mode .welcome-popup-content {
     background: #2d2d2d;
     color: #e0e0e0;
@@ -621,7 +621,6 @@ body.dark-mode .btn-other:active {
     border-color: #666;
 }
 
-/* Marker label styles */
 .marker-number-label {
-    color: black; /* Changed to black for better visibility in dark mode */
+    color: black;
 }

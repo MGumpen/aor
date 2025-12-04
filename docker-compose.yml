@@ -1,5 +1,4 @@
 services:
-  # MariaDB Database
   mariadb:
     image: mariadb:11.5
     container_name: aor-mariadb
@@ -23,7 +22,6 @@ services:
       timeout: 5s
       retries: 3
 
-  # AOR Web Application
   aor-web:
     build:
       context: ./AOR
@@ -43,7 +41,7 @@ services:
     networks:
       - aor_network
     volumes:
-      - ./AOR:/app/source:ro  # For development file watching
+      - ./AOR:/app/source:ro  
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/db-health"]
       interval: 30s
@@ -51,7 +49,6 @@ services:
       retries: 3
       start_period: 40s
 
-  # Adminer for database management (optional)
   adminer:
     image: adminer:4.8.1
     container_name: aor-adminer

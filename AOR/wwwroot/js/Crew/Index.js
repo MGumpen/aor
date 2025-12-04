@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeMap() {
     map = L.map('obstacle-map', {
-        center: [63.4305, 10.3951], // midlertidig senter (Trondheim)
+        center: [58.16347, 8.00345], 
         zoom: 13,
-        zoomControl: true,
+        zoomControl: true, 
         touchZoom: true,
         scrollWheelZoom: true,
         doubleClickZoom: true,
