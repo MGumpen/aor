@@ -31,7 +31,7 @@ body.dark-mode .btn-back {
 
 .navbar .dropdown-item {
     padding: 0.75rem 1.25rem;
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
 .navbar {
@@ -332,8 +332,12 @@ body.dark-mode .empty-state {
 .header-bar .dropdown-menu {
     position: absolute;
     min-width: 220px;
-    font-size: 1rem;
+    font-size: 1.5rem;
     z-index: 20000;
+}
+
+#userDropdown {
+    font-size: 1.1rem;
 }
 
 @media (max-width: 576px) {
@@ -342,7 +346,7 @@ body.dark-mode .empty-state {
     }
 
     #userDropdown {
-        font-size: 0.85rem;
+        font-size: 1rem;
         white-space: nowrap;
     }
 
