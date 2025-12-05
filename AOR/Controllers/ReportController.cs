@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using AOR.Data;
 using AOR.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
     [Authorize]
@@ -31,12 +32,12 @@ namespace AOR.Controllers;
 
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
 
-        return View(reports); // fortsatt Views/Report/MyReports.cshtml
+        return View(reports); 
     }
     
     [Authorize(Roles = "Crew, Registrar, Admin")]
     [HttpGet]
-    public async Task<IActionResult> ReportDetails(int id)
+    public async Task<IActionResult> ReportDetails(int id, string? returnUrl)
     {
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId))
@@ -51,12 +52,12 @@ namespace AOR.Controllers;
             return NotFound();
         }
 
-        // Crew får se rapporten, men brukernavn skjules hvis de ikke eier den
-        // (gjort i viewet via activeRole)
-
         ViewBag.DisplayName = User?.Identity?.Name ?? "User";
+        ViewBag.ReturnUrl = returnUrl; 
 
-        return View("ReportDetails", report);
+        var viewModel = ReportDetailsViewModel.FromReport(report);
+
+        return View("ReportDetails", viewModel);
     }
     
     

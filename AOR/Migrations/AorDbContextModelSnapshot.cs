@@ -97,7 +97,7 @@ namespace AOR.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("AOR.Models.ObstacleData", b =>
+            modelBuilder.Entity("AOR.Models.Data.ObstacleData", b =>
                 {
                     b.Property<int>("ObstacleId")
                         .ValueGeneratedOnAdd()
@@ -106,11 +106,13 @@ namespace AOR.Migrations
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ObstacleId"));
 
                     b.Property<string>("Category")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Coordinates")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(4000)
+                        .HasColumnType("varchar(4000)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -119,19 +121,20 @@ namespace AOR.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("MastType")
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ObstacleDescription")
-                        .HasMaxLength(1500)
-                        .HasColumnType("varchar(1500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
 
-                    b.Property<double?>("ObstacleHeight")
+                    b.Property<double>("ObstacleHeight")
                         .HasColumnType("double");
 
                     b.Property<string>("ObstacleName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ObstacleType")
                         .IsRequired()
@@ -167,7 +170,7 @@ namespace AOR.Migrations
                     b.ToTable("Obstacles");
                 });
 
-            modelBuilder.Entity("AOR.Models.ObstacleTypeModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.ObstacleTypeModel", b =>
                 {
                     b.Property<int>("TypeId")
                         .ValueGeneratedOnAdd()
@@ -188,10 +191,9 @@ namespace AOR.Migrations
                     b.ToTable("ObstacleTypes");
                 });
 
-            modelBuilder.Entity("AOR.Models.OrgModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.OrgModel", b =>
                 {
                     b.Property<int>("OrgNr")
-                        .HasMaxLength(9)
                         .HasColumnType("int");
 
                     b.Property<string>("OrgName")
@@ -204,7 +206,7 @@ namespace AOR.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("AOR.Models.PhotoModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.PhotoModel", b =>
                 {
                     b.Property<int>("PhotoId")
                         .ValueGeneratedOnAdd()
@@ -222,7 +224,7 @@ namespace AOR.Migrations
                     b.ToTable("Photos");
                 });
 
-            modelBuilder.Entity("AOR.Models.PositionModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.PositionModel", b =>
                 {
                     b.Property<int>("PositionId")
                         .ValueGeneratedOnAdd()
@@ -241,13 +243,16 @@ namespace AOR.Migrations
                     b.ToTable("Positions");
                 });
 
-            modelBuilder.Entity("AOR.Models.ReportModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.ReportModel", b =>
                 {
                     b.Property<int>("ReportId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<string>("AssignedToId")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -264,6 +269,8 @@ namespace AOR.Migrations
 
                     b.HasKey("ReportId");
 
+                    b.HasIndex("AssignedToId");
+
                     b.HasIndex("ObstacleId");
 
                     b.HasIndex("StatusId");
@@ -273,7 +280,7 @@ namespace AOR.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("AOR.Models.StatusModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.StatusModel", b =>
                 {
                     b.Property<int>("StatusId")
                         .ValueGeneratedOnAdd()
@@ -452,37 +459,42 @@ namespace AOR.Migrations
 
             modelBuilder.Entity("AOR.Data.User", b =>
                 {
-                    b.HasOne("AOR.Models.OrgModel", "Organization")
+                    b.HasOne("AOR.Models.Data.OrgModel", "Organization")
                         .WithMany("Users")
                         .HasForeignKey("OrgNr");
 
                     b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("AOR.Models.ObstacleData", b =>
+            modelBuilder.Entity("AOR.Models.Data.ObstacleData", b =>
                 {
-                    b.HasOne("AOR.Models.ObstacleTypeModel", null)
+                    b.HasOne("AOR.Models.Data.ObstacleTypeModel", null)
                         .WithMany("Obstacles")
                         .HasForeignKey("ObstacleTypeModelTypeId");
 
-                    b.HasOne("AOR.Models.PhotoModel", null)
+                    b.HasOne("AOR.Models.Data.PhotoModel", null)
                         .WithMany("Obstacles")
                         .HasForeignKey("PhotoModelPhotoId");
 
-                    b.HasOne("AOR.Models.PositionModel", null)
+                    b.HasOne("AOR.Models.Data.PositionModel", null)
                         .WithMany("Obstacles")
                         .HasForeignKey("PositionModelPositionId");
                 });
 
-            modelBuilder.Entity("AOR.Models.ReportModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.ReportModel", b =>
                 {
-                    b.HasOne("AOR.Models.ObstacleData", "Obstacle")
+                    b.HasOne("AOR.Data.User", "AssignedTo")
+                        .WithMany()
+                        .HasForeignKey("AssignedToId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AOR.Models.Data.ObstacleData", "Obstacle")
                         .WithMany()
                         .HasForeignKey("ObstacleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AOR.Models.StatusModel", "Status")
+                    b.HasOne("AOR.Models.Data.StatusModel", "Status")
                         .WithMany("Reports")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -493,6 +505,8 @@ namespace AOR.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AssignedTo");
 
                     b.Navigation("Obstacle");
 
@@ -552,27 +566,27 @@ namespace AOR.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AOR.Models.ObstacleTypeModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.ObstacleTypeModel", b =>
                 {
                     b.Navigation("Obstacles");
                 });
 
-            modelBuilder.Entity("AOR.Models.OrgModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.OrgModel", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("AOR.Models.PhotoModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.PhotoModel", b =>
                 {
                     b.Navigation("Obstacles");
                 });
 
-            modelBuilder.Entity("AOR.Models.PositionModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.PositionModel", b =>
                 {
                     b.Navigation("Obstacles");
                 });
 
-            modelBuilder.Entity("AOR.Models.StatusModel", b =>
+            modelBuilder.Entity("AOR.Models.Data.StatusModel", b =>
                 {
                     b.Navigation("Reports");
                 });

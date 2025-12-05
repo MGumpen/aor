@@ -2,10 +2,11 @@ using System.Diagnostics;
 using AOR.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AOR.Repositories;
+using AOR.Models.View;
 
 namespace AOR.Controllers;
 
@@ -155,7 +156,6 @@ public class AdminController : Controller
                 return View(model);
             }
 
-            // Oppdater users først
             var users = await _userRepository.GetByOrganizationAsync(oldOrgNr);
             foreach (var user in users)
             {
@@ -163,10 +163,8 @@ public class AdminController : Controller
                 await _userRepository.UpdateAsync(user);
             }
 
-            // Slett gammel org
             await _organizationRepository.DeleteAsync(oldOrgNr);
 
-            // Lag ny org
             var newOrg = new OrgModel
             {
                 OrgNr = model.OrgNr,
@@ -197,7 +195,6 @@ public class AdminController : Controller
 
         _logger.LogInformation("Deleting organization: {OrgName} ({OrgNr})", org.OrgName, org.OrgNr);
 
-// Sett users' OrgNr til null
         var users = await _userRepository.GetByOrganizationAsync(id);
         _logger.LogInformation("Found {Count} users to update", users.Count);
         foreach (var user in users)
@@ -206,7 +203,6 @@ public class AdminController : Controller
             await _userRepository.UpdateAsync(user);
         }
 
-// Slett org
         await _organizationRepository.DeleteAsync(id);
 
         _logger.LogInformation("Organization deleted successfully");

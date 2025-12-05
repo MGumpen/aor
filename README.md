@@ -1,18 +1,22 @@
 # AOR - Aviation Obstacle Registration
-ASP.NET Core MVC Application with Docker & MariaDB
+ASP.NET Core MVC Application med Docker & MariaDB
 Laget for UiA i samarbeid med Norsk Luftambulanse og Kartverket
 
 Gruppe 3, IT og informasjonssystemer, høsten 2025.
 
-- Vi har en egen fil som viser hvordan vi bruker github: Github.md
-
-- Forskjellige testingscenarier finner du i Testing.md
+### Forskjellige .md dokumentasjonsfiler:
+- Hvordan vi bruker Github: Github.md
+- Testing er dokumentert i Testing.md
+- Systemarkitektur er beskrevet i Architecture.md
 
 ## Testbrukere i Web Applikasjonen (blir seedet til databasen ved oppstart):
 - Crew: crew@test.no Passord: Test123$ Rolle(r): Crew
 - Crew 2: crew2@test.no Passord: Test123$ Rolle(r): Crew, Admin
 - Admin: admin@test.no Passord: Test123$ Rolle(r): Admin
-- Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registerfører
+- Registerfører: reg@test.no Passord: Test123$ Rolle(r): Registrar
+
+Appen er laget med tanke på at piloter og crew bruker den på iPad mens registerfører (Registrar) og Admin bruker den på PC. 
+Appen er ikke skalert til mobil.
 
 ### Forutsetninger for å starte applikasjonen:
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
@@ -34,14 +38,67 @@ docker compose up -d --build
 docker compose up -d
 
 # Åpne applikasjonen:
-# - Web App: http://localhost:5001
-# - Database Admin: http://localhost:8080
+  - Web App: http://localhost:5001 (container: web 5001:8080)
+# - Database Admin: http://localhost:8080 (Gir oversikt over databasen med tabeller)
+# - Bruker av appen kan se bort i fra containeren som heter Adminer og mariadb.
 
 # Stopp alle services
 docker compose down
 ```
+## Contributors
+- Vi har jobbet med en update branch. Det gjør at main branchen ikke inneholder riktig informasjon om hvem som har jobbet med 
+prosjektet dersom man sjekker Insights og deretter Contributors på github, ettersom den bare viser commits til main. 
+- Ettersom det stort sett er samme person som har laget PR og merget fra update til main, får denne personen veldig mange flere commits 
+enn de andre i gruppen.
+- For å få et mer riktig bilde av hvem som har bidratt til prosjektet, anbefaler vi å kjøre følgende kommando i terminalen når du er i appen sin git repository:
+```bash
+git shortlog -sne update
+```
+- Copilot står som Contributer. Den er brukt til å gjøre endringer i CI/CD workflow filen, og ikke selve applikasjonsfilene.
 
-## 🛠️ Database
+## Sikkerhet
+
+### Autentisering og autorisering
+- Innlogging håndteres av ASP.NET Core Identity.
+- Brukere tildeles roller som 'Crew', 'Registrar' og 'Admin'.
+- Tilgang kontrolleres i controllere og actions med '[Authorize]' og '[Authorize(Roles = "...")]'.
+
+### Passord og brukere
+- Passord lagres aldri i klartekst, men som hasher i databasen.
+- Testbrukere blir seeda til databasen ved oppstart og er kun ment for utvikling og testing av nye funksjoner.
+
+### Roller og tilgangskontroll
+- Crew: Kan registrere hindringer i rapporter eller som utkast (Draft). Kan se egne rapporter, og kan se andre hindringer, men disse er anonymisert (Viser ikke bruker eller Org).
+- Registrar: Får opp nye rapporter for godkjenning. Registrar kan tildele rapporten til andre registrarer, som får varsel om nye tildelinger.
+- Admin: Kan legge til, fjerne og redigere både brukere og organisasjoner i systemet.
+- En bruker kan ha flere roller i systemet, og velger da hvilken rolle de skal bruke når de logger inn.
+- Sensitive operasjoner (som brukeradministrasjon) er begrenset til Admin.
+
+## Bruk av applikasjonen
+### Crew
+AOR er en applikasjon laget for at piloter og andre flybesetningsmedlemmer skal kunne rapportere hindringer de oppdager under flyvning som ikke er registrert i deres systemer.
+Som crew kan man logge inn i applikasjonen, og får da tilgang til et kart som viser posisjonen til brukeren. 
+Brukeren kan klikke på en at hurtigknappene på skjermen for å registrere den hindringen de ser foran seg. 
+Ved å legge til punkter på kartet, registreres posisjonen til hindringen automatisk.
+Når brukeren er fornøyd med plassering av posisjonspunktene, kan brukeren fylle ut et skjema med informasjon om den aktuelle hindringen.
+Deretter kan brukeren lagre informasjonen som draft til senere redigering, eller sende inn rapporten til registerfører hos NRL teamet til Kartverket.
+Brukeren kan også finne en liste over sine egne rapporter, hvor draft også lagres, og se status på innsendte rapporter.
+
+### Registrar (registerfører)
+Som registerfører i NRL teamet, kan man logge inn for å få opp rapportene som er registrert av crew brukere.
+Registerfører får opp all informasjon om rapportene, og kan velge å tildele rapporten til en annen saksbehandler som skal gå gjennom den, eller godkjenne/avslå rapporten selv.
+Når rapporten er godkjent eller avslått, kommer det opp som statur hos crew medlemmet, og lagres i databasen med den aktuelle statusen. 
+Registerfører har også tilgang til å se Epost til brukeren som har rapportert, som gir muligheten til å etterspørre mer informasjon om nødvendig.
+
+### Admin
+En bruker som er admin har tilgang til å administrere brukere og organisasjoner i applikasjonen.
+En bruker kan ha flere roller i systemet, så en admin kan være crew eller registerfører, eller bare ha rollen admin.
+På sikt er planen også at admin skal få tilgang til rapporter og statistikk, men dette er ikke implementert i løsningen enda.
+
+
+# Teknisk
+
+## Database
 
 ### Connection String
 - **Lokal utvikling:** `Server=localhost;Database=aor_db;Uid=aor_user;Pwd=Test123;Port=3306;`
@@ -102,7 +159,7 @@ docker compose up -d --build aor-web
 docker compose down -v
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 **Web app unhealthy:**
 ```bash

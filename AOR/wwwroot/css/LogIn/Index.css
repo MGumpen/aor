@@ -1,0 +1,12 @@
+.role-btn {
+    width: 240px;
+    min-height: 42px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+@media (max-width: 500px) {
+    .role-btn {
+        width: 100%;
+    }
+}

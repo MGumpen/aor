@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace AOR.Data;
@@ -34,6 +34,12 @@ public class AorDbContext : IdentityDbContext<User>
                 .HasForeignKey(r => r.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict); 
+
+            e.HasOne(r => r.AssignedTo)
+                .WithMany()
+                .HasForeignKey(r => r.AssignedToId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             e.HasIndex(r => new { r.UserId, r.ObstacleId });
         });

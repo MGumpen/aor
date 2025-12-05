@@ -1,55 +1,68 @@
-### Testing scenarier
+# Testing
 
-# Log In
-- Logg inn med de forskjellige brukerne og passordene som står i README.md, så skal du komme til forskjellige index sider.
+Dette dokumentet beskriver hvordan vi tester prosjektet, hvilke deler som er dekket av tester, og hvordan man kjører testene.
 
-# Unit tests:
+## Hvordan kjøre testene
 
-LogInControllerTests:
+For å kjøre alle tester i løsningen:
 
-1. Index_Post_ValidRegisterforer_RedirectsToRegisterforerIndex
+Dotnet test
 
-Tester at når en bruker logger inn med riktige legitimasjon (reg@uia.no, 123), blir de sendt videre til riktig side — Registerforer/Index.
-Denne testen bekrefter at RedirectToActionResult fungerer og at brukeren får riktig rolle.
+## Test resultater:
 
-2. Index_Post_InvalidUser_ReturnsViewWithError
+```bash
+Test summary: total: 10; failed: 0; succeeded: 10; skipped: 0; duration: 1,2s
+Build succeeded with 1 warning(s) in 2,4s
+```
 
-Tester at hvis brukeren skriver feil brukernavn eller passord, så vises innloggingssiden igjen.
-I tillegg kontrolleres det at ModelState inneholder en feilmelding, noe som betyr at innloggingen mislykkes.
+## Teststruktur:
 
-3. Index_Get_ReturnsLoginView_WithViewData
+Prosjektstruktur (relevant for testing):
+	•	AOR/ – webapplikasjon og domene/modeller
+	•	UnitTests/ – NUnit unit tester for domene og repositories
 
-Tester at GET /LogIn/Index returnerer innloggingssiden (ViewResult) med riktig modell (LogInData).
-Den sjekker også at ViewData inneholder informasjon om database-tilkoblingen (DbConnected og DbError).
+Testprosjektet bruker:
+	•	NUnit som test-rammeverk
+	•	EF Core InMemory-database for å teste repositories uten ekte database
 
+Hva de ulike testene gjør
 
-ObstacleControllerTests:
+Domene / modeller
 
-1. DataForm_Post_ValidModel_Returns_Overview_And_Sets_CreatedAt
+AorDbContext_ShouldSeed_DefaultStatuses
+Tester at databasen seedes med fem standardstatusverdier:
+Pending, Approved, Rejected, Draft, Deleted.
 
-Tester at når et gyldig hinder (Obstacle) sendes inn via POST, returneres “Overview”-viewet.
-Testen bekrefter også at CreatedAt-feltet blir automatisk satt til riktig tidspunkt.
+ObstacleData_ShouldSetCreatedAt_OnCreation
+Sikrer at CreatedAt setter seg automatisk når et nytt ObstacleData-objekt opprettes.
 
-ForgotPasswordControllerTests:
+ObstacleData_ShouldRequireDescription_WhenTypeIsOther
+Validerer at ObstacleDescription kreves når ObstacleType == "other".
 
-1. Index_Post_ValidModel_RedirectsToLogIn
+ObstacleData_ShouldBeValid_WhenTypeOtherHasDescription
+Tester at modellen er gyldig når type er other og beskrivelse er angitt.
 
-Tester at når brukeren skriver inn en gyldig e-post i “Glemt passord”-skjemaet, logges forespørselen.
-Deretter sjekkes det at brukeren sendes videre til LogIn/Index-siden.
+⸻
 
-CrewControllerTests
+Repository-tester
 
-1. Index_Returns_ViewResult
+OrganizationRepository_ExistsAsync_ReturnsTrue_WhenOrganizationExists
+Returnerer true hvis en organisasjon med gitt OrgNr finnes.
 
-Tester at CrewController.Index() returnerer et gyldig ViewResult.
-Denne testen sikrer at hovedsiden for Crew vises uten feil.
+OrganizationRepository_ExistsAsync_ReturnsFalse_WhenOrganizationDoesNotExist
+Returnerer false når organisasjonen ikke finnes.
 
-2. Privacy_Returns_ViewResult
+OrganizationRepository_DeleteAsync_RemovesOrganization
+Tester at sletting fungerer og kun riktig organisasjon fjernes.
 
-Tester at CrewController.Privacy() returnerer riktig view.
-Bekrefter at personvern-siden lastes og vises som forventet.
+ObstacleRepository_AddAndGetByIdAsync_PersistsObstacle
+Sjekker at hinder lagres og kan hentes opp igjen riktig.
 
-3.  Error_Returns_View_With_ErrorViewModel
+UserRepository_GetByOrganizationAsync_ReturnsOnlyUsersFromThatOrganization
+Sikrer at kun brukere som tilhører en bestemt organisasjon returneres.
 
-Tester at CrewController.Error() returnerer et view med en modell av typen ErrorViewModel.
-Den sjekker at RequestId ikke er tom og at feilhåndteringen fungerer som planlagt.
+ReportRepository_UpdateStatusAndDelete_WorksAsExpected
+Tester:
+	1.	At UpdateStatusAsync oppdaterer status på riktig rapport
+	2.	At DeleteAsync fjerner rapporten permanent
+

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using AOR.Models;
+using AOR.Models.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace AOR.Data;
@@ -41,7 +41,6 @@ public static class AorDbSeeder
             return;
         }
 
-        // Ensure roles exist
         var roles = new[] { "Crew", "Admin", "Registrar" };
         foreach (var role in roles)
         {
@@ -100,7 +99,6 @@ public static class AorDbSeeder
             logger.LogError(ex, "Exception while seeding organisations");
         }
 
-        // Build a map of orgName -> OrgNr for quick lookup
         var orgMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         try
         {
@@ -108,7 +106,6 @@ public static class AorDbSeeder
             var allOrgs = await db.Organizations.ToListAsync();
             foreach (var o in allOrgs)
             {
-                // Avoid duplicates
                 if (!orgMap.ContainsKey(o.OrgName)) orgMap[o.OrgName] = o.OrgNr;
             }
         }
@@ -117,7 +114,6 @@ public static class AorDbSeeder
             logger.LogWarning(ex, "Kunne ikke hente organisasjoner etter seeding");
         }
 
-        // Test users - create users and link them to organisations via OrgNr
         var testUsers = new[]
         {
             new { Email = "crew@test.no", Password = "Test123$", Roles = new[] { "Crew" }, FirstName = "Kari", LastName = "Crew", PhoneNumber = "12345678", OrgName = "Norsk Luftambulanse" },
@@ -144,7 +140,6 @@ public static class AorDbSeeder
                         PhoneNumberConfirmed = true,
                     };
 
-                    // Set OrgNr if mapping exists
                     if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr))
                     {
                         user.OrgNr = orgNr;
@@ -157,7 +152,6 @@ public static class AorDbSeeder
                         continue;
                     }
 
-                    // Add multiple roles at once
                     var addRolesRes = await userManager.AddToRolesAsync(user, tu.Roles);
                     if (!addRolesRes.Succeeded)
                     {
@@ -170,7 +164,6 @@ public static class AorDbSeeder
                 }
                 else
                 {
-                    // Ensure username equals email
                     if (existing.UserName != existing.Email)
                     {
                         existing.UserName = existing.Email;
@@ -178,7 +171,6 @@ public static class AorDbSeeder
                         logger.LogInformation("Updated UserName to Email for existing user {Email}", tu.Email);
                     }
 
-                    // Ensure roles are assigned
                     var rolesForUser = await userManager.GetRolesAsync(existing);
                     var missingRoles = tu.Roles.Except(rolesForUser).ToArray();
                     if (missingRoles.Any())
@@ -194,7 +186,6 @@ public static class AorDbSeeder
                         }
                     }
 
-                    // Ensure OrgNr is set/updated
                     if (!string.IsNullOrEmpty(tu.OrgName) && orgMap.TryGetValue(tu.OrgName, out var orgNr) && existing.OrgNr != orgNr)
                     {
                         existing.OrgNr = orgNr;
