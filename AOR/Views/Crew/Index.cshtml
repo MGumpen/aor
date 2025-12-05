@@ -6,7 +6,6 @@
 <link rel="stylesheet" href="~/css/Crew/Index.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-<!-- Welcome popup -->
 <div class="welcome-popup" id="welcome-popup">
     <div class="welcome-popup-content">
         <h3>Welcome to AOR</h3>
@@ -16,16 +15,13 @@
     </div>
 </div>
 
-<!-- Map container -->
 <div class="map-container">
     <div id="obstacle-map"></div>
     
-    <!-- Location button -->
     <button class="location-btn" onclick="showMyLocation()">
         My Location
     </button>
     
-    <!-- Points panel -->
     <div class="points-panel" id="points-panel">
         <div class="points-panel-header">
             <h3 class="points-panel-title" id="panel-title" onclick="togglePointsPanel()" title="Click to hide panel">Points</h3>
@@ -34,17 +30,13 @@
                 <button class="panel-btn cancel" onclick="cancelDrawing()" title="Cancel">✕</button>
             </div>
         </div>
-        <div class="points-list" id="points-list">
-            <!-- Points will be dynamically added here -->
-        </div>
+        <div class="points-list" id="points-list"></div>
     </div>
     
-    <!-- Minimal notification -->
     <div class="drawing-notification" id="drawing-notification">
         Tap to place • View details in panel
     </div>
     
-    <!-- Action buttons -->
     <div class="action-buttons">
         <button class="main-action-btn btn-line" onclick="startDrawing('line')">
             Line

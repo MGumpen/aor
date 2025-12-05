@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeMap() {
     map = L.map('obstacle-map', {
-        center: [63.4305, 10.3951], // midlertidig senter (Trondheim)
+        center: [63.4305, 10.3951],
         zoom: 13,
         zoomControl: true,
         touchZoom: true,
@@ -111,7 +111,6 @@ function startLiveLocationTracking() {
             const accuracy = position.coords.accuracy || 0;
             const latlng = [lat, lng];
 
-            // Opprett / oppdater blå sirkelmarkør
             if (!myLocationMarker) {
                 myLocationMarker = L.circleMarker(latlng, {
                     radius: 8,
@@ -125,7 +124,6 @@ function startLiveLocationTracking() {
                 myLocationMarker.setLatLng(latlng);
             }
 
-            // Nøyaktighetssirkel rundt posisjonen
             if (!myLocationAccuracyCircle) {
                 myLocationAccuracyCircle = L.circle(latlng, {
                     radius: accuracy,
@@ -140,7 +138,6 @@ function startLiveLocationTracking() {
                 myLocationAccuracyCircle.setRadius(accuracy);
             }
 
-            // Første fix: sentrer kartet på brukeren
             if (firstFix) {
                 map.setView(latlng, 16);
                 firstFix = false;
@@ -449,13 +446,11 @@ function cancelDrawing() {
 }
 
 function showMyLocation() {
-    // My Location-knappen: hopp til live-marker hvis den finnes
     if (myLocationMarker) {
         map.setView(myLocationMarker.getLatLng(), 16);
         return;
     }
 
-    // Fallback: enkel posisjons-henting hvis live-tracking ikke har startet enda
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             function(position) {
@@ -554,7 +549,6 @@ function displayLast30DaysObstacles(obstacles) {
             const color = colors[obstacle.obstacleType.toLowerCase()] || '#4f46e5';
 
             if (coords.length === 1) {
-                // Single point - create a marker
                 const marker = L.circleMarker([coords[0].lat, coords[0].lng], {
                     radius: 10,
                     fillColor: color,
