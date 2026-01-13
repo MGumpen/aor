@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using AOR.Data;
+using AOR.Models.Data;
 using AOR.Repositories;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,7 +22,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Identity - registered after DbContext so stores are available
 // Use full AddIdentity so SignInManager, UserManager, RoleManager and cookie handling are configured
-builder.Services.AddIdentity<User, IdentityRole>(options =>
+builder.Services.AddIdentity<UserModel, IdentityRole>(options =>
 {
     // Optional: tweak password requirements for dev/test convenience
     options.Password.RequireDigit = true;

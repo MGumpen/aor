@@ -29,11 +29,11 @@ public static class AorDbSeeder
         catch { /* ignore logging errors */ }
 
         RoleManager<IdentityRole> roleManager;
-        UserManager<User> userManager;
+        UserManager<UserModel> userManager;
         try
         {
             roleManager = scoped.GetRequiredService<RoleManager<IdentityRole>>();
-            userManager = scoped.GetRequiredService<UserManager<User>>();
+            userManager = scoped.GetRequiredService<UserManager<UserModel>>();
         }
         catch (Exception ex)
         {
@@ -129,7 +129,7 @@ public static class AorDbSeeder
                 var existing = await userManager.FindByEmailAsync(tu.Email);
                 if (existing == null)
                 {
-                    var user = new User
+                    var user = new UserModel
                     {
                         UserName = tu.Email,
                         Email = tu.Email,

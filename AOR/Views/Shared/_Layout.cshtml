@@ -1,8 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using AOR.Data
+@using AOR.Models.Data
 @using System.Text.Json
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
+@inject SignInManager<UserModel> SignInManager
+@inject UserManager<UserModel> UserManager
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);

@@ -8,17 +8,22 @@ using System.Globalization;
 using AOR.Repositories;
 
 namespace AOR.Controllers;
+
+/// <summary>
+/// Controller for håndtering av hindringer (obstacles).
+/// Brukes av Crew for å registrere nye hindringer og se alle hindringer på kartet.
+/// </summary>
 [Authorize(Roles = "Crew")]
 public class ObstacleController : Controller
 {
     private readonly ILogger<ObstacleController> _logger;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<UserModel> _userManager;
     private readonly IObstacleRepository _obstacleRepository;
     private readonly IReportRepository _reportRepository;
     
     public ObstacleController(
         ILogger<ObstacleController> logger,
-        UserManager<User> userManager,
+        UserManager<UserModel> userManager,
         IObstacleRepository obstacleRepository,
         IReportRepository reportRepository)
     {
@@ -28,9 +33,15 @@ public class ObstacleController : Controller
         _reportRepository = reportRepository;
     }
     
+    /// <summary>
+    /// Omdireksjonspunkt for /Obstacle som sendes til All().
+    /// </summary>
     [HttpGet("/Obstacle")]
     public IActionResult Index() => RedirectToAction(nameof(All));
 
+    /// <summary>
+    /// Viser alle registrerte hindringer på kartet.
+    /// </summary>
     [HttpGet("/Obstacle/All")]
     public async Task<IActionResult> All()
     {
@@ -38,6 +49,12 @@ public class ObstacleController : Controller
         return View("AllObstacles", obstacles);
     }
     
+    /// <summary>
+    /// Viser skjemaet for registrering av ny hindring.
+    /// </summary>
+    /// <param name="type">Hindringens type</param>
+    /// <param name="coordinates">GeoJSON-koordinater</param>
+    /// <param name="count">Antall punkter</param>
     [HttpGet]
     public IActionResult DataForm(string type, string coordinates, int count)
     {
@@ -47,7 +64,7 @@ public class ObstacleController : Controller
         ViewBag.Coordinates = coordinates ?? "[]";
         ViewBag.PointCount = count;
         
-        return View(new ObstacleData 
+        return View(new ObstacleDataModel 
         { 
             ObstacleType = type ?? "other",
             Coordinates = coordinates,
@@ -55,6 +72,9 @@ public class ObstacleController : Controller
         });
     }
 
+    /// <summary>
+    /// Viser rapporter opprettet av innlogget bruker.
+    /// </summary>
     [HttpGet("/Crew/MyReports")]
     public async Task<IActionResult> MyReports()
     {
@@ -70,16 +90,20 @@ public class ObstacleController : Controller
         return View("~/Views/Report/MyReports.cshtml", reports);
     }
 
-
+    /// <summary>
+    /// Lagrer en ny hindring og opprettet en tilhørende rapport.
+    /// </summary>
+    /// <param name="obstacleData">Hindringdataene</param>
+    /// <param name="draft">Hvis satt, lagres som utkast lokalt</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DataForm(ObstacleData obstacleData, string? draft)
+    public async Task<IActionResult> DataForm(ObstacleDataModel obstacleData, string? draft)
     {
         Console.WriteLine("=== POST DataForm - Processing height conversion ===");
 
     ProcessHeightConversion(obstacleData);
     ProcessTypeSpecificFields(obstacleData);
-    NormalizeObstacleData(obstacleData);
+    NormalizeObstacleDataModel(obstacleData);
     ApplyAdditionalValidation(obstacleData);
 
         if (ModelState.IsValid)
@@ -137,7 +161,7 @@ public class ObstacleController : Controller
         return View(obstacleData);
     }
     
-    private void ProcessHeightConversion(ObstacleData obstacleData)
+    private void ProcessHeightConversion(ObstacleDataModel obstacleData)
     {
         var heightUnit = Request.Form["heightUnit"].FirstOrDefault() ?? "meters";
         var heightMetersStr = Request.Form["heightMeters"].FirstOrDefault();
@@ -145,7 +169,7 @@ public class ObstacleController : Controller
 
         if (string.IsNullOrWhiteSpace(heightMetersStr))
         {
-            heightMetersStr = Request.Form[nameof(ObstacleData.ObstacleHeight)].FirstOrDefault();
+            heightMetersStr = Request.Form[nameof(ObstacleDataModel.ObstacleHeight)].FirstOrDefault();
         }
 
         if (string.IsNullOrWhiteSpace(heightFeetStr))
@@ -177,12 +201,12 @@ public class ObstacleController : Controller
         if (parsed.HasValue && parsed.Value > 0)
         {
             obstacleData.ObstacleHeight = parsed.Value;
-            ModelState.Remove(nameof(ObstacleData.ObstacleHeight));
+            ModelState.Remove(nameof(ObstacleDataModel.ObstacleHeight));
             ModelState.SetModelValue(
-                nameof(ObstacleData.ObstacleHeight),
+                nameof(ObstacleDataModel.ObstacleHeight),
                 new ValueProviderResult(parsed.Value.ToString(CultureInfo.InvariantCulture)));
-            ModelState.ClearValidationState(nameof(ObstacleData.ObstacleHeight));
-            ModelState.MarkFieldValid(nameof(ObstacleData.ObstacleHeight));
+            ModelState.ClearValidationState(nameof(ObstacleDataModel.ObstacleHeight));
+            ModelState.MarkFieldValid(nameof(ObstacleDataModel.ObstacleHeight));
             TryValidateModel(obstacleData);
             Console.WriteLine($"Final obstacle height (meters): {obstacleData.ObstacleHeight}");
         }
@@ -207,7 +231,7 @@ public class ObstacleController : Controller
 
         return null;
     }
-    private void ProcessTypeSpecificFields(ObstacleData obstacleData)
+    private void ProcessTypeSpecificFields(ObstacleDataModel obstacleData)
     {
         if (obstacleData.ObstacleType?.ToLower() == "mast")
         {
@@ -238,7 +262,7 @@ public class ObstacleController : Controller
         }
     }
 
-    private void NormalizeObstacleData(ObstacleData obstacleData)
+    private void NormalizeObstacleDataModel(ObstacleDataModel obstacleData)
     {
         obstacleData.ObstacleName = obstacleData.ObstacleName?.Trim();
         obstacleData.ObstacleDescription = obstacleData.ObstacleDescription?.Trim();
@@ -248,49 +272,49 @@ public class ObstacleController : Controller
         obstacleData.Category = obstacleData.Category?.Trim();
     }
 
-    private void ApplyAdditionalValidation(ObstacleData obstacleData)
+    private void ApplyAdditionalValidation(ObstacleDataModel obstacleData)
     {
         if (!obstacleData.ObstacleHeight.HasValue)
         {
-            AddModelErrorOnce(nameof(ObstacleData.ObstacleHeight), "Height is required");
+            AddModelErrorOnce(nameof(ObstacleDataModel.ObstacleHeight), "Height is required");
         }
         else
         {
             var height = obstacleData.ObstacleHeight.Value;
             if (height < 0.1 || height > 1000)
             {
-                AddModelErrorOnce(nameof(ObstacleData.ObstacleHeight), "Height must be between 0.1 and 1000 meters");
+                AddModelErrorOnce(nameof(ObstacleDataModel.ObstacleHeight), "Height must be between 0.1 and 1000 meters");
             }
         }
 
         if (!string.IsNullOrEmpty(obstacleData.ObstacleName) && obstacleData.ObstacleName.Length > 50)
         {
-            AddModelErrorOnce(nameof(ObstacleData.ObstacleName), "Obstacle name can be at most 50 characters");
+            AddModelErrorOnce(nameof(ObstacleDataModel.ObstacleName), "Obstacle name can be at most 50 characters");
         }
 
         if (!string.IsNullOrEmpty(obstacleData.ObstacleDescription) && obstacleData.ObstacleDescription.Length > 1000)
         {
-            AddModelErrorOnce(nameof(ObstacleData.ObstacleDescription), "Description can be at most 1000 characters");
+            AddModelErrorOnce(nameof(ObstacleDataModel.ObstacleDescription), "Description can be at most 1000 characters");
         }
 
         if (!string.IsNullOrEmpty(obstacleData.Coordinates) && obstacleData.Coordinates.Length > 4000)
         {
-            AddModelErrorOnce(nameof(ObstacleData.Coordinates), "Coordinate payload exceeds maximum length");
+            AddModelErrorOnce(nameof(ObstacleDataModel.Coordinates), "Coordinate payload exceeds maximum length");
         }
 
         if (obstacleData.WireCount.HasValue && (obstacleData.WireCount < 1 || obstacleData.WireCount > 99))
         {
-            AddModelErrorOnce(nameof(ObstacleData.WireCount), "Wire count must be between 1 and 99");
+            AddModelErrorOnce(nameof(ObstacleDataModel.WireCount), "Wire count must be between 1 and 99");
         }
 
         if (!string.IsNullOrEmpty(obstacleData.MastType) && obstacleData.MastType.Length > 50)
         {
-            AddModelErrorOnce(nameof(ObstacleData.MastType), "Mast type can be at most 50 characters");
+            AddModelErrorOnce(nameof(ObstacleDataModel.MastType), "Mast type can be at most 50 characters");
         }
 
         if (!string.IsNullOrEmpty(obstacleData.Category) && obstacleData.Category.Length > 50)
         {
-            AddModelErrorOnce(nameof(ObstacleData.Category), "Category can be at most 50 characters");
+            AddModelErrorOnce(nameof(ObstacleDataModel.Category), "Category can be at most 50 characters");
         }
     }
 

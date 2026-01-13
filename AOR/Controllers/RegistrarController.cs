@@ -13,12 +13,12 @@ namespace AOR.Controllers;
 public class RegistrarController : Controller
 {
     private readonly ILogger<RegistrarController> _logger;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<UserModel> _userManager;
     private readonly IReportRepository _reportRepository;
 
     public RegistrarController(
         ILogger<RegistrarController> logger,
-        UserManager<User> userManager,
+        UserManager<UserModel> userManager,
         IReportRepository reportRepository)
     {
         _logger = logger;
@@ -33,8 +33,6 @@ public class RegistrarController : Controller
 
     public async Task<IActionResult> AllReports(string sort = "CreatedAt", string dir = "asc")
     {
-        ViewBag.CurrentSort = sort;
-        ViewBag.CurrentDir = dir;
         try
         {
             // Henter alle rapporter med Obstacle, User, Organization, Status via repo
@@ -42,7 +40,6 @@ public class RegistrarController : Controller
 
             // Hent registrars for dropdowns
             var registrars = await _reportRepository.GetRegistrarsAsync();
-            ViewBag.Registrars = registrars;
 
             // Sorter listen
             reports = (sort?.ToLower(), dir?.ToLower()) switch
@@ -63,12 +60,21 @@ public class RegistrarController : Controller
                 ("status", "asc") => reports.OrderByDescending(r => r.Status?.Status).ToList(),
                 _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
             };
-            return View(reports);
+
+            var viewModel = new AllReportsViewModel
+            {
+                Reports = reports,
+                Registrars = registrars,
+                CurrentSort = sort,
+                CurrentDir = dir
+            };
+
+            return View(viewModel);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching reports");
-            return View(new List<ReportModel>());
+            return View(new AllReportsViewModel());
         }
     }
 
@@ -118,12 +124,15 @@ public class RegistrarController : Controller
         if (user == null) return Challenge();
 
         var pendingCount = await _reportRepository.GetAssignedPendingCountAsync(user.Id);
-        ViewBag.AssignedPendingCount = pendingCount;
-
         var unassignedPending = await _reportRepository.GetUnassignedPendingCountAsync();
-        ViewBag.UnassignedPendingCount = unassignedPending;
 
-        return View();
+        var viewModel = new RegistrarIndexViewModel
+        {
+            AssignedPendingCount = pendingCount,
+            UnassignedPendingCount = unassignedPending
+        };
+
+        return View(viewModel);
     }
 
     public IActionResult Privacy()
@@ -134,7 +143,7 @@ public class RegistrarController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 
     [HttpGet]
@@ -154,9 +163,6 @@ public class RegistrarController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return Challenge();
 
-        ViewBag.CurrentSort = sort;
-        ViewBag.CurrentDir = dir;
-
         var reports = await _reportRepository.GetAssignedToAsync(user.Id);
 
         reports = (sort?.ToLower(), dir?.ToLower()) switch
@@ -174,7 +180,14 @@ public class RegistrarController : Controller
             _ => reports.OrderByDescending(r => r.CreatedAt).ToList()
         };
 
-        return View(reports);
+        var viewModel = new AssignedReportsViewModel
+        {
+            Reports = reports,
+            CurrentSort = sort,
+            CurrentDir = dir
+        };
+
+        return View(viewModel);
     }
 
     [HttpPost]

@@ -2,24 +2,42 @@ using AOR.Models.Data;
 
 namespace AOR.Repositories
 {
+    /// <summary>
+    /// Interface for dataaaksess til hindringer.
+    /// Definerer CRUD-operasjoner for ObstacleDataModel.
+    /// </summary>
     public interface IObstacleRepository
     {
-        // Hente alle hinder
-        Task<List<ObstacleData>> GetAllAsync();
+        /// <summary>
+        /// Henter alle hindringer fra databasen.
+        /// </summary>
+        Task<List<ObstacleDataModel>> GetAllAsync();
 
-        // Hente ett hinder
-        Task<ObstacleData?> GetByIdAsync(int obstacleId);
+        /// <summary>
+        /// Henter en spesifikk hindring basert på ID.
+        /// </summary>
+        /// <param name="obstacleId">Hindringens ID</param>
+        Task<ObstacleDataModel?> GetByIdAsync(int obstacleId);
 
-        // Sjekke om et hinder finnes
+        /// <summary>
+        /// Sjekker om en hindring eksisterer i databasen.
+        /// </summary>
+        /// <param name="obstacleId">Hindringens ID</param>
         Task<bool> ExistsAsync(int obstacleId);
 
-        // Opprette nytt hinder
-        Task AddAsync(ObstacleData obstacle);
+        /// <summary>
+        /// Opprett en ny hindring i databasen.
+        /// </summary>
+        Task AddAsync(ObstacleDataModel obstacle);
 
-        // Oppdatere eksisterende hinder
-        Task UpdateAsync(ObstacleData obstacle);
+        /// <summary>
+        /// Oppdater en eksisterende hindring.
+        /// </summary>
+        Task UpdateAsync(ObstacleDataModel obstacle);
 
-        // Slette hinder
+        /// <summary>
+        /// Sletter en hindring fra databasen.
+        /// </summary>
         Task DeleteAsync(int obstacleId);
     }
 }

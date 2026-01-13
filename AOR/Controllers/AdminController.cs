@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using AOR.Data;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using AOR.Models.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AOR.Repositories;
@@ -10,18 +10,23 @@ using AOR.Models.View;
 
 namespace AOR.Controllers;
 
+/// <summary>
+/// Controller for administrasjonsfunksjoner.
+/// Tillatt kun for brukere med Admin-rolle.
+/// Håndterer organisasjoner, brukere, rapporter og andre administrativt arbeid.
+/// </summary>
 [Authorize(Policy = "AsAdmin")]
 public class AdminController : Controller
 {
     private readonly ILogger<AdminController> _logger;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<UserModel> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IUserRepository _userRepository;
 
     public AdminController(
         ILogger<AdminController> logger,
-        UserManager<User> userManager,
+        UserManager<UserModel> userManager,
         RoleManager<IdentityRole> roleManager,
         IOrganizationRepository organizationRepository,
         IUserRepository userRepository)
@@ -33,46 +38,74 @@ public class AdminController : Controller
         _userRepository = userRepository;
     }
     
-    
+    /// <summary>
+    /// Viser innloggingssiden for Admin.
+    /// </summary>
     public IActionResult LogIn()
     {
         return View();
     }
+    
+    /// <summary>
+    /// Viser administrasjonshauvedpunktet.
+    /// </summary>
     public IActionResult Index()
     {
         return View();
     }
+    
+    /// <summary>
+    /// Viser personvernserklæringen.
+    /// </summary>
     public IActionResult Privacy()
     {
         return View();
     }
     
+    /// <summary>
+    /// Viser kartvisning for Admin.
+    /// </summary>
     public IActionResult Map()
     {
         return View();
     }
     
+    /// <summary>
+    /// Viser statistikk-dashboard.
+    /// </summary>
     public IActionResult Stats()
     {
         return View();
     }
     
+    /// <summary>
+    /// Viser rapporter-dashbord.
+    /// </summary>
     public IActionResult Reports()
     {
         return View();
     }
     
+    /// <summary>
+    /// Viser innstillinger for Admin.
+    /// </summary>
     public IActionResult Settings()
     {
         return View();
     }
 
+    /// <summary>
+    /// Standardfeilside.
+    /// </summary>
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
     
+    /// <summary>
+    /// Henter og viser alle organisasjoner.
+    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Orgs()
     {
@@ -81,6 +114,9 @@ public class AdminController : Controller
         return View(orgs);
     }
     
+    /// <summary>
+    /// Viser skjema for å opprette ny organisasjon.
+    /// </summary>
     [HttpGet]
     public IActionResult NewOrg()
     {
@@ -89,6 +125,10 @@ public class AdminController : Controller
     
     
     
+    /// <summary>
+    /// Oppretter en ny organisasjon.
+    /// </summary>
+    /// <param name="model">Modellen med organisasjonsdata.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> NewOrg(OrgModel model)
@@ -117,6 +157,10 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Orgs));
     }
     
+    /// <summary>
+    /// Viser skjema for å redigere en eksisterende organisasjon.
+    /// </summary>
+    /// <param name="id">Organisasjonsnummeret til organisasjonen som skal redigeres.</param>
     [HttpGet]
     public async Task<IActionResult> EditOrg(int id)
     {
@@ -129,6 +173,10 @@ public class AdminController : Controller
         return View(org);
     }
 
+    /// <summary>
+    /// Lagrer endringer gjort på en organisasjon.
+    /// </summary>
+    /// <param name="model">Modellen med oppdaterte organisasjonsdata.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditOrg(OrgModel model)
@@ -181,6 +229,10 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Orgs));
     }
     
+    /// <summary>
+    /// Sletter en organisasjon.
+    /// </summary>
+    /// <param name="id">Organisasjonsnummeret til organisasjonen som skal slettes.</param>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteOrg(int id)

@@ -1,4 +1,5 @@
 using AOR.Data;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +13,13 @@ namespace AOR.Controllers
 {
     public class LogInController : Controller
     {
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<UserModel> _signInManager;
+        private readonly UserManager<UserModel> _userManager;
         private readonly ILogger<LogInController> _logger;
 
         public LogInController(
-            SignInManager<User> signInManager,
-            UserManager<User> userManager,
+            SignInManager<UserModel> signInManager,
+            UserManager<UserModel> userManager,
             ILogger<LogInController> logger)
         {
             _signInManager = signInManager;
@@ -26,7 +27,7 @@ namespace AOR.Controllers
             _logger = logger;
         }
 
-        private async Task SignInWithActiveRole(User user, string chosenRole, bool rememberMe)
+        private async Task SignInWithActiveRole(UserModel user, string chosenRole, bool rememberMe)
         {
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
 
@@ -226,7 +227,7 @@ namespace AOR.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -237,7 +238,7 @@ namespace AOR.Controllers
             {
                 TempData["ForgotPassword_Info"] = "Hvis e-postadressen finnes og er bekreftet, er en lenke sendt.";
                 ModelState.Clear();
-                return View(new ForgotPasswordModel());
+                return View(new ForgotPasswordViewModel());
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -253,7 +254,7 @@ namespace AOR.Controllers
             TempData["ResetLink"] = callbackUrl;
 
             ModelState.Clear();
-            return View(new ForgotPasswordModel());
+            return View(new ForgotPasswordViewModel());
         }
 
 

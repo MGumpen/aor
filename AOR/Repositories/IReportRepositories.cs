@@ -3,45 +3,83 @@ using AOR.Models.Data;
 
 namespace AOR.Repositories
 {
+    /// <summary>
+    /// Interface for dataaaksess til rapporter.
+    /// Definer alle operasjoner for CRUD og spesialiserte queries på ReportModel.
+    /// </summary>
     public interface IReportRepository
     {
-        // Hent alle rapporter med tilhørende Obstacle, User og Status
+        /// <summary>
+        /// Henter alle rapporter med tilhørende Obstacle, User og Status (eager loading).
+        /// </summary>
         Task<List<ReportModel>> GetAllWithIncludesAsync();
 
-        // Hent rapporter for én bestemt bruker (MyReports)
+        /// <summary>
+        /// Henter rapporter som en bestemt bruker har opprettet (MyReports).
+        /// </summary>
+        /// <param name="userId">ID-en til brukeren</param>
         Task<List<ReportModel>> GetByUserAsync(string userId);
 
-        // Hent rapporter der brukeren er assignet (AssignedToId)
+        /// <summary>
+        /// Henter rapporter som er assignet til en bestemt registrar.
+        /// </summary>
+        /// <param name="userId">ID-en til registraren</param>
         Task<List<ReportModel>> GetAssignedToAsync(string userId);
 
-        // Hent antall rapporter som er assignet til en bruker og fortsatt er Pending
+        /// <summary>
+        /// Henter antall rapporter assignet til en bruker med status Pending.
+        /// </summary>
+        /// <param name="userId">ID-en til registraren</param>
         Task<int> GetAssignedPendingCountAsync(string userId);
 
-        // Hent antall rapporter som ikke er assignet og fortsatt er Pending
+        /// <summary>
+        /// Henter antall rapporter som ikke er assignet til noen og har status Pending.
+        /// </summary>
         Task<int> GetUnassignedPendingCountAsync();
 
-        // Hent alle brukere som har rollen Registrar
-        Task<List<User>> GetRegistrarsAsync();
+        /// <summary>
+        /// Henter alle brukere som har rollen Registrar.
+        /// </summary>
+        Task<List<UserModel>> GetRegistrarsAsync();
 
-        // Assign en rapport til en registrar (satt AssignedToId)
+        /// <summary>
+        /// Assignerer en rapport til en registrar eller fjerner assigneringen.
+        /// </summary>
+        /// <param name="reportId">Rapporten som skal assigneres</param>
+        /// <param name="registrarUserId">ID-en til registraren (null for å fjerne assignering)</param>
         Task AssignToAsync(int reportId, string? registrarUserId);
 
-        // Hent rapporter siste 30 dager (for Last30Days-endepunktet)
+        /// <summary>
+        /// Henter rapporter som ble opprettet de siste 30 dagene.
+        /// </summary>
         Task<List<ReportModel>> GetLast30DaysAsync();
 
-        // Hent én spesifikk rapport inkl. Obstacle, User, Status (til detaljer-visning)
+        /// <summary>
+        /// Henter en spesifikk rapport med alle relaterte data (for detaljer-visning).
+        /// </summary>
+        /// <param name="reportId">Rapporten som skal hentes</param>
         Task<ReportModel?> GetByIdWithIncludesAsync(int reportId);
 
-        // Opprett ny rapport
+        /// <summary>
+        /// Opprett en ny rapport i databasen.
+        /// </summary>
         Task AddAsync(ReportModel report);
 
-        // Oppdater en eksisterende rapport (f.eks. endre felter)
+        /// <summary>
+        /// Oppdater en eksisterende rapport.
+        /// </summary>
         Task UpdateAsync(ReportModel report);
 
-        // Bare oppdatere status på en rapport (nyttig for admin/moderering)
+        /// <summary>
+        /// Oppdater kun statusen på en rapport.
+        /// </summary>
+        /// <param name="reportId">Rapporten som skal oppdateres</param>
+        /// <param name="statusId">Ny status-ID</param>
         Task UpdateStatusAsync(int reportId, int statusId);
 
-        // Slette rapport (om dere ønsker det senere)
+        /// <summary>
+        /// Sletter en rapport fra databasen.
+        /// </summary>
         Task DeleteAsync(int reportId);
     }
 }

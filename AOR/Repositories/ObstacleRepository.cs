@@ -13,7 +13,7 @@ namespace AOR.Repositories
             _context = context;
         }
 
-        public async Task<List<ObstacleData>> GetAllAsync()
+        public async Task<List<ObstacleDataModel>> GetAllAsync()
         {
             return await _context.Obstacles
                 .AsNoTracking()
@@ -21,7 +21,7 @@ namespace AOR.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ObstacleData?> GetByIdAsync(int obstacleId)
+        public async Task<ObstacleDataModel?> GetByIdAsync(int obstacleId)
         {
             return await _context.Obstacles
                 .AsNoTracking()
@@ -34,13 +34,13 @@ namespace AOR.Repositories
                 .AnyAsync(o => o.ObstacleId == obstacleId);
         }
 
-        public async Task AddAsync(ObstacleData obstacle)
+        public async Task AddAsync(ObstacleDataModel obstacle)
         {
             _context.Obstacles.Add(obstacle);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(ObstacleData obstacle)
+        public async Task UpdateAsync(ObstacleDataModel obstacle)
         {
             _context.Obstacles.Update(obstacle);
             await _context.SaveChangesAsync();

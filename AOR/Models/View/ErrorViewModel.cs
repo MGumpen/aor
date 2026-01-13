@@ -1,6 +1,6 @@
 namespace AOR.Models.View;
 
-public class ErrorModel
+public class ErrorViewModel
 {
     public string? RequestId { get; set; }
 

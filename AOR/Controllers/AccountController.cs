@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using AOR.Data;
+using AOR.Models.Data;
 using Microsoft.AspNetCore.Mvc;
 using AOR.Models.View;
 using Microsoft.AspNetCore.Identity;
@@ -12,14 +13,14 @@ namespace AOR.Controllers;
 public class AccountController : Controller
 {
     private readonly ILogger<AccountController> _logger;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<UserModel> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IOrganizationRepository _organizationRepository;
     private readonly IUserRepository _userRepository;
 
     public AccountController(
         ILogger<AccountController> logger,
-        UserManager<User> userManager,
+        UserManager<UserModel> userManager,
         RoleManager<IdentityRole> roleManager,
         IOrganizationRepository organizationRepository,
         IUserRepository userRepository)
@@ -133,7 +134,7 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var user = new User
+        var user = new UserModel
         {
             UserName = model.Email,
             Email = model.Email,
@@ -196,7 +197,7 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> EditUser(string id)
     {
-        User? user;
+        UserModel? user;
         if (!string.IsNullOrEmpty(id))
         {
             user = await _userManager.FindByIdAsync(id);
@@ -418,7 +419,7 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> AdminEditUser(string id)
     {
-        User? user;
+        UserModel? user;
         if (!string.IsNullOrEmpty(id))
         {
             user = await _userManager.FindByIdAsync(id);

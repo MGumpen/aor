@@ -1,13 +1,11 @@
-@model IEnumerable<AOR.Models.Data.ReportModel>
-@using AOR.Data
+@model AOR.Models.View.RegistrarIndexViewModel
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<User> UserManager
+@inject UserManager<AOR.Models.Data.UserModel> UserManager
 
 @{
     var currentUser = await UserManager.GetUserAsync(User);
     Layout = "_Layout";
     ViewData["Title"] = "Registrar - Dashboard";
-    var assignedPending = (ViewBag.AssignedPendingCount as int?) ?? 0;
 }
 
 <link rel="stylesheet" href="~/css/Registrar/Index.css" />
@@ -20,13 +18,12 @@
 
     <div class="admin-grid">
         <a class="admin-tile" asp-action="AllReports">All reports @{
-            var unassigned = (ViewBag.UnassignedPendingCount as int?) ?? 0;
-            if (unassigned > 0)
+            if (Model.UnassignedPendingCount > 0)
             {
-                <text> <span class="badge badge-orange ms-2">@unassigned Unassigned</span></text>;
+                <text> <span class="badge badge-orange ms-2">@Model.UnassignedPendingCount Unassigned</span></text>
             }
         }</a>
-        <a class="admin-tile" asp-action="AssignedReports">Assigned reports @if(assignedPending > 0) { <span class="badge badge-orange ms-2">@assignedPending Pending</span> }</a>
+        <a class="admin-tile" asp-action="AssignedReports">Assigned reports @if(Model.AssignedPendingCount > 0) { <span class="badge badge-orange ms-2">@Model.AssignedPendingCount Pending</span> }</a>
     </div>
 </div>
 

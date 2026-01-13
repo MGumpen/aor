@@ -1,12 +1,10 @@
-@model IEnumerable<AOR.Models.Data.ReportModel>
+@model AOR.Models.View.AssignedReportsViewModel
 @{
     ViewData["Title"] = "Assigned reports";
     Layout = "_Layout";
-    var currentSort = (ViewBag.CurrentSort as string) ?? "CreatedAt";
-    var currentDir = (ViewBag.CurrentDir as string) ?? "desc";
-    string Toggle(string key) => (string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase) && currentDir == "asc") ? "desc" : "asc";
-    string Caret(string key) => string.Equals(currentSort, key, System.StringComparison.OrdinalIgnoreCase)
-        ? (currentDir == "asc" ? "▲" : "▼")
+    string Toggle(string key) => (string.Equals(Model.CurrentSort, key, StringComparison.OrdinalIgnoreCase) && Model.CurrentDir == "asc") ? "desc" : "asc";
+    string Caret(string key) => string.Equals(Model.CurrentSort, key, StringComparison.OrdinalIgnoreCase)
+        ? (Model.CurrentDir == "asc" ? "▲" : "▼")
         : "";
 }
 
@@ -42,7 +40,7 @@
                  </tr>
              </thead>
              <tbody>
-                 @if (!(Model?.Any() ?? false))
+                 @if (!(Model?.Reports?.Any() ?? false))
                  {
                      <tr>
                          <td colspan="9"><div class="alert alert-info mb-0">Du har ingen assignede rapporter.</div></td>
@@ -50,7 +48,7 @@
                  }
                  else
                  {
-                     foreach (var report in Model)
+                     foreach (var report in Model.Reports)
                      {
                          <tr>
                              <td>@(report.Obstacle?.ObstacleName ?? "Ukjent")</td>

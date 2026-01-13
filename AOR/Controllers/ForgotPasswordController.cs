@@ -14,13 +14,13 @@ namespace AOR.Controllers
 
         public IActionResult Index()
         {
-            return View(new ForgotPasswordModel());
+            return View(new ForgotPasswordViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public IActionResult Index(ForgotPasswordModel model)
+        public IActionResult Index(ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {

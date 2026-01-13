@@ -8,13 +8,13 @@ namespace AOR.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var model = new SettingsModel();
+            var model = new SettingsViewModel();
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(SettingsModel model)
+        public IActionResult Index(SettingsViewModel model)
         {
             if (ModelState.IsValid)
             {
